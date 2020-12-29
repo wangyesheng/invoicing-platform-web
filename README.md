@@ -1,4 +1,4 @@
-# vue-admin-template
+# invoicing-platform-web
 
 ## Build Setup
 
