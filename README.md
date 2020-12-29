@@ -5,13 +5,13 @@
 
 ```bash
 # clone the project
-git clone https://github.com/wangyesheng/vue-admin-template.git
+https://github.com/wangyesheng/invoicing-platform-web.git
 
 # enter the project directory
-cd vue-admin-template
+cd invoicing-platform-web
 
 # install dependency
-npm install
+npm install or cnpm install or yarn install
 
 # develop
 npm run dev
