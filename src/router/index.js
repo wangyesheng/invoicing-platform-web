@@ -1,25 +1,24 @@
-import Vue from 'vue'
-import Router from 'vue-router'
+import Vue from "vue";
+import Router from "vue-router";
 
-import { constantRoutes, asyncRoutes } from './route.config'
+import { constantRoutes, asyncRoutes } from "./route.config";
 
-Vue.use(Router)
+Vue.use(Router);
 
-const createRouter = () => new Router({
-  mode: 'hash',
-  scrollBehavior: () => ({ y: 0 }),
-  routes: constantRoutes
-})
+const createRouter = () =>
+  new Router({
+    mode: "hash",
+    scrollBehavior: () => ({ y: 0 }),
+    routes: constantRoutes.concat(asyncRoutes)
+  });
 
-const router = createRouter()
+const router = createRouter();
 
 export function resetRouter() {
-  const newRouter = createRouter()
-  router.matcher = newRouter.matcher // reset router
+  const newRouter = createRouter();
+  router.matcher = newRouter.matcher; // reset router
 }
 
-export default router
+export default router;
 
-export {
-  constantRoutes, asyncRoutes
-} 
+export { constantRoutes, asyncRoutes };

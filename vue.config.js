@@ -35,13 +35,13 @@ module.exports = {
       warnings: false,
       errors: true
     },
-    proxy: {
-      // detail: https://cli.vuejs.org/config/#devserver-proxy
-      [process.env.VUE_APP_BASE_API]: {
-        target: `http://localhost:3000`,
-        changeOrigin: true
-      }
-    }
+    // proxy: {
+    //   // detail: https://cli.vuejs.org/config/#devserver-proxy
+    //   [process.env.VUE_APP_BASE_API]: {
+    //     target: `http://localhost:3000`,
+    //     changeOrigin: true
+    //   }
+    // }
   },
   configureWebpack: {
     // provide the app's title in webpack's name field, so that
