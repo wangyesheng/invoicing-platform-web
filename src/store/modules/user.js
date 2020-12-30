@@ -51,7 +51,6 @@ const mutations = {
 const actions = {
   login({ commit }, userInfo) {
     const { username, password } = userInfo
-    console.log(userInfo);
     return new Promise((resolve, reject) => {
       checkLoginRes({ username: username.trim(), password: password }).then(response => {
         const { data } = response
