@@ -1,6 +1,8 @@
 <template>
   <div class="app-content">
-    User
+    <div class="user-wrap">
+      <el-button>hello</el-button>
+    </div>
   </div>
 </template>
 
@@ -21,3 +23,6 @@ export default {
   },
 };
 </script>
+
+<style lang="scss" scoped>
+</style>
