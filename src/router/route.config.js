@@ -1,4 +1,4 @@
-import Layout from '@/layout'
+import Layout from "@/layout";
 
 /**
  * Note: sub-menu only appear when route children.length >= 1
@@ -21,94 +21,75 @@ import Layout from '@/layout'
 
 export const constantRoutes = [
   {
-    path: '/login',
-    component: () => import('@/views/login/index'),
+    path: "/login",
+    component: () => import("@/views/login/index"),
     hidden: true
   },
 
   {
-    path: '/404',
-    component: () => import('@/views/404'),
+    path: "/404",
+    component: () => import("@/views/404"),
     hidden: true
   },
-
   {
-    path: '/',
+    path: "/",
     component: Layout,
-    redirect: '/dashboard',
-    children: [{
-      path: 'dashboard',
-      name: 'Dashboard',
-      component: () => import('@/views/dashboard/index'),
-      meta: { title: 'Dashboard', icon: 'dashboard' }
-    }]
-  },
-]
+    redirect: "/dashboard",
+    children: [
+      {
+        path: "dashboard",
+        name: "Dashboard",
+        component: () => import("@/views/dashboard/index"),
+        meta: { title: "工作台", icon: "dashboard" }
+      }
+    ]
+  }
+];
 
 export const asyncRoutes = [
   {
-    path: '/sys',
+    path: "/sys",
     component: Layout,
-    name: 'SYS',
-    redirect: '/sys/user',
-    meta: { title: 'System', icon: 'dashboard' },
+    name: "SYS",
+    redirect: "/sys/user",
+    meta: { title: "系统管理", icon: "system" },
     children: [
       {
-        path: '/sys/user',
-        name: 'SYS_USER',
-        component: () => import('@/views/sys/user'),
-        meta: { title: 'User' }
+        path: "/sys/user",
+        name: "SYS_USER",
+        component: () => import("@/views/sys/user"),
+        meta: { title: "用户管理" }
       },
       {
-        path: '/sys/role',
-        name: 'SYS_ROLE',
-        component: () => import('@/views/sys/role'),
-        meta: { title: 'Role' }
-      }, {
-        path: '/sys/permission',
-        name: 'SYS_PERMISSION',
-        component: () => import('@/views/sys/permission'),
-        meta: { title: 'Permission' }
+        path: "/sys/role",
+        name: "SYS_ROLE",
+        component: () => import("@/views/sys/role"),
+        meta: { title: "角色管理" }
+      },
+      {
+        path: "/sys/permission",
+        name: "SYS_PERMISSION",
+        component: () => import("@/views/sys/permission"),
+        meta: { title: "权限管理" }
       }
+      // {
+      //   path: "/sys/api",
+      //   name: "SYS_API_REQUEST",
+      //   component: () => import("@/views/sys/api"),
+      //   meta: { title: "接口管理" }
+      // },
     ]
   },
   {
-    path: '/nested',
+    path: "/bidding",
     component: Layout,
-    redirect: '/nested/menu1',
-    name: 'Nested',
-    meta: {
-      title: 'Nested',
-      icon: 'nested'
-    },
     children: [
       {
-        path: '/nested/menu1',
-        component: () => import('@/views/nested/menu1/index'), // Parent router-view
-        name: 'Menu1',
-        meta: { title: 'Menu1' },
-        redirect: '/nested/menu1/menu1-1',
-        children: [
-          {
-            path: '/nested/menu1/menu1-1',
-            component: () => import('@/views/nested/menu1/menu1-1'),
-            name: 'Menu1-1',
-            meta: { title: 'Menu1-1' }
-          },
-          {
-            path: '/nested/menu1/menu1-3',
-            component: () => import('@/views/nested/menu1/menu1-3'),
-            name: 'Menu1-3',
-            meta: { title: 'Menu1-3' }
-          }
-        ]
-      },
-      {
-        path: '/nested/menu2',
-        component: () => import('@/views/nested/menu2/index'),
-        meta: { title: 'menu2' }
+        path: "/bidding",
+        name: "BIDDING",
+        component: () => import("@/views/bidding/index"),
+        meta: { title: "招标管理", icon: "dashboard" }
       }
     ]
-  },
-]
-
+  }
+];

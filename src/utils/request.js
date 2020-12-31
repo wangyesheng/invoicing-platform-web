@@ -16,7 +16,7 @@ service.interceptors.request.use(
       "Access-Control-Allow-Origin": "*"
     };
     if (store.getters.token) {
-      config.headers["AccessToken2"] = getToken();
+      config.headers["access_token2"] = getToken();
     }
     return config;
   },

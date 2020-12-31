@@ -91,7 +91,7 @@ export default {
     & .sidebar-title {
       display: inline-block;
       margin: 0;
-      color: #21CA2E;
+      color: #409EFF;
       font-weight: 600;
       line-height: 50px;
       font-size: 14px;
