@@ -9,14 +9,14 @@
           <el-input
             clearable
             v-model="queryCondition.nbr"
-            placeholder="请输入标书编号"
+            placeholder="请输入编号"
           />
         </el-form-item>
         <el-form-item label="开始日期">
           <el-date-picker
             clearable
             type="date"
-            placeholder="请选择标书开始日期"
+            placeholder="请选择开始日期"
             v-model="queryCondition.effDate"
             style="width: 100%;"
           />
@@ -25,7 +25,7 @@
           <el-date-picker
             clearable
             type="date"
-            placeholder="请选择标书结束日期"
+            placeholder="请选择结束日期"
             v-model="queryCondition.dueDate"
             style="width: 100%;"
           />
@@ -34,7 +34,7 @@
         <el-form-item label="状态">
           <el-select
             clearable
-            placeholder="请选择标书状态"
+            placeholder="请选择状态"
             v-model="queryCondition.state"
           >
             <el-option
@@ -70,17 +70,17 @@
         </el-table-column>
         <el-table-column
           prop="effDate"
-          label="招标开始日期"
+          label="开始日期"
         >
         </el-table-column>
         <el-table-column
           prop="dueDate"
-          label="招标结束日期"
+          label="结束日期"
         >
         </el-table-column>
         <el-table-column
           prop="state"
-          label="招标状态"
+          label="状态"
         >
           <template slot-scope="scope">
             <eos-tag :type="scope.row._stateTag">{{scope.row._stateLabel}}</eos-tag>
@@ -91,7 +91,7 @@
             <el-button
               type="text"
               @click="handleShowLineDialog(scope.row.nbr)"
-            >查询招标行</el-button>
+            >招标行</el-button>
             <el-button
               type="text"
               @click="$router.push(`/bidding/operation?nbr=${scope.row.nbr}`)"
@@ -109,7 +109,7 @@
       </el-table>
     </el-card>
     <el-dialog
-      title="招标行信息"
+      title="行信息"
       width="60%"
       :visible.sync="lineDialog.visible"
     >

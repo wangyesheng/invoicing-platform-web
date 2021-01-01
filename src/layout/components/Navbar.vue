@@ -63,14 +63,14 @@ export default {
 
 <style lang="scss" scoped>
 .navbar {
-  height: 62px;
+  height: 50px;
   overflow: hidden;
   position: relative;
   background: #fff;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.01), 0 10px 30px rgba(0, 0, 0, 0.08);
 
   .hamburger-container {
-    line-height: 60px;
+    line-height: 50px;
     height: 100%;
     float: left;
     cursor: pointer;
@@ -94,7 +94,7 @@ export default {
 
       .avatar-wrapper {
         position: relative;
-        margin-top: 10px;
+        margin-top: 8px;
         .username {
           position: relative;
           bottom: 10px;
@@ -103,8 +103,8 @@ export default {
 
         .user-avatar {
           cursor: pointer;
-          width: 40px;
-          height: 40px;
+          width: 35px;
+          height: 35px;
           border-radius: 50%;
         }
       }

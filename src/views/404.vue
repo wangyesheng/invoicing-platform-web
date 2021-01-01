@@ -77,7 +77,7 @@ export default {
         animation-delay: 1.2s;
       }
       &.right {
-        width: 62px;
+        width: 50px;
         top: 100px;
         left: 500px;
         opacity: 0;

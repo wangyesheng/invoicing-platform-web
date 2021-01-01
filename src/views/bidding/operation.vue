@@ -2,7 +2,7 @@
   <div class="app-content">
     <el-card shadow="never">
       <div class="bidding-operation-wrap">
-        <h3>{{pageTitle}}</h3>
+        <!-- <h3>{{pageTitle}}</h3> -->
         <el-divider />
         <el-form
           ref="biddingForm"
@@ -11,16 +11,16 @@
           :rules="biddingForm.rules"
         >
           <el-form-item
-            label="标书编号"
+            label="编号"
             prop="nbr"
           >
             <el-input
               v-model="biddingForm.data.nbr"
-              placeholder="请输入标书编号"
+              placeholder="请输入编号"
             />
           </el-form-item>
           <el-form-item
-            label="招标开始日期"
+            label="开始日期"
             prop="effDate"
           >
             <el-date-picker
@@ -31,7 +31,7 @@
             />
           </el-form-item>
           <el-form-item
-            label="招标截止日期"
+            label="截止日期"
             prop="dueDate"
           >
             <el-date-picker
@@ -44,7 +44,7 @@
           <el-form-item label="备注">
             <el-input
               v-model="biddingForm.data.remark"
-              placeholder="请输入标书备注"
+              placeholder="请输入备注"
               type="textarea"
               autosize
             />
@@ -55,7 +55,7 @@
               @click="handleShowLineDialog(null)"
             >新建行信息</el-button>
           </el-form-item>
-          <el-form-item label="标书行信息">
+          <el-form-item label="">
             <el-table
               style="width: 100%"
               :data="biddingLines"
@@ -89,7 +89,7 @@
             <el-button
               type="primary"
               @click="handleSumbit('biddingForm')"
-            >提交</el-button>
+            >确定提交</el-button>
             <el-button @click="handleReset('biddingForm')">重置</el-button>
           </el-form-item>
         </el-form>
@@ -114,21 +114,21 @@
               />
             </el-form-item>
             <el-form-item
-              label="招标底价"
+              label="底价"
               prop="price"
             >
               <el-input
                 v-model="lineDialog.formData.price"
-                placeholder="请输入招标底价"
+                placeholder="请输入底价"
               />
             </el-form-item>
             <el-form-item
-              label="招标数量"
+              label="数量"
               prop="qty"
             >
               <el-input
                 v-model="lineDialog.formData.qty"
-                placeholder="请输入招标数量"
+                placeholder="请输入数量"
               />
             </el-form-item>
             <el-form-item
@@ -173,10 +173,10 @@ export default {
         rules: {
           nbr: [{ required: true, message: '请输入标书编号', trigger: 'blur' }],
           effDate: [
-            { required: true, message: '请选择招标开始日期', trigger: 'blur' },
+            { required: true, message: '请选择开始日期', trigger: 'blur' },
           ],
           dueDate: [
-            { required: true, message: '请选择招标截止日期', trigger: 'blur' },
+            { required: true, message: '请选择截止日期', trigger: 'blur' },
           ],
         },
       },
@@ -192,9 +192,9 @@ export default {
         formRules: {
           part: [{ required: true, message: '请输入部件号', trigger: 'blur' }],
           price: [
-            { required: true, message: '请输入招标底价', trigger: 'blur' },
+            { required: true, message: '请输入底价', trigger: 'blur' },
           ],
-          qty: [{ required: true, message: '请输入招标数量', trigger: 'blur' }],
+          qty: [{ required: true, message: '请输入数量', trigger: 'blur' }],
           um: [{ required: true, message: '请输入单位', trigger: 'blur' }],
         },
       },

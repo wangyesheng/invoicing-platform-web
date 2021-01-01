@@ -48,7 +48,7 @@ export default {
   },
   data() {
     return {
-      title: '进销存管理系统',
+      title: 'PSD管理系统',
       logo:
         'https://wpimg.wallstcn.com/69a1c46c-eb1c-4b46-8bd4-e9e686ef5251.png',
     };
@@ -69,8 +69,8 @@ export default {
 .sidebar-logo-container {
   position: relative;
   width: 100%;
-  height: 62px;
-  line-height: 62px;
+  height: 50px;
+  line-height: 50px;
   background: #fff;
   text-align: center;
   overflow: hidden;

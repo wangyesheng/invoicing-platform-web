@@ -87,16 +87,16 @@ export const asyncRoutes = [
     meta: { title: "招标管理", icon: "bidding" },
     children: [
       {
+        path: "/bidding/operation",
+        name: "BIDDING_OPERATION",
+        component: () => import("@/views/bidding/operation"),
+        meta: { title: "新建标书" }
+      },
+      {
         path: "/bidding/index",
         name: "BIDDING",
         component: () => import("@/views/bidding/index"),
         meta: { title: "标书管理" }
-      },
-      {
-        path: "/bidding/operation",
-        name: "BIDDING_OPERATION",
-        component: () => import("@/views/bidding/operation"),
-        meta: { title: "新建编辑标书" }
       }
     ]
   }
