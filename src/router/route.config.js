@@ -52,7 +52,7 @@ export const asyncRoutes = [
     component: Layout,
     name: "SYS",
     redirect: "/sys/user",
-    meta: { title: "系统管理", icon: "system" },
+    meta: { title: "系统设置", icon: "system" },
     children: [
       {
         path: "/sys/user",
@@ -83,12 +83,20 @@ export const asyncRoutes = [
   {
     path: "/bidding",
     component: Layout,
+    redirect: "/bidding/index",
+    meta: { title: "招标管理", icon: "bidding" },
     children: [
       {
-        path: "/bidding",
+        path: "/bidding/index",
         name: "BIDDING",
         component: () => import("@/views/bidding/index"),
-        meta: { title: "招标管理", icon: "dashboard" }
+        meta: { title: "标书管理" }
+      },
+      {
+        path: "/bidding/operation",
+        name: "BIDDING_OPERATION",
+        component: () => import("@/views/bidding/operation"),
+        meta: { title: "新建编辑标书" }
       }
     ]
   }

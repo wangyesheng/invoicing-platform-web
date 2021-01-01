@@ -13,7 +13,7 @@ body {
 }
 
 label {
-  font-weight: 700;
+  font-weight: 600;
 }
 
 html {
@@ -62,6 +62,15 @@ div:focus {
 // main-container global css
 .app-content {
   margin: 0 30px 30px;
-  background: #fff;
-  padding: 20px;
+
+  .eos-operation-wrap {
+    background-color: #fff;
+    margin-bottom: 10px;
+    border-radius: 4px;
+    padding: 10px 10px 0 10px;
+
+    .el-form-item {
+      margin-bottom: 10px;
+    }
+  }
 }

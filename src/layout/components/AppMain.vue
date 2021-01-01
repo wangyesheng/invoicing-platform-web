@@ -1,6 +1,6 @@
 <template>
   <section class="app-main">
-    <breadcrumb class="breadcrumb-container" />
+    <!-- <breadcrumb class="breadcrumb-container" /> -->
     <transition
       name="fade-transform"
       mode="out-in"
@@ -36,7 +36,7 @@ export default {
 }
 
 .fixed-header + .app-main {
-  padding-top: 62px;
+  padding-top: 94px;
 }
 </style>
 
