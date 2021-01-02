@@ -86,24 +86,17 @@
             <eos-tag :type="scope.row._stateTag">{{scope.row._stateLabel}}</eos-tag>
           </template>
         </el-table-column>
+        <el-table-column
+          prop="bivDate"
+          label="竞标日期"
+        >
+        </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button
               type="text"
               @click="handleShowLineDialog(scope.row.nbr)"
-            >招标行</el-button>
-            <el-button
-              type="text"
-              @click="$router.push(`/bidding/operation?nbr=${scope.row.nbr}`)"
-            >编辑</el-button>
-            <el-button
-              type="text"
-              @click="handleDelete(scope.row.nbr)"
-            >删除</el-button>
-            <el-button
-              type="text"
-              @click="handleAction1(scope.row.nbr)"
-            >发标</el-button>
+            >开始竞标</el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -125,17 +118,22 @@
         >
         </el-table-column>
       </el-table>
+       <span slot="footer" class="dialog-footer">
+        <el-button @click="lineDialog.visible = false">取 消</el-button>
+        <el-button type="primary" @click="lineDialog.visible = false">保存</el-button>
+        <el-button type="primary" @click="lineDialog.visible = false">确定竞标</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getRes, postRes } from '@/api/api';
-import biddingMixin from '@/mixins/biddingMixin';
+import { getRes } from '@/api/api';
+import bivvingMixin from '@/mixins/bivvingMixin';
 import { BIDDING_STATES } from '@/constant';
 
 export default {
-  mixins: [biddingMixin],
+  mixins: [bivvingMixin],
   data() {
     return {
       rows: [],
@@ -156,8 +154,8 @@ export default {
   },
   methods: {
     async queryAsync() {
-      const result = await getRes('/api/plat/v2/bid/query', this.queryCondition);
-      this.rows = (result || []).map((x) => {
+      const data = await getRes('/api/plat/v2/biv/query', this.queryCondition);
+      this.rows = (data || []).map((x) => {
         const scope = BIDDING_STATES.find((flag) => flag.value == x.state);
         return {
           ...x,
@@ -172,19 +170,6 @@ export default {
     },
     handleEdit() {},
     handleDelete() {},
-    handleAction1(nbr){
-      // 如果给`Action1`命名具体了，就和业务关联了，这个是要尽量避免的
-  
-      this.$confirm("你确定要执行此操作吗?", "提示", {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消'
-      }).then(()=>{
-          postRes('/api/plat/v2/bid/fab', { "nbr": nbr})
-          .then(res => {
-            console.log(res)
-          });
-      });
-    },
     handleSearch() {
       this.queryAsync();
     },

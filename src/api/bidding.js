@@ -32,7 +32,7 @@ export function getMainBiddingsByNbrRes(nbr) {
  * 获取指定招标的所有行信息
  * @param {*} nbr
  */
-export function getBiddingLinesByNbrRes(nbr) {
+export function getlinesByNbrRes(nbr) {
   return request({
     url: "/api/plat/v2/bid/det",
     method: "get",

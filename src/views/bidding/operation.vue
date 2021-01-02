@@ -58,7 +58,7 @@
           <el-form-item label="">
             <el-table
               style="width: 100%"
-              :data="biddingLines"
+              :data="lines"
             >
               <el-table-column
                 v-for="item in schema.lines"
@@ -205,7 +205,7 @@ export default {
     this.nbr &&
       Promise.all([
         this.getMainBiddingsByNbr(),
-        this.getBiddingLinesByNbr(this.nbr),
+        this.getlinesByNbr(this.nbr),
       ]);
     this.pageTitle = this.nbr ? '编辑标书' : '新增标书';
   },

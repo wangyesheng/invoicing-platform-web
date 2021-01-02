@@ -15,8 +15,8 @@ export default {
             label: "部件号"
           },
           {
-            field: "price",
-            label: "底价"
+            field: "desc",
+            label: "部件描述"
           },
           {
             field: "qty",
@@ -27,8 +27,8 @@ export default {
             label: "单位"
           },
           {
-            field: "date",
-            label: "日期"
+            field: "price",
+            label: "报价"
           }
         ]
       },
@@ -37,7 +37,7 @@ export default {
   },
   methods: {
     async getLinesByNbr(nbr) {
-      const data = await getRes('/api/plat/v2/bid/det', {
+      const data = await getRes('/api/plat/v2/biv/det', {
         "nbr": nbr
       });
       this.lines = (data || []).map(x => {

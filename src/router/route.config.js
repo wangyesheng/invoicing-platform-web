@@ -97,6 +97,18 @@ export const asyncRoutes = [
         name: "BIDDING",
         component: () => import("@/views/bidding/index"),
         meta: { title: "标书管理" }
+      },
+      {
+        path: "/bivving/index",
+        name: "BIVVING",
+        component: () => import("@/views/bivving/index"),
+        meta: { title: "竞标管理" }
+      },
+      {
+        path: "/bivving/hall",
+        name: "BIVVING_HALL",
+        component: () => import("@/views/bivving/hall"),
+        meta: { title: "竞标大厅" }
       }
     ]
   }

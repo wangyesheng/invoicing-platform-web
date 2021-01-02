@@ -1,4 +1,4 @@
-export const BIDDING_FLAGS = [
+export const BIDDING_STATES = [
   {
     label: "建标中",
     value: 0,
