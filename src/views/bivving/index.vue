@@ -117,6 +117,14 @@
           :label="item.label"
         >
         </el-table-column>
+        <el-table-column
+          prop="price"
+          label="报价"
+        >
+        <template slot-scope="scope">
+          <el-input v-model="scope.row.price"></el-input>
+        </template>
+        </el-table-column>
       </el-table>
        <span slot="footer" class="dialog-footer">
         <el-button @click="lineDialog.visible = false">取 消</el-button>
