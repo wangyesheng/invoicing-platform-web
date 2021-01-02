@@ -11,13 +11,6 @@ export function checkLoginRes({ username, password }) {
   });
 }
 
-export function getUserinfoRes(token) {
-  return request({
-    url: "/api/userinfo",
-    method: "get",
-    params: { token }
-  });
-}
 
 export function getViewUserMainRes(token) {
   return request({

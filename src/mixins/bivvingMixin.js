@@ -1,12 +1,9 @@
-import {
-  getRes
-} from "@/api/api";
-
 export default {
   data() {
     return {
       schema: {
-        lines: [{
+        lines: [
+          {
             field: "line",
             label: "行号"
           },
@@ -25,10 +22,6 @@ export default {
           {
             field: "um",
             label: "单位"
-          },
-          {
-            field: "price",
-            label: "报价"
           }
         ]
       },
@@ -37,8 +30,8 @@ export default {
   },
   methods: {
     async getLinesByNbr(nbr) {
-      const data = await getRes('/api/plat/v2/biv/det', {
-        "nbr": nbr
+      const data = await this.$get("/api/plat/v2/biv/det", {
+        nbr
       });
       this.lines = (data || []).map(x => {
         x.date = x.date.slice(0, 10);

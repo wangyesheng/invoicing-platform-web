@@ -130,7 +130,6 @@
 </template>
 
 <script>
-import { getRes, postRes } from '@/api/api';
 import biddingMixin from '@/mixins/biddingMixin';
 import { BIDDING_STATES } from '@/constant';
 
@@ -156,7 +155,10 @@ export default {
   },
   methods: {
     async queryAsync() {
-      const result = await getRes('/api/plat/v2/bid/query', this.queryCondition);
+      const result = await this.$get(
+        '/api/plat/v2/bid/query',
+        this.queryCondition
+      );
       this.rows = (result || []).map((x) => {
         const scope = BIDDING_STATES.find((flag) => flag.value == x.state);
         return {
@@ -172,17 +174,16 @@ export default {
     },
     handleEdit() {},
     handleDelete() {},
-    handleAction1(nbr){
+    handleAction1(nbr) {
       // 如果给`Action1`命名具体了，就和业务关联了，这个是要尽量避免的
-  
-      this.$confirm("你确定要执行此操作吗?", "提示", {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消'
-      }).then(()=>{
-          postRes('/api/plat/v2/bid/fab', { "nbr": nbr})
-          .then(res => {
-            console.log(res)
-          });
+
+      this.$confirm('你确定要执行此操作吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+      }).then(() => {
+        this.$post('/api/plat/v2/bid/fab', { nbr: nbr }).then((res) => {
+          console.log(res);
+        });
       });
     },
     handleSearch() {

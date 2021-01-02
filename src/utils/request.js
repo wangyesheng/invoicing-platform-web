@@ -52,4 +52,32 @@ service.interceptors.response.use(
   }
 );
 
+export const getRes = (url, params) =>
+  service({
+    url,
+    method: "get",
+    params
+  });
+
+export const postRes = (url, data) =>
+  service({
+    url,
+    method: "post",
+    data
+  });
+
+export const putRes = (url, data) =>
+  service({
+    url,
+    method: "put",
+    data
+  });
+
+export const deleteRes = (url, params) =>
+  service({
+    url,
+    method: "post",
+    params
+  });
+
 export default service;

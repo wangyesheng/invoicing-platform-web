@@ -155,8 +155,8 @@
 </template>
 
 <script>
-import { getMainBiddingsByNbrRes } from '@/api/bidding';
 import biddingMixin from '@/mixins/biddingMixin';
+import { parseTime } from '@/utils';
 
 export default {
   mixins: [biddingMixin],
@@ -191,9 +191,7 @@ export default {
         },
         formRules: {
           part: [{ required: true, message: '请输入部件号', trigger: 'blur' }],
-          price: [
-            { required: true, message: '请输入底价', trigger: 'blur' },
-          ],
+          price: [{ required: true, message: '请输入底价', trigger: 'blur' }],
           qty: [{ required: true, message: '请输入数量', trigger: 'blur' }],
           um: [{ required: true, message: '请输入单位', trigger: 'blur' }],
         },
@@ -203,20 +201,17 @@ export default {
   mounted() {
     this.nbr = this.$route.query.nbr;
     this.nbr &&
-      Promise.all([
-        this.getMainBiddingsByNbr(),
-        this.getlinesByNbr(this.nbr),
-      ]);
+      Promise.all([this.getMainBiddingsByNbr(), this.getLinesByNbr(this.nbr)]);
     this.pageTitle = this.nbr ? '编辑标书' : '新增标书';
   },
   methods: {
     async getMainBiddingsByNbr() {
-      const data = await getMainBiddingsByNbrRes(this.nbr);
+      const data = await this.$get('/api/plat/v2/bid', { nbr: this.nbr });
       for (let key in data) {
         this.biddingForm.data[key] = data[key];
       }
     },
-    handleShowLineDialog(scope) {
+    async handleShowLineDialog(scope) {
       if (scope) {
         // edit
         this.lineDialog.title = '编辑';
@@ -229,6 +224,21 @@ export default {
         for (let key in this.lineDialog.formData) {
           this.lineDialog.formData[key] = '';
         }
+
+        // console.log();
+        this.biddingForm.data.dueDate = parseTime(
+          this.biddingForm.data.dueDate,
+          '{y}-{m}-{d}'
+        );
+        this.biddingForm.data.effDate = parseTime(
+          this.biddingForm.data.effDate,
+          '{y}-{m}-{d}'
+        );
+        const data = await this.$post(
+          '/api/plat/v2/bid',
+          this.biddingForm.data
+        );
+        console.log(data);
       }
       this.lineDialog.visible = true;
     },

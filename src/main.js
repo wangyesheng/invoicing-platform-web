@@ -8,7 +8,7 @@ import locale from "element-ui/lib/locale/lang/zh-CN"; // lang i18n
 
 import "@/styles/index.scss"; // global css
 
-import '@/config/ui';
+import "@/config/ui";
 
 import App from "./App";
 import store from "./store";
@@ -16,8 +16,14 @@ import router from "./router";
 
 import "@/icons"; // icon
 import "@/permission"; // permission control
+import { getRes, postRes, putRes, deleteRes } from "@/utils/request";
 
-Vue.use(ElementUI, { size: 'small', locale });
+Vue.prototype.$get = getRes;
+Vue.prototype.$post = postRes;
+Vue.prototype.$put = putRes;
+Vue.prototype.$delete = deleteRes;
+
+Vue.use(ElementUI, { size: "small", locale });
 
 Vue.config.productionTip = false;
 

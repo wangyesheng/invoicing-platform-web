@@ -121,22 +121,30 @@
           prop="price"
           label="报价"
         >
-        <template slot-scope="scope">
-          <el-input v-model="scope.row.price"></el-input>
-        </template>
+          <template slot-scope="scope">
+            <el-input v-model="scope.row.price"></el-input>
+          </template>
         </el-table-column>
       </el-table>
-       <span slot="footer" class="dialog-footer">
+      <span
+        slot="footer"
+        class="dialog-footer"
+      >
         <el-button @click="lineDialog.visible = false">取 消</el-button>
-        <el-button type="primary" @click="lineDialog.visible = false">保存</el-button>
-        <el-button type="primary" @click="lineDialog.visible = false">确定竞标</el-button>
+        <el-button
+          type="primary"
+          @click="lineDialog.visible = false"
+        >保存</el-button>
+        <el-button
+          type="primary"
+          @click="lineDialog.visible = false"
+        >确定竞标</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import { getRes } from '@/api/api';
 import bivvingMixin from '@/mixins/bivvingMixin';
 import { BIDDING_STATES } from '@/constant';
 
@@ -162,7 +170,10 @@ export default {
   },
   methods: {
     async queryAsync() {
-      const data = await getRes('/api/plat/v2/biv/query', this.queryCondition);
+      const data = await this.$get(
+        '/api/plat/v2/biv/query',
+        this.queryCondition
+      );
       this.rows = (data || []).map((x) => {
         const scope = BIDDING_STATES.find((flag) => flag.value == x.state);
         return {
