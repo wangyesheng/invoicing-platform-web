@@ -1,7 +1,10 @@
 <template>
   <div class="app-content">
     <div class="eos-operation-wrap">
-      <el-form inline :model="queryCondition">
+      <el-form
+        inline
+        :model="queryCondition"
+      >
         <el-form-item label="编号">
           <el-input
             clearable
@@ -43,7 +46,10 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleSearch">查询</el-button>
+          <el-button
+            type="primary"
+            @click="handleSearch"
+          >查询</el-button>
         </el-form-item>
         <!-- <el-form-item>
           <el-button
@@ -56,28 +62,52 @@
 
     <el-card shadow="never">
       <el-table :data="rows">
-        <el-table-column prop="nbr" label="编号" width="180"> </el-table-column>
-        <el-table-column prop="effDate" label="开始日期"> </el-table-column>
-        <el-table-column prop="dueDate" label="结束日期"> </el-table-column>
-        <el-table-column prop="state" label="状态">
+        <el-table-column
+          prop="nbr"
+          label="编号"
+          width="180"
+        > </el-table-column>
+        <el-table-column
+          prop="effDate"
+          label="开始日期"
+        > </el-table-column>
+        <el-table-column
+          prop="dueDate"
+          label="结束日期"
+        > </el-table-column>
+        <el-table-column
+          prop="state"
+          label="状态"
+        >
           <template slot-scope="scope">
             <eos-tag :type="scope.row._stateTag">{{
               scope.row._stateLabel
             }}</eos-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="bivDate" label="竞标日期"> </el-table-column>
+        <el-table-column
+          prop="bivDate"
+          label="竞标日期"
+        > </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button type="text" @click="handleShowLineDialog(scope.row)"
-              >{{ scope.row.state >= 2 ? "详情" : "开始竞标" }}</el-button
-            >
+            <el-button
+              type="text"
+              @click="handleShowLineDialog(scope.row)"
+            >{{ scope.row.state >= 2 ? "详情" : "开始竞标" }}</el-button>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
-    <el-dialog title="行信息" width="60%" :visible.sync="lineDialog.visible">
-      <el-table style="width: 100%" :data="lines">
+    <el-dialog
+      title="行信息"
+      width="60%"
+      :visible.sync="lineDialog.visible"
+    >
+      <el-table
+        style="width: 100%"
+        :data="lines"
+      >
         <el-table-column
           v-for="item in schema.lines"
           :key="item.line"
@@ -85,24 +115,38 @@
           :label="item.label"
         >
         </el-table-column>
-        <el-table-column prop="price" label="报价">
+        <el-table-column
+          prop="price"
+          label="报价"
+        >
           <template slot-scope="scope">
             <el-input v-model="scope.row.price"></el-input>
           </template>
         </el-table-column>
       </el-table>
-      <span slot="footer" class="dialog-footer">
+      <span
+        slot="footer"
+        v-if="lineDialog.state<2"
+      >
         <el-button @click="lineDialog.visible = false">取 消</el-button>
-        <el-button type="primary" @click="handleSaveDet(true)" :v-if="!rowEntity || rowEntity.state < 2">保存</el-button>
-        <el-button type="primary" @click="handleSaveDet(false)" :v-if="!rowEntity || rowEntity.state < 2">确定竞标</el-button>
+        <el-button
+          type="primary"
+          @click="handleSaveDet(true)"
+          v-if="lineDialog.state < 2"
+        >保存</el-button>
+        <el-button
+          type="primary"
+          @click="handleSaveDet(false)"
+          v-if="lineDialog.state < 2"
+        >确定竞标</el-button>
       </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import bivvingMixin from "@/mixins/bivvingMixin";
-import { BIVVING_STATES } from "@/constant";
+import bivvingMixin from '@/mixins/bivvingMixin';
+import { BIVVING_STATES } from '@/constant';
 
 export default {
   mixins: [bivvingMixin],
@@ -110,17 +154,17 @@ export default {
     return {
       rows: [],
       queryCondition: {
-        nbr: "",
-        effDate: "",
-        dueDate: "",
-        state: "",
+        nbr: '',
+        effDate: '',
+        dueDate: '',
+        state: '',
       },
       lineDialog: {
         visible: false,
-        nbr: "",
+        nbr: '',
+        state: -1,
       },
       biddingFlags: BIVVING_STATES,
-      rowEntity: null // 被点击行的实体，打开模态窗时赋值，关闭时清空
     };
   },
   mounted() {
@@ -129,7 +173,7 @@ export default {
   methods: {
     async queryAsync() {
       const data = await this.$get(
-        "/api/plat/v2/biv/query",
+        '/api/plat/v2/biv/query',
         this.queryCondition
       );
       this.rows = (data || []).map((x) => {
@@ -142,12 +186,9 @@ export default {
       });
     },
     handleShowLineDialog(row) {
-      this.rowEntity = {
-        state: row.state
-      };
-
       this.getLinesByNbr(row.nbr);
       this.lineDialog.nbr = row.nbr;
+      this.lineDialog.state = row.state;
       this.lineDialog.visible = true;
     },
     handleEdit() {},
@@ -161,22 +202,23 @@ export default {
         return {
           nbr: v.nbr,
           line: v.line,
-          price: v.price
+          price: v.price,
         };
       });
 
-      this.$post("/api/plat/v2/biv/jingb", {
+      this.$post('/api/plat/v2/biv/jingb', {
         nbr: this.lineDialog.nbr,
         saving: saving,
         lines: fset,
       }).then((res) => {
         if (res) {
           this.$message({
-            message: saving ? "竞标信息已经保存! 确认无误后，可以点击`确定竞标`以提交竞标信息！" : "已完成竞标，请等待开标！",
-            type: "success",
+            message: saving
+              ? '竞标信息已经保存! 确认无误后，可以点击`确定竞标`以提交竞标信息！'
+              : '已完成竞标，请等待开标！',
+            type: 'success',
           });
           this.lineDialog.visible = false;
-          this.rowEntity = null;
         } else {
         }
         this.queryAsync();
