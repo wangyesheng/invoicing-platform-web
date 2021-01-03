@@ -50,3 +50,17 @@ export const BIVVING_STATES = [
     tag: "green"
   }
 ];
+
+// 采购合同状态
+export const PO_STATES = [
+  {
+    label: "建单中",
+    value: 0,
+    tag: "gray"
+  },
+  {
+    label: "有效单",
+    value: 1,
+    tag: "blue"
+  }
+];

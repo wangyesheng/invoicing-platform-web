@@ -111,5 +111,85 @@ export const asyncRoutes = [
         meta: { title: "竞标大厅" }
       }
     ]
+  },
+  {
+    path: "/po",
+    component: Layout,
+    redirect: "/po/index",
+    meta: { title: "采购管理", icon: "bidding" },
+    children: [
+      {
+        path: "/po/operation",
+        name: "PO_OPERATION",
+        component: () => import("@/views/po/operation"),
+        meta: { title: "新建合同" }
+      },
+      {
+        path: "/po/index",
+        name: "PO",
+        component: () => import("@/views/po/index"),
+        meta: { title: "采购管理" }
+      }
+    ]
+  },
+  {
+    path: "/ship",
+    component: Layout,
+    redirect: "/ship/index",
+    meta: { title: "发货管理", icon: "bidding" },
+    children: [
+      {
+        path: "/ship/operation",
+        name: "SHIP_OPERATION",
+        component: () => import("@/views/ship/operation"),
+        meta: { title: "新建发货单" }
+      },
+      {
+        path: "/ship/index",
+        name: "SHIP",
+        component: () => import("@/views/ship/index"),
+        meta: { title: "发货单管理" }
+      }
+    ]
+  },
+  {
+    path: "/recp",
+    component: Layout,
+    redirect: "/receipt/index",
+    meta: { title: "收货管理", icon: "bidding" },
+    children: [
+      {
+        path: "/receipt/operation",
+        name: "RECP_OPERATION",
+        component: () => import("@/views/receipt/operation"),
+        meta: { title: "新建收货单" }
+      },
+      {
+        path: "/receipt/index",
+        name: "RECP",
+        component: () => import("@/views/receipt/index"),
+        meta: { title: "收货单管理" }
+      }
+    ]
+  },
+  {
+    path: "/in",
+    component: Layout,
+    redirect: "/invoice/index",
+    meta: { title: "发票管理", icon: "bidding" },
+    children: [
+      {
+        path: "/invoice/operation",
+        name: "IN_OPERATION",
+        component: () => import("@/views/invoice/operation"),
+        meta: { title: "新建发票" }
+      },
+      {
+        path: "/invoice/index",
+        name: "IN",
+        component: () => import("@/views/invoice/index"),
+        meta: { title: "发票管理" }
+      }
+    ]
   }
 ];
