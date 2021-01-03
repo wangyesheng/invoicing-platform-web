@@ -5,17 +5,17 @@
         <!-- <h3>{{pageTitle}}</h3> -->
         <el-divider />
         <el-form
-          ref="biddingForm"
+          ref="formMstr"
           label-width="100px"
-          :model="biddingForm.data"
-          :rules="biddingForm.rules"
+          :model="formMstr.data"
+          :rules="formMstr.rules"
         >
           <el-form-item
             label="编号"
             prop="nbr"
           >
             <el-input
-              v-model="biddingForm.data.nbr"
+              v-model="formMstr.data.nbr"
               placeholder="请输入编号"
             />
           </el-form-item>
@@ -26,7 +26,7 @@
             <el-date-picker
               type="date"
               placeholder="请选择开始日期"
-              v-model="biddingForm.data.effDate"
+              v-model="formMstr.data.effDate"
               style="width: 100%;"
             />
           </el-form-item>
@@ -37,13 +37,13 @@
             <el-date-picker
               type="date"
               placeholder="请选择截止日期"
-              v-model="biddingForm.data.dueDate"
+              v-model="formMstr.data.dueDate"
               style="width: 100%;"
             />
           </el-form-item>
           <el-form-item label="备注">
             <el-input
-              v-model="biddingForm.data.remark"
+              v-model="formMstr.data.remark"
               placeholder="请输入备注"
               type="textarea"
               autosize
@@ -88,9 +88,9 @@
           <el-form-item>
             <el-button
               type="primary"
-              @click="handleSumbit('biddingForm')"
+              @click="handleMstrSumbit('formMstr')"
             >确定提交</el-button>
-            <el-button @click="handleReset('biddingForm')">重置</el-button>
+            <el-button @click="handleReset('formMstr')">重置</el-button>
           </el-form-item>
         </el-form>
         <el-dialog
@@ -104,6 +104,15 @@
             :model="lineDialog.formData"
             :rules="lineDialog.formRules"
           >
+          <el-form-item
+              label="行号"
+              prop="line"
+            >
+              <el-input
+                v-model="lineDialog.formData.line"
+                placeholder="请输入行号"
+              />
+            </el-form-item>
             <el-form-item
               label="部件号"
               prop="part"
@@ -145,7 +154,7 @@
             <el-button @click="handleReset('lineForm')">重置</el-button>
             <el-button
               type="primary"
-              @click="handleSumbit('lineForm')"
+              @click="handleLineSumbit('lineForm')"
             >确定</el-button>
           </span>
         </el-dialog>
@@ -163,7 +172,7 @@ export default {
   data() {
     return {
       pageTitle: '',
-      biddingForm: {
+      formMstr: {
         data: {
           nbr: '',
           effDate: '',
@@ -184,10 +193,11 @@ export default {
         title: '',
         visible: false,
         formData: {
+          line: 0,
           part: '',
           price: '',
           qty: '',
-          um: '',
+          um: 'ea',
         },
         formRules: {
           part: [{ required: true, message: '请输入部件号', trigger: 'blur' }],
@@ -208,10 +218,16 @@ export default {
     async getMainBiddingsByNbr() {
       const data = await this.$get('/api/plat/v2/bid', { nbr: this.nbr });
       for (let key in data) {
-        this.biddingForm.data[key] = data[key];
+        this.formMstr.data[key] = data[key];
       }
     },
     async handleShowLineDialog(scope) {
+      // 验证
+      if(!this.formMstr.data.nbr || !this.formMstr.data.effDate || !this.formMstr.data.dueDate) {
+        alert('请先填写标单');
+        return;
+      }
+
       if (scope) {
         // edit
         this.lineDialog.title = '编辑';
@@ -225,27 +241,54 @@ export default {
           this.lineDialog.formData[key] = '';
         }
 
-        // console.log();
-        this.biddingForm.data.dueDate = parseTime(
-          this.biddingForm.data.dueDate,
+        this.formMstr.data.dueDate = parseTime(
+          this.formMstr.data.dueDate,
           '{y}-{m}-{d}'
         );
-        this.biddingForm.data.effDate = parseTime(
-          this.biddingForm.data.effDate,
+        this.formMstr.data.effDate = parseTime(
+          this.formMstr.data.effDate,
           '{y}-{m}-{d}'
         );
         const data = await this.$post(
           '/api/plat/v2/bid',
-          this.biddingForm.data
+          Object.assign({ "saving" : true }, this.formMstr.data) // saving表示临时存储数据的，不涉及状态的确认
         );
         console.log(data);
       }
       this.lineDialog.visible = true;
     },
-    handleSumbit(formName) {
+    handleMstrSumbit(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          alert('submit!');
+          console.log(this.lineDialog.formData);
+          this.$post('/api/plat/v2/bid', this.formMstr.data)
+          .then(res => {
+            this.$message({
+            message: "标书已经创建成功",
+            type: "success",
+          });
+            this.lineDialog.visible = false;
+            this.getLinesByNbr(this.formMstr.data.nbr);
+          });
+        } else {
+          console.log('error submit!!');
+          return false;
+        }
+      });
+    },
+    handleLineSumbit(formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          console.log(this.lineDialog.formData);
+          this.$post('/api/plat/v2/bid/line', Object.assign({ "nbr" : this.formMstr.data.nbr }, this.lineDialog.formData))
+          .then(res => {
+            this.$message({
+            message: "行已保存，可继续创建新行",
+            type: "success",
+          });
+            this.lineDialog.visible = false;
+            this.getLinesByNbr(this.formMstr.data.nbr);
+          });
         } else {
           console.log('error submit!!');
           return false;
