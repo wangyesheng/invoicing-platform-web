@@ -35,7 +35,7 @@
             v-model="queryCondition.state"
           >
             <el-option
-              v-for="item in biddingFlags"
+              v-for="item in states"
               :key="item.value"
               :label="item.label"
               :value="item.value"
@@ -56,7 +56,9 @@
 
     <el-card shadow="never">
       <el-table :data="rows">
-        <el-table-column prop="nbr" label="编号" width="180"> </el-table-column>
+        <el-table-column prop="nbr" label="编号" width="120"> </el-table-column>
+        <el-table-column prop="supp" label="供应商" width="150"> </el-table-column>
+        <el-table-column prop="addr" label="送货地址" width="200"> </el-table-column>
         <el-table-column prop="effDate" label="开始日期"> </el-table-column>
         <el-table-column prop="dueDate" label="结束日期"> </el-table-column>
         <el-table-column prop="state" label="状态">
@@ -66,11 +68,21 @@
             }}</eos-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="bivDate" label="竞标日期"> </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button type="text" @click="handleShowLineDialog(scope.row)"
-              >{{ scope.row.state >= 2 ? "详情" : "开始竞标" }}</el-button
+            <el-button type="text" @click="handleShowLineDialog(scope.row.nbr)"
+              >订单行</el-button
+            >
+            <el-button
+              type="text"
+              @click="$router.push(`/po/operation?nbr=${scope.row.nbr}`)"
+              >编辑</el-button
+            >
+            <el-button type="text" @click="handleDelete(scope.row.nbr)"
+              >删除</el-button
+            >
+            <el-button type="text" @click="handleAction1(scope.row.nbr)"
+              >打印</el-button
             >
           </template>
         </el-table-column>
@@ -85,27 +97,17 @@
           :label="item.label"
         >
         </el-table-column>
-        <el-table-column prop="price" label="报价">
-          <template slot-scope="scope">
-            <el-input v-model="scope.row.price"></el-input>
-          </template>
-        </el-table-column>
       </el-table>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="lineDialog.visible = false">取 消</el-button>
-        <el-button type="primary" @click="handleSaveDet(true)" :v-if="!rowEntity || rowEntity.state < 2">保存</el-button>
-        <el-button type="primary" @click="handleSaveDet(false)" :v-if="!rowEntity || rowEntity.state < 2">确定竞标</el-button>
-      </span>
     </el-dialog>
   </div>
 </template>
 
 <script>
-import bivvingMixin from "@/mixins/bivvingMixin";
-import { BIVVING_STATES } from "@/constant";
+import poMixin from "@/mixins/poMixin";
+import { PO_STATES } from "@/constant";
 
 export default {
-  mixins: [bivvingMixin],
+  mixins: [poMixin],
   data() {
     return {
       rows: [],
@@ -117,10 +119,8 @@ export default {
       },
       lineDialog: {
         visible: false,
-        nbr: "",
       },
-      biddingFlags: BIVVING_STATES,
-      rowEntity: null // 被点击行的实体，打开模态窗时赋值，关闭时清空
+      states: PO_STATES,
     };
   },
   mounted() {
@@ -128,12 +128,12 @@ export default {
   },
   methods: {
     async queryAsync() {
-      const data = await this.$get(
-        "/api/plat/v2/biv/query",
+      const result = await this.$get(
+        "/api/plat/v2/po/query",
         this.queryCondition
       );
-      this.rows = (data || []).map((x) => {
-        const scope = BIVVING_STATES.find((flag) => flag.value == x.state);
+      this.rows = (result || []).map((x) => {
+        const scope = PO_STATES.find((flag) => flag.value == x.state);
         return {
           ...x,
           _stateTag: scope.tag,
@@ -141,47 +141,19 @@ export default {
         };
       });
     },
-    handleShowLineDialog(row) {
-      this.rowEntity = {
-        state: row.state
-      };
-
-      this.getLinesByNbr(row.nbr);
-      this.lineDialog.nbr = row.nbr;
+    handleShowLineDialog(nbr) {
+      this.getLinesByNbr(nbr);
       this.lineDialog.visible = true;
     },
     handleEdit() {},
     handleDelete() {},
+    handleAction1(nbr) {
+      alert('打印');
+    },
     handleSearch() {
       this.queryAsync();
     },
     handleReset() {},
-    handleSaveDet(saving) {
-      const fset = this.lines.map((v) => {
-        return {
-          nbr: v.nbr,
-          line: v.line,
-          price: v.price
-        };
-      });
-
-      this.$post("/api/plat/v2/biv/jingb", {
-        nbr: this.lineDialog.nbr,
-        saving: saving,
-        lines: fset,
-      }).then((res) => {
-        if (res) {
-          this.$message({
-            message: saving ? "竞标信息已经保存! 确认无误后，可以点击`确定竞标`以提交竞标信息！" : "已完成竞标，请等待开标！",
-            type: "success",
-          });
-          this.lineDialog.visible = false;
-          this.rowEntity = null;
-        } else {
-        }
-        this.queryAsync();
-      });
-    },
   },
 };
 </script>
