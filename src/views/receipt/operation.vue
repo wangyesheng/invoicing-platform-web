@@ -16,28 +16,6 @@
           <el-form-item label="供应商" prop="supp">
             <el-input v-model="formMstr.data.supp" placeholder="请输入供应商" />
           </el-form-item>
-          <el-form-item label="送货地址" prop="addr">
-            <el-input
-              v-model="formMstr.data.addr"
-              placeholder="请输入送货地址"
-            />
-          </el-form-item>
-          <el-form-item label="开始日期" prop="effDate">
-            <el-date-picker
-              type="date"
-              placeholder="请选择开始日期"
-              v-model="formMstr.data.effDate"
-              style="width: 100%"
-            />
-          </el-form-item>
-          <el-form-item label="截止日期" prop="dueDate">
-            <el-date-picker
-              type="date"
-              placeholder="请选择截止日期"
-              v-model="formMstr.data.dueDate"
-              style="width: 100%"
-            />
-          </el-form-item>
           <el-form-item label="备注">
             <el-input
               v-model="formMstr.data.remark"
@@ -48,7 +26,7 @@
           </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="handleShowLineDialog(null)"
-              >新建行信息</el-button
+              >新建收货行</el-button
             >
           </el-form-item>
           <el-form-item label="">
@@ -96,6 +74,12 @@
             :model="lineDialog.formData"
             :rules="lineDialog.formRules"
           >
+          <el-form-item label="发货单" prop="shipNbr">
+              <el-input
+                v-model="lineDialog.formData.shipNbr"
+                placeholder="请输入发货单"
+              />
+            </el-form-item>
             <el-form-item label="行号" prop="line">
               <el-input
                 v-model="lineDialog.formData.line"
@@ -108,22 +92,22 @@
                 placeholder="请输入部件号"
               />
             </el-form-item>
-            <el-form-item label="价格" prop="price">
+            <el-form-item label="单位" prop="um">
               <el-input
-                v-model="lineDialog.formData.price"
-                placeholder="请输入底价"
+                v-model="lineDialog.formData.um"
+                placeholder="请输入单位"
               />
             </el-form-item>
             <el-form-item label="数量" prop="qty">
               <el-input
                 v-model="lineDialog.formData.qty"
-                placeholder="请输入数量"
+                placeholder="请输入收货数量"
               />
             </el-form-item>
-            <el-form-item label="单位" prop="um">
+            <el-form-item label="备注" prop="remark">
               <el-input
-                v-model="lineDialog.formData.um"
-                placeholder="请输入单位"
+                v-model="lineDialog.formData.remark"
+                placeholder="请输入备注"
               />
             </el-form-item>
           </el-form>
@@ -140,11 +124,11 @@
 </template>
 
 <script>
-import poMixin from "@/mixins/poMixin";
+import receiptMixin from "@/mixins/receiptMixin";
 import { parseTime } from "@/utils";
 
 export default {
-  mixins: [poMixin],
+  mixins: [receiptMixin],
   data() {
     return {
       pageTitle: "",
@@ -152,21 +136,11 @@ export default {
         data: {
           nbr: "",
           supp: "",
-          addr: "",
-          effDate: "",
-          dueDate: "",
           remark: "",
         },
         rules: {
           nbr: [{ required: true, message: "请输入标书编号", trigger: "blur" }],
-          supp: [{ required: true, message: "请输入供应商", trigger: "blur" }],
-          addr: [{ required: true, message: "请输入送货地址", trigger: "blur" }],
-          effDate: [
-            { required: true, message: "请选择开始日期", trigger: "blur" },
-          ],
-          dueDate: [
-            { required: true, message: "请选择截止日期", trigger: "blur" },
-          ],
+          supp: [{ required: true, message: "请输入供应商", trigger: "blur" }]
         },
       },
       lineDialog: {
@@ -181,7 +155,6 @@ export default {
         },
         formRules: {
           part: [{ required: true, message: "请输入部件号", trigger: "blur" }],
-          price: [{ required: true, message: "请输入采购价格", trigger: "blur" }],
           qty: [{ required: true, message: "请输入数量", trigger: "blur" }],
           um: [{ required: true, message: "请输入单位", trigger: "blur" }],
         },
@@ -196,7 +169,7 @@ export default {
   },
   methods: {
     async getMstrByNbr() {
-      const data = await this.$get("/api/plat/v2/po", { nbr: this.nbr });
+      const data = await this.$get("/api/plat/v2/receipt", { nbr: this.nbr });
       for (let key in data) {
         this.formMstr.data[key] = data[key];
       }
@@ -205,10 +178,9 @@ export default {
       // 验证
       if (
         !this.formMstr.data.nbr ||
-        !this.formMstr.data.effDate ||
-        !this.formMstr.data.dueDate
+        !this.formMstr.data.supp
       ) {
-        alert("请先填写采购合同编码");
+        alert("请先填写收货编码");
         return;
       }
 
@@ -225,16 +197,8 @@ export default {
           this.lineDialog.formData[key] = "";
         }
 
-        this.formMstr.data.dueDate = parseTime(
-          this.formMstr.data.dueDate,
-          "{y}-{m}-{d}"
-        );
-        this.formMstr.data.effDate = parseTime(
-          this.formMstr.data.effDate,
-          "{y}-{m}-{d}"
-        );
         const data = await this.$post(
-          "/api/plat/v2/po",
+          "/api/plat/v2/receipt",
           Object.assign({ saving: true }, this.formMstr.data) // saving表示临时存储数据的，不涉及状态的确认
         );
         // console.log(data);
@@ -245,9 +209,9 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           console.log(this.lineDialog.formData);
-          this.$post("/api/plat/v2/po", this.formMstr.data).then((res) => {
+          this.$post("/api/plat/v2/receipt", this.formMstr.data).then((res) => {
             this.$message({
-              message: "采购合同已经创建成功",
+              message: "收货单已经创建成功",
               type: "success",
             });
             this.lineDialog.visible = false;
@@ -264,11 +228,16 @@ export default {
         if (valid) {
           console.log(this.lineDialog.formData);
           this.$post(
-            "/api/plat/v2/po/line",
-            Object.assign(
-              { nbr: this.formMstr.data.nbr },
-              this.lineDialog.formData
-            )
+            "/api/plat/v2/receipt/line",
+            { 
+              nbr: this.formMstr.data.nbr,
+              shipNbr: this.lineDialog.formData.shipNbr,
+              line: this.lineDialog.formData.line,
+              part: this.lineDialog.formData.part,
+              um: this.lineDialog.formData.um,
+              qty: this.lineDialog.formData.qty,
+              remark: this.lineDialog.formData.remark
+            }
           ).then((res) => {
             this.$message({
               message: "行已保存，可继续创建新行",
