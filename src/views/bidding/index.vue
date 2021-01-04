@@ -6,10 +6,15 @@
         :model="queryCondition"
       >
         <el-form-item label="编号">
-          <el-input
+          <!-- <el-input
             clearable
             v-model="queryCondition.nbr"
             placeholder="请输入编号"
+          /> -->
+
+          <eos-combo-grid
+            :config="comboConfig"
+            @select="handleSelect"
           />
         </el-form-item>
         <el-form-item label="开始日期">
@@ -59,7 +64,6 @@
         <!-- </el-form-item> -->
       </el-form>
     </div>
-
     <el-card shadow="never">
       <el-table :data="rows">
         <el-table-column
@@ -137,6 +141,34 @@ export default {
   mixins: [biddingMixin],
   data() {
     return {
+      comboConfig: {
+        url: '/api/plat/v2/bid/det',
+        params: {
+          nbr: 'BI2101030001',
+        },
+        tableColumns: [
+          {
+            field: 'line',
+            label: '行号',
+          },
+          {
+            field: 'part',
+            label: '部件号',
+          },
+          {
+            field: 'price',
+            label: '底价',
+          },
+          {
+            field: 'qty',
+            label: '数量',
+          },
+          {
+            field: 'um',
+            label: '单位',
+          },
+        ],
+      },
       rows: [],
       queryCondition: {
         nbr: '',
@@ -154,6 +186,9 @@ export default {
     this.queryAsync();
   },
   methods: {
+    handleSelect(value) {
+      console.log('data from child', value);
+    },
     async queryAsync() {
       const result = await this.$get(
         '/api/plat/v2/bid/query',
