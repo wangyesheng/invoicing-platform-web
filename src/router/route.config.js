@@ -191,5 +191,25 @@ export const asyncRoutes = [
         meta: { title: "发票管理" }
       }
     ]
+  },
+  {
+    path: "/part",
+    component: Layout,
+    redirect: "/part/index",
+    meta: { title: "部件管理", icon: "bidding" },
+    children: [
+      {
+        path: "/part/operation",
+        name: "PART_OPERATION",
+        component: () => import("@/views/part/operation"),
+        meta: { title: "新建部件" }
+      },
+      {
+        path: "/part/index",
+        name: "PART",
+        component: () => import("@/views/part/index"),
+        meta: { title: "部件管理" }
+      }
+    ]
   }
 ];
