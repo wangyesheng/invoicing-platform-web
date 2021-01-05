@@ -3,7 +3,7 @@
     class="eos-combo-wrap"
     v-click-outside
   >
-    <el-input type="text" />
+    <el-input type="text" :value="value" />
     <div
       class="pannel-wrap"
       v-if="isVisible"
@@ -33,6 +33,7 @@
 <script>
 export default {
   props: {
+    value: '',
     config: {
       type: Object,
       default: () => {},

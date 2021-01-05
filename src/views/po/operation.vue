@@ -14,7 +14,12 @@
             <el-input v-model="formMstr.data.nbr" placeholder="请输入编号" />
           </el-form-item>
           <el-form-item label="供应商" prop="supp">
-            <el-input v-model="formMstr.data.supp" placeholder="请输入供应商" />
+            <eos-combo-grid
+              :config="comboSuppConfig"
+              @select="handleComboSelectSupp"
+              v-model="formMstr.data.supp"
+            />
+            {{ !combSuppResult ? "" : combSuppResult.userName }}
           </el-form-item>
           <el-form-item label="送货地址" prop="addr">
             <el-input
@@ -103,10 +108,16 @@
               />
             </el-form-item>
             <el-form-item label="部件号" prop="part">
-              <el-input
+              <!-- <el-input
                 v-model="lineDialog.formData.part"
                 placeholder="请输入部件号"
+              /> -->
+              <eos-combo-grid
+                :config="comboPartConfig"
+                @select="handleComboSelectPart"
+                v-model="lineDialog.formData.part"
               />
+              {{ !combPartResult ? "" : combPartResult.desc }}
             </el-form-item>
             <el-form-item label="价格" prop="price">
               <el-input
@@ -160,7 +171,9 @@ export default {
         rules: {
           nbr: [{ required: true, message: "请输入标书编号", trigger: "blur" }],
           supp: [{ required: true, message: "请输入供应商", trigger: "blur" }],
-          addr: [{ required: true, message: "请输入送货地址", trigger: "blur" }],
+          addr: [
+            { required: true, message: "请输入送货地址", trigger: "blur" },
+          ],
           effDate: [
             { required: true, message: "请选择开始日期", trigger: "blur" },
           ],
@@ -181,11 +194,51 @@ export default {
         },
         formRules: {
           part: [{ required: true, message: "请输入部件号", trigger: "blur" }],
-          price: [{ required: true, message: "请输入采购价格", trigger: "blur" }],
+          price: [
+            { required: true, message: "请输入采购价格", trigger: "blur" },
+          ],
           qty: [{ required: true, message: "请输入数量", trigger: "blur" }],
           um: [{ required: true, message: "请输入单位", trigger: "blur" }],
         },
       },
+      comboSuppConfig: {
+        url: "/api/plat/v2/user/combo",
+        params: {
+          domain: "wx",
+        },
+        tableColumns: [
+          {
+            field: "account",
+            label: "账号",
+          },
+          {
+            field: "userName",
+            label: "名称",
+          },
+        ],
+      },
+      combSuppResult: {}, // 供应商返回对象
+      comboPartConfig: {
+        url: "/api/plat/v2/part/combo",
+        params: {
+          domain: "wx",
+        },
+        tableColumns: [
+          {
+            field: "part",
+            label: "部件号",
+          },
+          {
+            field: "desc",
+            label: "部件名称",
+          },
+          {
+            field: "um",
+            label: "单位",
+          },
+        ],
+      },
+      combPartResult: {}, // 供应商返回对象
     };
   },
   mounted() {
@@ -285,6 +338,19 @@ export default {
     },
     handleReset(formName) {
       this.$refs[formName].resetFields();
+    },
+    handleComboSelectSupp(value) {
+      if (value && value.length) {
+        this.$set(this.formMstr.data, "supp", value[0].account);
+        this.$set(this.combSuppResult, "userName", value[0].userName);
+      }
+    },
+    handleComboSelectPart(value) {
+      if (value && value.length) {
+        this.$set(this.lineDialog.formData, "part", value[0].part);
+        this.$set(this.lineDialog.formData, "um", value[0].um);
+        this.$set(this.combPartResult, "desc", value[0].desc);
+      }
     },
   },
 };
