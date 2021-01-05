@@ -55,10 +55,6 @@
     </div>
 
     <el-card shadow="never">
-      <div class="chart-container" style="width: 400px; height: 300px;">
-        <div id="chart" ref="chart" style="width: 100%; height: 100%;" />
-      </div>
-<!--       
       <el-table :data="rows">
         <el-table-column prop="nbr" label="编号" width="180"> </el-table-column>
         <el-table-column prop="effDate" label="开始日期"> </el-table-column>
@@ -73,12 +69,12 @@
         <el-table-column prop="bivDate" label="竞标日期"> </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button type="text" @click="handleShowLineDialog(scope.row.nbr)"
+            <el-button type="text" @click="handleShowLineDialog(scope.row)"
               >进入大厅</el-button
             >
           </template>
         </el-table-column>
-      </el-table> -->
+      </el-table>
     </el-card>
     <el-dialog title="行信息" width="60%" :visible.sync="lineDialog.visible">
       <el-table style="width: 100%" :data="lines">
@@ -100,19 +96,43 @@
         >
       </span>
     </el-dialog>
+    <el-drawer
+      :title="'当前标号: ' + (!selectdRow ? '' : selectdRow.nbr)"
+      :visible.sync="showDrawer"
+      direction="rtl"
+      size="50%"
+    >
+      <el-card v-for="item in lines" :key="item.line" class="box-card" shadow="hover">
+        <div slot="header" class="clearfix">
+          <span>L{{item.line}}&nbsp;{{item.part}}&nbsp;{{item.desc}}</span>
+          <el-button style="float: right; padding: 3px 0" type="text"
+            >选为中标</el-button
+          >
+        </div>
+        <el-table
+          :show-header="false"
+          ref="multipleTable"
+          :data="bivDets"
+          tooltip-effect="dark"
+          style="width: 100%"
+        >
+          <el-table-column type="selection" width="55"> </el-table-column>
+          <el-table-column prop="supp" label="编号" width="120">
+          </el-table-column>
+          <el-table-column prop="price" label="报价" width="120">
+          </el-table-column>
+          <el-table-column prop="diffPrice" label="差价" width="120">
+          </el-table-column>
+          <el-table-column prop="suppName" label="名称"> </el-table-column>
+        </el-table>
+      </el-card>
+    </el-drawer>
   </div>
 </template>
 
 <script>
 import bivvingMixin from "@/mixins/bivvingMixin";
 import { BIDDING_STATES } from "@/constant";
-
-var echarts = require("echarts/lib/echarts");
-// 引入柱状图
-require("echarts/lib/chart/pictorialBar");
-// 引入提示框和标题组件
-require("echarts/lib/component/tooltip");
-require("echarts/lib/component/title");
 
 export default {
   mixins: [bivvingMixin],
@@ -129,11 +149,33 @@ export default {
         visible: false,
       },
       biddingFlags: BIDDING_STATES,
+      tableData: [
+        {
+          supp: "S0511001",
+          name: "上海陆家浜管理公司",
+          price: 1.2,
+          diffPrice: "+0.1",
+        },
+        {
+          supp: "S0511002",
+          name: "无锡国家软件园集团",
+          price: 1.09,
+          diffPrice: "-0.01",
+        },
+        {
+          supp: "S0511003",
+          name: "常州游乐建设集团",
+          price: 1.23,
+          diffPrice: "+0.12",
+        },
+      ],
+      showDrawer: false,
+      selectdRow: null, // 点击`进入大厅`的行对象
+      bivDets: [] //  竞标情况
     };
   },
   mounted() {
-    // this.queryAsync();
-    this.initCharts();
+    this.queryAsync();
   },
   methods: {
     async queryAsync() {
@@ -150,9 +192,15 @@ export default {
         };
       });
     },
-    handleShowLineDialog(nbr) {
-      this.getLinesByNbr(nbr);
-      this.lineDialog.visible = true;
+    handleShowLineDialog(entity) {
+      this.selectdRow = entity;
+      // 获取行
+      this.getLinesByNbr(entity.nbr);
+      // 获取竞标信息，包含供应商、报价和差价等
+      this.$get(
+        "/api/plat/v2/bid/bivinfo", { "nbr": entity.nbr }
+      ).then(res => this.bivDets = res);
+      this.showDrawer = true; 
     },
     handleEdit() {},
     handleDelete() {},
@@ -160,111 +208,6 @@ export default {
       this.queryAsync();
     },
     handleReset() {},
-    initCharts() {
-      var dom = document.getElementById("chart");
-      console.log(dom.clientHeight);
-      this.chart = echarts.init(dom,'light');
-      this.setOptions();
-    },
-    setOptions() {
-      this.chart.setOption({
-    backgroundColor: "#38445E",
-    grid: {
-        left: '12%',
-        top: '5%',
-        bottom: '12%',
-        right: '8%'
-    },
-    xAxis: {
-        data: ['驯鹿', '火箭', '飞机', '高铁', '轮船', '汽车', '跑步', '步行', ],
-        axisTick: {
-            show: false
-        },
-        axisLine: {
-            lineStyle: {
-                color: 'rgba(255, 129, 109, 0.1)',
-                width: 1 //这里是为了突出显示加上的
-            }
-        },
-        axisLabel: {
-            textStyle: {
-                color: '#999',
-                fontSize: 12
-            }
-        }
-    },
-    yAxis: [{
-        splitNumber: 2,
-        axisTick: {
-            show: false
-        },
-        axisLine: {
-            lineStyle: {
-                color: 'rgba(255, 129, 109, 0.1)',
-                width: 1 //这里是为了突出显示加上的
-            }
-        },
-        axisLabel: {
-            textStyle: {
-                color: '#999'
-            }
-        },
-        splitArea: {
-            areaStyle: {
-                color: 'rgba(255,255,255,.5)'
-            }
-        },
-        splitLine: {
-            show: true,
-            lineStyle: {
-                color: 'rgba(255, 129, 109, 0.1)',
-                width: 0.5,
-                type: 'dashed'
-            }
-        }
-    }],
-    series: [{
-        name: 'hill',
-        type: 'pictorialBar',
-        barCategoryGap: '0%',
-        symbol: 'path://M0,10 L10,10 C5.5,10 5.5,5 5,0 C4.5,5 4.5,10 0,10 z',
-        label: {
-            show: true,
-            position: 'top',
-            distance: 15,
-            color: '#DB5E6A',
-            fontWeight: 'bolder',
-            fontSize: 20,
-        },
-        itemStyle: {
-            normal: {
-                color: {
-                    type: 'linear',
-                    x: 0,
-                    y: 0,
-                    x2: 0,
-                    y2: 1,
-                    colorStops: [{
-                            offset: 0,
-                            color: 'rgba(232, 94, 106, .8)' //  0%  处的颜色
-                        },
-                        {
-                            offset: 1,
-                            color: 'rgba(232, 94, 106, .1)' //  100%  处的颜色
-                        }
-                    ],
-                    global: false //  缺省为  false
-                }
-            },
-            emphasis: {
-                opacity: 1
-            }
-        },
-        data: [123, 60, 25, 18, 12, 9, 2, 1],
-        z: 10
-    }]
-});
-    },
   },
 };
 </script>

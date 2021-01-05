@@ -9,21 +9,12 @@
             placeholder="请输入编号"
           />
         </el-form-item>
-        <el-form-item label="开始日期">
+        <el-form-item label="发货日期">
           <el-date-picker
             clearable
             type="date"
-            placeholder="请选择开始日期"
-            v-model="queryCondition.effDate"
-            style="width: 100%"
-          />
-        </el-form-item>
-        <el-form-item label="结束日期">
-          <el-date-picker
-            clearable
-            type="date"
-            placeholder="请选择结束日期"
-            v-model="queryCondition.dueDate"
+            placeholder="请选择发货日期"
+            v-model="queryCondition.date"
             style="width: 100%"
           />
         </el-form-item>
@@ -57,10 +48,13 @@
     <el-card shadow="never">
       <el-table :data="rows">
         <el-table-column prop="nbr" label="编号" width="120"> </el-table-column>
-        <el-table-column prop="supp" label="供应商" width="150"> </el-table-column>
-        <el-table-column prop="addr" label="送货地址" width="200"> </el-table-column>
-        <el-table-column prop="effDate" label="开始日期"> </el-table-column>
-        <el-table-column prop="dueDate" label="结束日期"> </el-table-column>
+        <el-table-column prop="supp" label="供应商" width="150">
+        </el-table-column>
+        <el-table-column prop="suppName" label="供应商名称" width="150">
+        </el-table-column>
+        <el-table-column prop="addr" label="送货地址" width="200">
+        </el-table-column>
+        <el-table-column prop="date" label="发货日期" :formatter="dateFormatter"> </el-table-column>
         <el-table-column prop="state" label="状态">
           <template slot-scope="scope">
             <eos-tag :type="scope.row._stateTag">{{
@@ -68,6 +62,7 @@
             }}</eos-tag>
           </template>
         </el-table-column>
+        <el-table-column prop="remark" label="备注"> </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
             <el-button type="text" @click="handleShowLineDialog(scope.row.nbr)"
@@ -75,7 +70,7 @@
             >
             <el-button
               type="text"
-              @click="$router.push(`/po/operation?nbr=${scope.row.nbr}`)"
+              @click="$router.push(`/ship/operation?nbr=${scope.row.nbr}`)"
               >编辑</el-button
             >
             <el-button type="text" @click="handleDelete(scope.row.nbr)"
@@ -103,18 +98,17 @@
 </template>
 
 <script>
-import poMixin from "@/mixins/poMixin";
+import shipMixin from "@/mixins/shipMixin";
 import { PO_STATES } from "@/constant";
 
 export default {
-  mixins: [poMixin],
+  mixins: [shipMixin],
   data() {
     return {
       rows: [],
       queryCondition: {
         nbr: "",
-        effDate: "",
-        dueDate: "",
+        date: "",
         state: "",
       },
       lineDialog: {
@@ -129,7 +123,7 @@ export default {
   methods: {
     async queryAsync() {
       const result = await this.$get(
-        "/api/plat/v2/po/query",
+        "/api/plat/v2/ship/query",
         this.queryCondition
       );
       this.rows = (result || []).map((x) => {
@@ -141,6 +135,9 @@ export default {
         };
       });
     },
+    dateFormatter(row, column) {
+      return !row.date ? row.date : row.date.slice(0, 10);
+    },
     handleShowLineDialog(nbr) {
       this.getLinesByNbr(nbr);
       this.lineDialog.visible = true;
@@ -148,7 +145,7 @@ export default {
     handleEdit() {},
     handleDelete() {},
     handleAction1(nbr) {
-      alert('打印');
+      alert("打印");
     },
     handleSearch() {
       this.queryAsync();
