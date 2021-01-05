@@ -3,7 +3,11 @@
     class="eos-combo-wrap"
     v-click-outside
   >
-    <el-input type="text" :value="value" />
+    <el-input
+      type="text"
+      :placeholder="placeholder"
+      :value="value"
+    />
     <div
       class="pannel-wrap"
       v-if="isVisible"
@@ -33,10 +37,17 @@
 <script>
 export default {
   props: {
-    value: '',
+    value: {
+      type: String,
+      default: '',
+    },
     config: {
       type: Object,
       default: () => {},
+    },
+    placeholder: {
+      type: String,
+      default: '',
     },
   },
   directives: {
@@ -64,7 +75,6 @@ export default {
   data() {
     return {
       isVisible: false,
-      selectedValue: '',
       dataSource: [],
     };
   },
