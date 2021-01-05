@@ -13,11 +13,8 @@
           <el-form-item label="发货单号" prop="nbr">
             <el-input v-model="formMstr.data.nbr" placeholder="请输入发货单号" />
           </el-form-item>
-          <el-form-item label="物流公司" prop="thirdcomp">
-            <el-input v-model="formMstr.data.thirdcomp" placeholder="请输入物流公司" />
-          </el-form-item>
-            <el-form-item label="物流编号" prop="thirdnbr">
-            <el-input v-model="formMstr.data.thirdnbr" placeholder="请输入物流编号" />
+          <el-form-item label="供应商" prop="supp">
+            <el-input v-model="formMstr.data.supp" placeholder="请输入供应商" />
           </el-form-item>
           <el-form-item label="送货地址" prop="addr">
             <el-input
@@ -107,21 +104,12 @@
                 placeholder="请输入行号"
               />
             </el-form-item>
-            <el-form-item label="采购单号" prop="ponbr">
+            <el-form-item label="部件号" prop="part">
               <el-input
-                v-model="lineDialog.formData.ponbr"
-                placeholder="请输入采购单号"
+                v-model="lineDialog.formData.part"
+                placeholder="请输入部件号"
               />
             </el-form-item>
-
-
-
-
-
-
-
-
-
             <el-form-item label="数量" prop="qty">
               <el-input
                 v-model="lineDialog.formData.qty"
@@ -140,8 +128,6 @@
                 placeholder="请输入备注"
               />
             </el-form-item>
-
-
           </el-form>
           <span slot="footer">
             <el-button @click="handleReset('lineForm')">重置</el-button>
@@ -167,22 +153,16 @@ export default {
       formMstr: {
         data: {
           nbr: "",
-          thirdnbr: "",
-          thirdcomp: "",
+          supp: "",
           addr: "",
           thirdComp: "",
           thirdNbr: "",
           remark: "",
-          domain: "wx"
         },
         rules: {
-          nbr: [{ required: true, message: "请输入发货编号", trigger: "blur" }],
-          thirdnbr: [{ required: true, message: "请输入物流公司", trigger: "blur" }],
-          thirdcomp: [{ required: true, message: "请输入物流编号", trigger: "blur" }],
+          nbr: [{ required: true, message: "请输入标书编号", trigger: "blur" }],
+          supp: [{ required: true, message: "请输入供应商", trigger: "blur" }],
           addr: [{ required: true, message: "请输入送货地址", trigger: "blur" }]
-
-
-
         },
       },
       lineDialog: {
@@ -195,7 +175,6 @@ export default {
           qty: "",
           um: "ea",
           remark: ''
-
         },
         formRules: {
           part: [{ required: true, message: "请输入部件号", trigger: "blur" }],
@@ -209,11 +188,11 @@ export default {
     this.nbr = this.$route.query.nbr;
     this.nbr &&
       Promise.all([this.getMstrByNbr(), this.getLinesByNbr(this.nbr)]);
-    this.pageTitle = this.nbr ? "编辑发货单" : "新增发货单";
+    this.pageTitle = this.nbr ? "编辑合同" : "新增合同";
   },
   methods: {
     async getMstrByNbr() {
-      const data = await this.$get("/api/plat/v2/ship", { nbr: this.nbr });
+      const data = await this.$get("/api/plat/v2/po", { nbr: this.nbr });
       for (let key in data) {
         this.formMstr.data[key] = data[key];
       }
@@ -241,10 +220,6 @@ export default {
         for (let key in this.lineDialog.formData) {
           this.lineDialog.formData[key] = "";
         }
-
-
-
-
 
         const data = await this.$post(
           "/api/plat/v2/ship",
