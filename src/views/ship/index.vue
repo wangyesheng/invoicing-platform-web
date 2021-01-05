@@ -129,7 +129,7 @@ export default {
   methods: {
     async queryAsync() {
       const result = await this.$get(
-        "/api/plat/v2/po/query",
+        "/api/plat/v2/ship/query",
         this.queryCondition
       );
       this.rows = (result || []).map((x) => {
