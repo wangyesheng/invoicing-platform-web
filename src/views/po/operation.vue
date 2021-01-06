@@ -10,19 +10,10 @@
           :model="formMstr.data"
           :rules="formMstr.rules"
         >
-          <el-form-item
-            label="编号"
-            prop="nbr"
-          >
-            <el-input
-              v-model="formMstr.data.nbr"
-              placeholder="请输入编号"
-            />
+          <el-form-item label="编号" prop="nbr">
+            <el-input v-model="formMstr.data.nbr" placeholder="请输入编号" />
           </el-form-item>
-          <el-form-item
-            label="供应商"
-            prop="_supp"
-          >
+          <el-form-item label="供应商" prop="_supp">
             <eos-combo-grid
               placeholder="请输入供应商"
               :config="comboSuppConfig"
@@ -30,19 +21,13 @@
               @select="handleComboSelectSupp"
             />
           </el-form-item>
-          <el-form-item
-            label="送货地址"
-            prop="addr"
-          >
+          <el-form-item label="送货地址" prop="addr">
             <el-input
               v-model="formMstr.data.addr"
               placeholder="请输入送货地址"
             />
           </el-form-item>
-          <el-form-item
-            label="开始日期"
-            prop="effDate"
-          >
+          <el-form-item label="开始日期" prop="effDate">
             <el-date-picker
               type="date"
               placeholder="请选择开始日期"
@@ -50,10 +35,7 @@
               style="width: 100%"
             />
           </el-form-item>
-          <el-form-item
-            label="截止日期"
-            prop="dueDate"
-          >
+          <el-form-item label="截止日期" prop="dueDate">
             <el-date-picker
               type="date"
               placeholder="请选择截止日期"
@@ -70,16 +52,12 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button
-              type="primary"
-              @click="handleShowLineDialog(null)"
-            >新建行信息</el-button>
+            <el-button type="primary" @click="handleShowLineDialog(null)"
+              >新建行信息</el-button
+            >
           </el-form-item>
           <el-form-item label="">
-            <el-table
-              style="width: 100%"
-              :data="lines"
-            >
+            <el-table style="width: 100%" :data="lines">
               <el-table-column
                 v-for="item in schema.lines"
                 :key="item.line"
@@ -106,10 +84,9 @@
             </el-table>
           </el-form-item>
           <el-form-item>
-            <el-button
-              type="primary"
-              @click="handleMstrSumbit('formMstr')"
-            >确定提交</el-button>
+            <el-button type="primary" @click="handleMstrSumbit('formMstr')"
+              >确定提交</el-button
+            >
             <el-button @click="handleReset('formMstr')">重置</el-button>
           </el-form-item>
         </el-form>
@@ -124,23 +101,13 @@
             :model="lineDialog.formData"
             :rules="lineDialog.formRules"
           >
-            <el-form-item
-              label="行号"
-              prop="line"
-            >
+            <el-form-item label="行号" prop="line">
               <el-input
                 v-model="lineDialog.formData.line"
                 placeholder="请输入行号"
               />
             </el-form-item>
-            <el-form-item
-              label="部件号"
-              prop="part"
-            >
-              <!-- <el-input
-                v-model="lineDialog.formData.part"
-                placeholder="请输入部件号"
-              /> -->
+            <el-form-item label="部件号" prop="part">
               <eos-combo-grid
                 :config="comboPartConfig"
                 @select="handleComboSelectPart"
@@ -148,28 +115,19 @@
               />
               {{ !combPartResult ? "" : combPartResult.desc }}
             </el-form-item>
-            <el-form-item
-              label="价格"
-              prop="price"
-            >
+            <el-form-item label="价格" prop="price">
               <el-input
                 v-model="lineDialog.formData.price"
                 placeholder="请输入底价"
               />
             </el-form-item>
-            <el-form-item
-              label="数量"
-              prop="qty"
-            >
+            <el-form-item label="数量" prop="qty">
               <el-input
                 v-model="lineDialog.formData.qty"
                 placeholder="请输入数量"
               />
             </el-form-item>
-            <el-form-item
-              label="单位"
-              prop="um"
-            >
+            <el-form-item label="单位" prop="um">
               <el-input
                 v-model="lineDialog.formData.um"
                 placeholder="请输入单位"
@@ -178,10 +136,9 @@
           </el-form>
           <span slot="footer">
             <el-button @click="handleReset('lineForm')">重置</el-button>
-            <el-button
-              type="primary"
-              @click="handleLineSumbit('lineForm')"
-            >确定</el-button>
+            <el-button type="primary" @click="handleLineSumbit('lineForm')"
+              >确定</el-button
+            >
           </span>
         </el-dialog>
       </div>
@@ -190,97 +147,97 @@
 </template>
 
 <script>
-import poMixin from '@/mixins/poMixin';
-import { parseTime } from '@/utils';
+import poMixin from "@/mixins/poMixin";
+import { parseTime, clone } from "@/utils";
 
 export default {
   mixins: [poMixin],
   data() {
     return {
-      pageTitle: '',
+      pageTitle: "",
       formMstr: {
         data: {
-          nbr: '',
-          _supp: '',
-          supp: '',
-          addr: '',
-          effDate: '',
-          dueDate: '',
-          remark: '',
+          nbr: "",
+          _supp: "",
+          supp: "",
+          addr: "",
+          effDate: "",
+          dueDate: "",
+          remark: "",
+          state: 0,
         },
         rules: {
           nbr: [
-            { required: true, message: '请输入标书编号', trigger: 'change' },
+            { required: true, message: "请输入标书编号", trigger: "change" },
           ],
           _supp: [
-            { required: true, message: '请输入供应商', trigger: 'change' },
+            { required: true, message: "请输入供应商", trigger: "change" },
           ],
           addr: [
-            { required: true, message: '请输入送货地址', trigger: 'change' },
+            { required: true, message: "请输入送货地址", trigger: "change" },
           ],
           effDate: [
-            { required: true, message: '请选择开始日期', trigger: 'change' },
+            { required: true, message: "请选择开始日期", trigger: "change" },
           ],
           dueDate: [
-            { required: true, message: '请选择截止日期', trigger: 'change' },
+            { required: true, message: "请选择截止日期", trigger: "change" },
           ],
         },
       },
       lineDialog: {
-        title: '',
+        title: "",
         visible: false,
         formData: {
           line: 0,
-          part: '',
+          part: "",
           price: 0,
-          qty: '',
-          um: 'ea',
+          qty: "",
+          um: "ea",
         },
         formRules: {
           part: [
-            { required: true, message: '请输入部件号', trigger: 'change' },
+            { required: true, message: "请输入部件号", trigger: "change" },
           ],
           price: [
-            { required: true, message: '请输入采购价格', trigger: 'change' },
+            { required: true, message: "请输入采购价格", trigger: "change" },
           ],
-          qty: [{ required: true, message: '请输入数量', trigger: 'change' }],
-          um: [{ required: true, message: '请输入单位', trigger: 'change' }],
+          qty: [{ required: true, message: "请输入数量", trigger: "change" }],
+          um: [{ required: true, message: "请输入单位", trigger: "change" }],
         },
       },
       comboSuppConfig: {
-        url: '/api/plat/v2/user/combo',
+        url: "/api/plat/v2/user/combo",
         params: {
-          domain: 'wx',
+          domain: "wx",
         },
         tableColumns: [
           {
-            field: 'account',
-            label: '账号',
+            field: "account",
+            label: "账号",
           },
           {
-            field: 'userName',
-            label: '名称',
+            field: "userName",
+            label: "名称",
           },
         ],
       },
-      combSuppResult: {}, // 供应商返回对象
       comboPartConfig: {
-        url: '/api/plat/v2/part/combo',
+        url: "/api/plat/v2/part/combo",
         params: {
-          domain: 'wx',
+          domain: "wx",
         },
         tableColumns: [
           {
-            field: 'part',
-            label: '部件号',
+            field: "part",
+            label: "部件号",
           },
           {
-            field: 'desc',
-            label: '部件名称',
+            field: "desc",
+            label: "部件名称",
           },
           {
-            field: 'um',
-            label: '单位',
+            field: "um",
+            label: "单位",
           },
         ],
       },
@@ -291,11 +248,11 @@ export default {
     this.nbr = this.$route.query.nbr;
     this.nbr &&
       Promise.all([this.getMstrByNbr(), this.getLinesByNbr(this.nbr)]);
-    this.pageTitle = this.nbr ? '编辑合同' : '新增合同';
+    this.pageTitle = this.nbr ? "编辑合同" : "新增合同";
   },
   methods: {
     async getMstrByNbr() {
-      const data = await this.$get('/api/plat/v2/po', { nbr: this.nbr });
+      const data = await this.$get("/api/plat/v2/po", { nbr: this.nbr });
       for (let key in data) {
         this.formMstr.data[key] = data[key];
       }
@@ -307,54 +264,52 @@ export default {
         !this.formMstr.data.effDate ||
         !this.formMstr.data.dueDate
       ) {
-        alert('请先填写采购合同编码');
+        alert("请先填写采购合同编码");
         return;
       }
 
       if (scope) {
         // edit
-        this.lineDialog.title = '编辑';
+        this.lineDialog.title = "编辑";
         for (let key in scope) {
           this.lineDialog.formData[key] = scope[key];
         }
       } else {
         // add
-        this.lineDialog.title = '新增';
+        this.lineDialog.title = "新增";
         for (let key in this.lineDialog.formData) {
-          this.lineDialog.formData[key] = '';
+          this.lineDialog.formData[key] = "";
         }
 
         this.formMstr.data.dueDate = parseTime(
           this.formMstr.data.dueDate,
-          '{y}-{m}-{d}'
+          "{y}-{m}-{d}"
         );
         this.formMstr.data.effDate = parseTime(
           this.formMstr.data.effDate,
-          '{y}-{m}-{d}'
+          "{y}-{m}-{d}"
         );
 
-        const reqData = { ...this.formMstr.data };
-        delete reqData._supp;
-        const data = await this.$post(
-          '/api/plat/v2/po',
-          { ...reqData, saving: true } // saving表示临时存储数据的，不涉及状态的确认
-        );
+        const data = await this.$post("/api/plat/v2/po", clone(this.formMstr.data));
       }
       this.lineDialog.visible = true;
     },
     handleMstrSumbit(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          this.$post('/api/plat/v2/po', this.formMstr.data).then((res) => {
+          this.$post(
+            "/api/plat/v2/po",
+            clone(this.formMstr.data, ["state", 1])
+          ).then((res) => {
             this.$message({
-              message: '采购合同已经创建成功',
-              type: 'success',
+              message: "采购合同已经创建成功",
+              type: "success",
             });
             this.lineDialog.visible = false;
             this.getLinesByNbr(this.formMstr.data.nbr);
           });
         } else {
-          console.log('error submit!!');
+          console.log("error submit!!");
           return false;
         }
       });
@@ -363,21 +318,21 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.$post(
-            '/api/plat/v2/po/line',
+            "/api/plat/v2/po/line",
             Object.assign(
               { nbr: this.formMstr.data.nbr },
               this.lineDialog.formData
             )
           ).then((res) => {
             this.$message({
-              message: '行已保存，可继续创建新行',
-              type: 'success',
+              message: "行已保存，可继续创建新行",
+              type: "success",
             });
             this.lineDialog.visible = false;
             this.getLinesByNbr(this.formMstr.data.nbr);
           });
         } else {
-          console.log('error submit!!');
+          console.log("error submit!!");
           return false;
         }
       });
@@ -387,17 +342,15 @@ export default {
     },
     handleComboSelectSupp(value) {
       if (value && value.length) {
-        this.formMstr.data._supp = value[0].userName;
+        this.formMstr.data._supp = value[0].account + " - " + value[0].userName;
         this.formMstr.data.supp = value[0].account;
-        // this.$set(this.formMstr.data, 'supp', value[0].account);
-        // this.$set(this.combSuppResult, 'userName', value[0].userName);
       }
     },
     handleComboSelectPart(value) {
       if (value && value.length) {
-        this.$set(this.lineDialog.formData, 'part', value[0].part);
-        this.$set(this.lineDialog.formData, 'um', value[0].um);
-        this.$set(this.combPartResult, 'desc', value[0].desc);
+        this.$set(this.lineDialog.formData, "part", value[0].part);
+        this.$set(this.lineDialog.formData, "um", value[0].um);
+        this.$set(this.combPartResult, "desc", value[0].desc);
       }
     },
   },

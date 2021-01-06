@@ -16,7 +16,7 @@ export default {
           },
           {
             field: "qty",
-            label: "数量"
+            label: "发货数量"
           },
           {
             field: "um",

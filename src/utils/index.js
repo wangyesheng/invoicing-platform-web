@@ -37,7 +37,9 @@ export function parseTime(time, cFormat) {
   const time_str = format.replace(/{(y|m|d|h|i|s|a)+}/g, (result, key) => {
     let value = formatObj[key]
     // Note: getDay() returns 0 on Sunday
-    if (key === 'a') { return ['日', '一', '二', '三', '四', '五', '六'][value ] }
+    if (key === 'a') {
+      return ['日', '一', '二', '三', '四', '五', '六'][value]
+    }
     if (result.length > 0 && value < 10) {
       value = '0' + value
     }
@@ -100,11 +102,38 @@ export function param2Obj(url) {
   }
   return JSON.parse(
     '{"' +
-      decodeURIComponent(search)
-        .replace(/"/g, '\\"')
-        .replace(/&/g, '","')
-        .replace(/=/g, '":"')
-        .replace(/\+/g, ' ') +
-      '"}'
+    decodeURIComponent(search)
+    .replace(/"/g, '\\"')
+    .replace(/&/g, '","')
+    .replace(/=/g, '":"')
+    .replace(/\+/g, ' ') +
+    '"}'
   )
+}
+
+/**
+ * 拷贝指定对象，其中，`_`开头的属性不拷贝
+ * @param {Object} obj
+ * @param {Array} assignments: ['key1', val1], ['key2', val2]
+ * @returns {Object}
+ */
+export function clone(obj, ...assignments) {
+  if (!obj) return obj;
+  const result = {};
+  for (let key in obj) {
+    if (key.startsWith('_')) {
+      continue;
+    }
+    result[key] = obj[key];
+  }
+
+  if (assignments && assignments.length) {
+    assignments.forEach(item => {
+      if(item && item.length && item.length > 1) {
+        result[item[0]] = item[1];
+      }
+    });
+  }
+
+  return result;
 }
