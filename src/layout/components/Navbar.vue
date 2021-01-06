@@ -7,20 +7,27 @@
     />
 
     <div class="right-menu">
-      <el-dropdown class="avatar-container" trigger="hover" placement="bottom">
+      <el-dropdown
+        class="avatar-container"
+        trigger="hover"
+        placement="bottom"
+      >
         <div class="avatar-wrapper">
           <img
             src="https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3806311023,739217486&fm=26&gp=0.jpg"
             class="user-avatar"
           />
-          <span class="username">{{userinfo.username}}</span>
+          <span class="username">{{appUser.userName}}</span>
         </div>
         <div>
           <el-dropdown-menu slot="dropdown">
             <router-link to="/">
               <el-dropdown-item>Home</el-dropdown-item>
             </router-link>
-            <el-dropdown-item divided @click.native="logout">
+            <el-dropdown-item
+              divided
+              @click.native="logout"
+            >
               <span style="display:block;">Log Out</span>
             </el-dropdown-item>
           </el-dropdown-menu>
@@ -31,33 +38,36 @@
 </template>
 
 <script>
-import { mapGetters } from "vuex";
-import Hamburger from "@/components/Hamburger";
+import { mapGetters } from 'vuex';
+import Hamburger from '@/components/Hamburger';
 
 export default {
   components: {
-    Hamburger
+    Hamburger,
   },
   computed: {
-    ...mapGetters(["sidebar", "userinfo"])
+    ...mapGetters(['sidebar', 'userinfo']),
+    appUser() {
+      return JSON.parse(localStorage.getItem('platform_userinfo'));
+    },
   },
   methods: {
     toggleSideBar() {
-      this.$store.dispatch("app/toggleSideBar");
+      this.$store.dispatch('app/toggleSideBar');
     },
     logout() {
-      this.$confirm("Are you sure you want to log out?", "Tips", {
-        confirmButtonText: "Sure",
-        cancelButtonText: "Cancel",
-        type: "warning"
+      this.$confirm('Are you sure you want to log out?', 'Tips', {
+        confirmButtonText: 'Sure',
+        cancelButtonText: 'Cancel',
+        type: 'warning',
       })
         .then(async () => {
-          await this.$store.dispatch("user/logout");
+          await this.$store.dispatch('user/logout');
           this.$router.push(`/login?redirect=${this.$route.fullPath}`);
         })
         .catch(() => {});
-    }
-  }
+    },
+  },
 };
 </script>
 

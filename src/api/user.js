@@ -10,12 +10,3 @@ export function checkLoginRes({ username, password }) {
     }
   });
 }
-
-
-export function getViewUserMainRes(token) {
-  return request({
-    url: "/api/discovery/view/user/main",
-    method: "get",
-    params: { token }
-  });
-}

@@ -113,18 +113,18 @@ export default {
       this.$refs.loginForm.validate(async (valid) => {
         if (valid) {
           this.loading = true;
-          // try {
-          //   const res = await this.$store.dispatch(
-          //     'user/login',
-          //     this.loginForm
-          //   );
-          //   console.log(res);
-          //   this.$router.push({ path: this.redirect || '/' });
-          //   this.loading = false;
-          // } catch (error) {
-          //   this.loading = false;
-          // }
-          this.$router.push({ path: this.redirect || '/' });
+          try {
+            const res = await this.$store.dispatch(
+              'user/login',
+              this.loginForm
+            );
+            console.log(res);
+            this.$router.push({ path: this.redirect || '/' });
+            this.loading = false;
+          } catch (error) {
+            this.loading = false;
+          }
+          // this.$router.push({ path: this.redirect || '/' });
         } else {
           console.log('error submit!!');
           return false;
