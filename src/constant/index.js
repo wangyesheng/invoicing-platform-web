@@ -64,3 +64,42 @@ export const PO_STATES = [
     tag: "blue"
   }
 ];
+
+// 物流公司
+export const EXPRESSCOM = [
+  {
+    label: "顺丰速运",
+    value: 'SF',
+    tag: "gray"
+  },
+  {
+    label: "圆通速递",
+    value: 'YTO',
+    tag: "blue"
+  },
+  {
+    label: "申通快递",
+    value: 'STO',
+    tag: "orange"
+  },
+  {
+    label: "已中通快递",
+    value: 'ZTO',
+    tag: "green"
+  },
+  {
+    label: "韵达速递",
+    value: 'YD',
+    tag: "green"
+  },
+  {
+    label: "百世快递",
+    value: 'HTKY',
+    tag: "green"
+  },
+  {
+    label: "德邦快递",
+    value: 'DBL',
+    tag: "green"
+  }
+];

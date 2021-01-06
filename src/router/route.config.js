@@ -149,6 +149,11 @@ export const asyncRoutes = [
         name: "SHIP",
         component: () => import("@/views/ship/index"),
         meta: { title: "发货单管理" }
+      },{
+        path: "/ship/express",
+        name: "EXPRESS",
+        component: () => import("@/views/ship/express"),
+        meta: { title: "物流查询" }
       }
     ]
   },

@@ -79,6 +79,9 @@
             <el-button type="text" @click="handleAction1(scope.row.nbr)"
               >打印</el-button
             >
+             <el-button type="text" @click="handleExpress(scope.row.nbr)"
+              >物流</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
@@ -151,6 +154,7 @@ export default {
       this.queryAsync();
     },
     handleReset() {},
+    handleExpress(){}
   },
 };
 </script>
