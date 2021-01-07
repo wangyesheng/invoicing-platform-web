@@ -83,16 +83,6 @@ export const EXPRESSCOM = [
     tag: "orange"
   },
   {
-    label: "已中通快递",
-    value: 'ZTO',
-    tag: "green"
-  },
-  {
-    label: "韵达速递",
-    value: 'YD',
-    tag: "green"
-  },
-  {
     label: "百世快递",
     value: 'HTKY',
     tag: "green"
