@@ -164,11 +164,14 @@ export default {
         title: "",
         visible: false,
         formData: {
+          nbr: "",
           shipNbr: "",
+          poNbr: "",
           line: 0,
           part: "",
           qty: "",
           um: "ea",
+          remark: "",
           _desc: "",
           _shipQty: 0, // 发货数量
         },
@@ -296,15 +299,10 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           console.log(this.lineDialog.formData);
-          this.$post("/api/plat/v2/receipt/line", {
-            nbr: this.formMstr.data.nbr,
-            shipNbr: this.lineDialog.formData.shipNbr,
-            line: this.lineDialog.formData.line,
-            part: this.lineDialog.formData.part,
-            um: this.lineDialog.formData.um,
-            qty: this.lineDialog.formData.qty,
-            remark: this.lineDialog.formData.remark,
-          }).then((res) => {
+          this.$post(
+            "/api/plat/v2/receipt/line",
+            clone(this.lineDialog.formData, ["nbr", this.formMstr.data.nbr])
+          ).then((res) => {
             this.$message({
               message: "行已保存，可继续创建新行",
               type: "success",
@@ -330,6 +328,7 @@ export default {
     handleComboSelectShip(value) {
       if (value && value.length) {
         this.lineDialog.formData.shipNbr = value[0].nbr;
+        this.lineDialog.formData.poNbr = value[0].poNbr;
         this.lineDialog.formData.line = value[0].line;
         this.lineDialog.formData.part = value[0].part;
         this.lineDialog.formData._desc = value[0].desc;

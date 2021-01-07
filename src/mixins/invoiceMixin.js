@@ -3,9 +3,6 @@ export default {
     return {
       schema: {
         lines: [{
-            field: "poNbr",
-            label: "采购单"
-          }, {
             field: "shipNbr",
             label: "发货单"
           }, {

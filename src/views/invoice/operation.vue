@@ -14,7 +14,13 @@
             <el-input v-model="formMstr.data.nbr" placeholder="请输入发票号" />
           </el-form-item>
           <el-form-item label="供应商" prop="supp">
-            <el-input v-model="formMstr.data.supp" placeholder="请输入供应商" />
+            <!-- <el-input v-model="formMstr.data.supp" placeholder="请输入供应商" /> -->
+            <eos-combo-grid
+              placeholder="请输入供应商"
+              :config="comboSuppConfig"
+              v-model="formMstr.data._supp"
+              @select="handleComboSelectSupp"
+            />
           </el-form-item>
           <el-form-item label="备注">
             <el-input
@@ -74,10 +80,12 @@
             :model="lineDialog.formData"
             :rules="lineDialog.formRules"
           >
-          <el-form-item label="收货单" prop="rcptNbr">
-              <el-input
+            <el-form-item label="收货单" prop="rcptNbr">
+              <eos-combo-grid
+                :config="comboShipConfig"
+                @select="handleComboSelectShip"
                 v-model="lineDialog.formData.rcptNbr"
-                placeholder="请输入收货单号"
+                placeholder="请输入收货单"
               />
             </el-form-item>
             <el-form-item label="行号" prop="line">
@@ -91,6 +99,7 @@
                 v-model="lineDialog.formData.part"
                 placeholder="请输入部件号"
               />
+              {{ lineDialog.formData._desc }}
             </el-form-item>
             <el-form-item label="单位" prop="um">
               <el-input
@@ -98,10 +107,22 @@
                 placeholder="请输入单位"
               />
             </el-form-item>
+            <el-form-item label="收货数量" prop="_rcptQty">
+              <el-input
+                v-model="lineDialog.formData._rcptQty"
+                placeholder="请输入收货数量"
+              />
+            </el-form-item>
             <el-form-item label="数量" prop="qty">
               <el-input
                 v-model="lineDialog.formData.qty"
                 placeholder="请输入开票数量"
+              />
+            </el-form-item>
+            <el-form-item label="发票价格" prop="price">
+              <el-input
+                v-model="lineDialog.formData.price"
+                placeholder="请输入发票价格"
               />
             </el-form-item>
             <el-form-item label="备注" prop="remark">
@@ -125,7 +146,7 @@
 
 <script>
 import invoiceMixin from "@/mixins/invoiceMixin";
-import { parseTime } from "@/utils";
+import { parseTime, clone } from "@/utils";
 
 export default {
   mixins: [invoiceMixin],
@@ -136,31 +157,90 @@ export default {
         data: {
           nbr: "",
           supp: "",
+          _supp: "",
           remark: "",
+          state: 0,
         },
         rules: {
           nbr: [{ required: true, message: "请输入标书编号", trigger: "blur" }],
-          supp: [{ required: true, message: "请输入供应商", trigger: "blur" }]
+          supp: [{ required: true, message: "请输入供应商", trigger: "blur" }],
         },
       },
       lineDialog: {
         title: "",
         visible: false,
         formData: {
-          poNbr: '',
-          shipNbr: '',
-          rcptNbr: '',
+          nbr: "",
+          poNbr: "",
+          shipNbr: "",
+          rcptNbr: "",
           line: 0,
           part: "",
           price: 0,
           qty: "",
           um: "ea",
+          remark: "",
+          _desc: "",
+          _rcptQty: 0, // 收货数量
+          _shipQty: 0, // 发货数量
         },
         formRules: {
           part: [{ required: true, message: "请输入部件号", trigger: "blur" }],
           qty: [{ required: true, message: "请输入数量", trigger: "blur" }],
           um: [{ required: true, message: "请输入单位", trigger: "blur" }],
         },
+      },
+      comboSuppConfig: {
+        url: "/api/plat/v2/user/combo",
+        params: {
+          domain: "wx",
+        },
+        tableColumns: [
+          {
+            field: "account",
+            label: "账号",
+          },
+          {
+            field: "userName",
+            label: "名称",
+          },
+        ],
+      },
+      comboShipConfig: {
+        url: "/api/plat/v2/receipt/combo",
+        params: {
+          domain: "wx",
+        },
+        tableColumns: [
+          {
+            field: "nbr",
+            label: "收货单",
+          },
+          {
+            field: "line",
+            label: "行号",
+          },
+          {
+            field: "part",
+            label: "部件号",
+          },
+          {
+            field: "desc",
+            label: "部件名称",
+          },
+          {
+            field: "qty",
+            label: "收货数量",
+          },
+          {
+            field: "um",
+            label: "单位",
+          },
+          {
+            field: "shipQty",
+            label: "发货数量",
+          },
+        ],
       },
     };
   },
@@ -179,10 +259,7 @@ export default {
     },
     async handleShowLineDialog(scope) {
       // 验证
-      if (
-        !this.formMstr.data.nbr ||
-        !this.formMstr.data.supp
-      ) {
+      if (!this.formMstr.data.nbr || !this.formMstr.data.supp) {
         alert("请先填写发票号");
         return;
       }
@@ -202,17 +279,18 @@ export default {
 
         const data = await this.$post(
           "/api/plat/v2/invoice",
-          Object.assign({ saving: true }, this.formMstr.data) // saving表示临时存储数据的，不涉及状态的确认
+          clone(this.formMstr.data)
         );
-        // console.log(data);
       }
       this.lineDialog.visible = true;
     },
     handleMstrSumbit(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          console.log(this.lineDialog.formData);
-          this.$post("/api/plat/v2/invoice", this.formMstr.data).then((res) => {
+          this.$post(
+            "/api/plat/v2/invoice",
+            clone(this.formMstr.data, ["state", 1])
+          ).then((res) => {
             this.$message({
               message: "发票已经创建成功",
               type: "success",
@@ -229,20 +307,9 @@ export default {
     handleLineSumbit(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          console.log(this.lineDialog.formData);
           this.$post(
             "/api/plat/v2/invoice/line",
-            { 
-              nbr: this.formMstr.data.nbr,
-              rcptNbr: this.lineDialog.formData.rcptNbr,
-              shipNbr: this.lineDialog.formData.shipNbr,
-              poNbr: this.lineDialog.formData.poNbr,
-              line: this.lineDialog.formData.line,
-              part: this.lineDialog.formData.part,
-              um: this.lineDialog.formData.um,
-              qty: this.lineDialog.formData.qty,
-              remark: this.lineDialog.formData.remark
-            }
+            clone(this.lineDialog.formData, ["nbr", this.formMstr.data.nbr])
           ).then((res) => {
             this.$message({
               message: "行已保存，可继续创建新行",
@@ -259,6 +326,25 @@ export default {
     },
     handleReset(formName) {
       this.$refs[formName].resetFields();
+    },
+    handleComboSelectSupp(value) {
+      if (value && value.length) {
+        this.formMstr.data._supp = value[0].account + " - " + value[0].userName;
+        this.formMstr.data.supp = value[0].account;
+      }
+    },
+    handleComboSelectShip(value) {
+      if (value && value.length) {
+        this.lineDialog.formData.rcptNbr = value[0].nbr;
+        this.lineDialog.formData.shipNbr = value[0].shipNbr;
+        this.lineDialog.formData.poNbr = value[0].poNbr;
+        this.lineDialog.formData.line = value[0].line;
+        this.lineDialog.formData.part = value[0].part;
+        this.lineDialog.formData._desc = value[0].desc;
+        this.lineDialog.formData.um = value[0].um;
+        this.lineDialog.formData._rcptQty = value[0].qty;
+        this.lineDialog.formData._shipQty = value[0].shipQty;
+      }
     },
   },
 };
