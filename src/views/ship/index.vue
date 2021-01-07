@@ -79,7 +79,7 @@
             <el-button type="text" @click="handleAction1(scope.row.nbr)"
               >打印</el-button
             >
-             <el-button type="text" @click="handleExpress(scope.row.nbr)"
+             <el-button type="text" @click="handleExpress(scope.row)"
               >物流</el-button
             >
           </template>
@@ -154,7 +154,10 @@ export default {
       this.queryAsync();
     },
     handleReset() {},
-    handleExpress(){}
+    handleExpress(row){
+      this.$router.push(`/ship/express?thirdComp=${row.thirdComp}&thirdNbr=${row.thirdNbr}&nbr=${row.nbr}`)
+      console.log(row);
+    }
   },
 };
 </script>

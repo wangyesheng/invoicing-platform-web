@@ -46,10 +46,10 @@
         <el-col :lg="12" :xl="12">        
           <div style=" width: 100%;">
             <h3 style="text-align: center;">物流信息</h3>
-            <div style="padding-top: 20px;"  v-for="item in Traces">
-                <i><span style="color:red">时间：{{item.AcceptTime}}</span></i>
+            <div style="padding-top: 20px; font-family:Microsoft YaHei"   v-for="item in Traces">
+                <span style="color:red ">时间：{{item.AcceptTime}}</span>
                 <br/> 
-                <i>{{item.AcceptStation}} </i>
+                {{item.AcceptStation}}
             </div>
             <span style="color:red" v-if="play">无物流信息</span>
           </div>
@@ -97,6 +97,11 @@ export default {
   },
   mounted() {
     this.handleReset();
+    this.queryCondition.thirdNbr = this.$route.query.thirdNbr;
+    this.queryCondition.thirdComp = this.$route.query.thirdComp;
+    this.queryCondition.nbr = this.$route.query.nbr;
+    this.queryCondition.thirdNbr &&
+      Promise.all([this.handleSearch()]);
   },
   methods: {
     async queryAsync() {
@@ -110,7 +115,7 @@ export default {
       }else{
            this.play=true;
       }
-      this.Traces = result.Traces;
+      this.Traces = result.Traces.reverse();
     },
     handleSearch() {
       this.queryAsync();
