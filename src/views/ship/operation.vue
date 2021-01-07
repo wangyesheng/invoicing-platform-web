@@ -32,11 +32,19 @@
             />
           </el-form-item>
           <el-form-item label="运输公司" prop="thirdComp">
-            <el-input
-              v-model="formMstr.data.thirdComp"
-              placeholder="请输入运输公司"
-            />
-          </el-form-item>
+          <el-select
+            clearable
+            placeholder="请输入运输公司"
+            v-model="formMstr.data.thirdComp"
+          >
+            <el-option
+              v-for="item in expresscoms"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            ></el-option>
+          </el-select>
+        </el-form-item>
           <el-form-item label="运输单号" prop="thirdNbr">
             <el-input
               v-model="formMstr.data.thirdNbr"
@@ -162,12 +170,14 @@
 <script>
 import shipMixin from "@/mixins/shipMixin";
 import { parseTime, clone } from "@/utils";
+import { EXPRESSCOM } from '@/constant';
 
 export default {
   mixins: [shipMixin],
   data() {
     return {
       pageTitle: "",
+      expresscoms: EXPRESSCOM,
       formMstr: {
         data: {
           nbr: "",
