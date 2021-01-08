@@ -129,11 +129,31 @@ export function clone(obj, ...assignments) {
 
   if (assignments && assignments.length) {
     assignments.forEach(item => {
-      if(item && item.length && item.length > 1) {
+      if (item && item.length && item.length > 1) {
         result[item[0]] = item[1];
       }
     });
   }
+
+  return result;
+}
+
+/**
+ * 摘取指定对象的指定属性，返回新对象
+ * @param {Object} obj
+ * @param {Array} props: 'key1', 'key2'
+ * @returns {Object}
+ */
+export function extract(obj, ...props) {
+  if (!obj) return obj;
+  if (!props) return obj;
+
+  const result = {};
+  props.forEach(item => {
+    if (item && item.length && item.length > 1) {
+      result[item] = obj[item];
+    }
+  });
 
   return result;
 }

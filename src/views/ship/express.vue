@@ -46,7 +46,7 @@
         <el-col :lg="12" :xl="12">        
           <div style=" width: 100%;">
             <h3 style="text-align: center;">物流信息</h3>
-            <div style="padding-top: 20px; font-family:Microsoft YaHei"   v-for="item in Traces">
+            <div style="padding-top: 20px; font-family:Microsoft YaHei; font-size: 12px;" v-for="(item, index) in Traces" :key="index">
                 <span style="color:red ">时间：{{item.AcceptTime}}</span>
                 <br/> 
                 {{item.AcceptStation}}

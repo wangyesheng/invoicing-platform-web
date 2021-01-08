@@ -1,27 +1,18 @@
 <template>
-  <div
-    class="eos-combo-wrap"
-    v-click-outside
-  >
+  <div class="eos-combo-wrap" v-click-outside>
     <el-input
       type="text"
       :placeholder="placeholder"
       :value="value"
+      @keydown.down="handlePrevent($event)"
     />
-    <div
-      class="pannel-wrap"
-      v-if="isVisible"
-    >
+    <div class="pannel-wrap" v-if="isVisible">
       <el-table
         :data="dataSource"
         style="width: 100%"
         @selection-change="handleSelectionChange"
       >
-        <el-table-column
-          type="selection"
-          width="55"
-        >
-        </el-table-column>
+        <el-table-column type="selection" width="55"> </el-table-column>
         <el-table-column
           v-for="item in config.tableColumns"
           :key="item.line"
@@ -39,7 +30,7 @@ export default {
   props: {
     value: {
       type: String,
-      default: '',
+      default: "",
     },
     config: {
       type: Object,
@@ -47,7 +38,7 @@ export default {
     },
     placeholder: {
       type: String,
-      default: '',
+      default: "",
     },
   },
   directives: {
@@ -65,10 +56,10 @@ export default {
           }
         };
         el.handler = handler;
-        document.addEventListener('click', handler);
+        document.addEventListener("click", handler);
       },
       unbind(el) {
-        document.removeEventListener('click', el.handler);
+        document.removeEventListener("click", el.handler);
       },
     },
   },
@@ -87,11 +78,14 @@ export default {
       this.isVisible = false;
     },
     handleSelectionChange(value) {
-      this.$emit('select', value);
+      this.$emit("select", value);
     },
     async query() {
       const data = await this.$get(this.config.url, this.config.params);
       this.dataSource = data;
+    },
+    handlePrevent(e) {
+      e.preventDefault();
     },
   },
 };
