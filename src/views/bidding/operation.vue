@@ -10,35 +10,23 @@
           :model="formMstr.data"
           :rules="formMstr.rules"
         >
-          <el-form-item
-            label="编号"
-            prop="nbr"
-          >
-            <el-input
-              v-model="formMstr.data.nbr"
-              placeholder="请输入编号"
-            />
+          <el-form-item label="编号" prop="nbr">
+            <el-input v-model="formMstr.data.nbr" placeholder="请输入编号" />
           </el-form-item>
-          <el-form-item
-            label="开始日期"
-            prop="effDate"
-          >
+          <el-form-item label="开始日期" prop="effDate">
             <el-date-picker
               type="date"
               placeholder="请选择开始日期"
               v-model="formMstr.data.effDate"
-              style="width: 100%;"
+              style="width: 100%"
             />
           </el-form-item>
-          <el-form-item
-            label="截止日期"
-            prop="dueDate"
-          >
+          <el-form-item label="截止日期" prop="dueDate">
             <el-date-picker
               type="date"
               placeholder="请选择截止日期"
               v-model="formMstr.data.dueDate"
-              style="width: 100%;"
+              style="width: 100%"
             />
           </el-form-item>
           <el-form-item label="备注">
@@ -50,16 +38,12 @@
             />
           </el-form-item>
           <el-form-item>
-            <el-button
-              type="primary"
-              @click="handleShowLineDialog(null)"
-            >新建行信息</el-button>
+            <el-button type="primary" @click="handleShowLineDialog(null)"
+              >新建行信息</el-button
+            >
           </el-form-item>
           <el-form-item label="">
-            <el-table
-              style="width: 100%"
-              :data="lines"
-            >
+            <el-table style="width: 100%" :data="lines">
               <el-table-column
                 v-for="item in schema.lines"
                 :key="item.line"
@@ -86,10 +70,9 @@
             </el-table>
           </el-form-item>
           <el-form-item>
-            <el-button
-              type="primary"
-              @click="handleMstrSumbit('formMstr')"
-            >确定提交</el-button>
+            <el-button type="primary" @click="handleMstrSumbit('formMstr')"
+              >确定提交</el-button
+            >
             <el-button @click="handleReset('formMstr')">重置</el-button>
           </el-form-item>
         </el-form>
@@ -104,46 +87,33 @@
             :model="lineDialog.formData"
             :rules="lineDialog.formRules"
           >
-          <el-form-item
-              label="行号"
-              prop="line"
-            >
+            <el-form-item label="行号" prop="line">
               <el-input
                 v-model="lineDialog.formData.line"
                 placeholder="请输入行号"
               />
             </el-form-item>
-            <el-form-item
-              label="部件号"
-              prop="part"
-            >
-              <el-input
+            <el-form-item label="部件号" prop="part">
+              <eos-combo-grid
+                :config="comboPartConfig"
+                @select="handleComboSelectPart"
                 v-model="lineDialog.formData.part"
-                placeholder="请输入部件号"
               />
+              {{ !combPartResult ? "" : combPartResult.desc }}
             </el-form-item>
-            <el-form-item
-              label="底价"
-              prop="price"
-            >
+            <el-form-item label="底价" prop="price">
               <el-input
                 v-model="lineDialog.formData.price"
                 placeholder="请输入底价"
               />
             </el-form-item>
-            <el-form-item
-              label="数量"
-              prop="qty"
-            >
+            <el-form-item label="数量" prop="qty">
               <el-input
                 v-model="lineDialog.formData.qty"
                 placeholder="请输入数量"
               />
             </el-form-item>
-            <el-form-item
-              label="单位"
-              prop="um"
-            >
+            <el-form-item label="单位" prop="um">
               <el-input
                 v-model="lineDialog.formData.um"
                 placeholder="请输入单位"
@@ -152,10 +122,9 @@
           </el-form>
           <span slot="footer">
             <el-button @click="handleReset('lineForm')">重置</el-button>
-            <el-button
-              type="primary"
-              @click="handleLineSumbit('lineForm')"
-            >确定</el-button>
+            <el-button type="primary" @click="handleLineSumbit('lineForm')"
+              >确定</el-button
+            >
           </span>
         </el-dialog>
       </div>
@@ -164,94 +133,119 @@
 </template>
 
 <script>
-import biddingMixin from '@/mixins/biddingMixin';
-import { parseTime } from '@/utils';
+import biddingMixin from "@/mixins/biddingMixin";
+import { parseTime } from "@/utils";
 
 export default {
   mixins: [biddingMixin],
   data() {
     return {
-      pageTitle: '',
+      pageTitle: "",
       formMstr: {
         data: {
-          nbr: '',
-          effDate: '',
-          dueDate: '',
-          remark: '',
+          nbr: "",
+          effDate: "",
+          dueDate: "",
+          remark: "",
         },
         rules: {
-          nbr: [{ required: true, message: '请输入标书编号', trigger: 'blur' }],
+          nbr: [{ required: true, message: "请输入标书编号", trigger: "blur" }],
           effDate: [
-            { required: true, message: '请选择开始日期', trigger: 'blur' },
+            { required: true, message: "请选择开始日期", trigger: "blur" },
           ],
           dueDate: [
-            { required: true, message: '请选择截止日期', trigger: 'blur' },
+            { required: true, message: "请选择截止日期", trigger: "blur" },
           ],
         },
       },
       lineDialog: {
-        title: '',
+        title: "",
         visible: false,
         formData: {
           line: 0,
-          part: '',
-          price: '',
-          qty: '',
-          um: 'ea',
+          part: "",
+          price: "",
+          qty: "",
+          um: "ea",
         },
         formRules: {
-          part: [{ required: true, message: '请输入部件号', trigger: 'blur' }],
-          price: [{ required: true, message: '请输入底价', trigger: 'blur' }],
-          qty: [{ required: true, message: '请输入数量', trigger: 'blur' }],
-          um: [{ required: true, message: '请输入单位', trigger: 'blur' }],
+          part: [{ required: true, message: "请输入部件号", trigger: "blur" }],
+          price: [{ required: true, message: "请输入底价", trigger: "blur" }],
+          qty: [{ required: true, message: "请输入数量", trigger: "blur" }],
+          um: [{ required: true, message: "请输入单位", trigger: "blur" }],
         },
       },
+      comboPartConfig: {
+        url: "/api/plat/v2/part/combo",
+        params: {
+          domain: "wx",
+        },
+        tableColumns: [
+          {
+            field: "part",
+            label: "部件号",
+          },
+          {
+            field: "desc",
+            label: "部件名称",
+          },
+          {
+            field: "um",
+            label: "单位",
+          },
+        ],
+      },
+      combPartResult: {}, // 供应商返回对象
     };
   },
   mounted() {
     this.nbr = this.$route.query.nbr;
     this.nbr &&
       Promise.all([this.getMainBiddingsByNbr(), this.getLinesByNbr(this.nbr)]);
-    this.pageTitle = this.nbr ? '编辑标书' : '新增标书';
+    this.pageTitle = this.nbr ? "编辑标书" : "新增标书";
   },
   methods: {
     async getMainBiddingsByNbr() {
-      const data = await this.$get('/api/plat/v2/bid', { nbr: this.nbr });
+      const data = await this.$get("/api/plat/v2/bid", { nbr: this.nbr });
       for (let key in data) {
         this.formMstr.data[key] = data[key];
       }
     },
     async handleShowLineDialog(scope) {
       // 验证
-      if(!this.formMstr.data.nbr || !this.formMstr.data.effDate || !this.formMstr.data.dueDate) {
-        alert('请先填写标单');
+      if (
+        !this.formMstr.data.nbr ||
+        !this.formMstr.data.effDate ||
+        !this.formMstr.data.dueDate
+      ) {
+        alert("请先填写标单");
         return;
       }
 
       if (scope) {
         // edit
-        this.lineDialog.title = '编辑';
+        this.lineDialog.title = "编辑";
         for (let key in scope) {
           this.lineDialog.formData[key] = scope[key];
         }
       } else {
         // add
-        this.lineDialog.title = '新增';
+        this.lineDialog.title = "新增";
         for (let key in this.lineDialog.formData) {
-          this.lineDialog.formData[key] = '';
+          this.lineDialog.formData[key] = "";
         }
 
         this.formMstr.data.dueDate = parseTime(
           this.formMstr.data.dueDate,
-          '{y}-{m}-{d}'
+          "{y}-{m}-{d}"
         );
         this.formMstr.data.effDate = parseTime(
           this.formMstr.data.effDate,
-          '{y}-{m}-{d}'
+          "{y}-{m}-{d}"
         );
         const data = await this.$post(
-          '/api/plat/v2/bid',
-          Object.assign({ "saving" : true }, this.formMstr.data) // saving表示临时存储数据的，不涉及状态的确认
+          "/api/plat/v2/bid",
+          Object.assign({ saving: true }, this.formMstr.data) // saving表示临时存储数据的，不涉及状态的确认
         );
         console.log(data);
       }
@@ -261,17 +255,16 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           console.log(this.lineDialog.formData);
-          this.$post('/api/plat/v2/bid', this.formMstr.data)
-          .then(res => {
+          this.$post("/api/plat/v2/bid", this.formMstr.data).then((res) => {
             this.$message({
-            message: "标书已经创建成功",
-            type: "success",
-          });
+              message: "标书已经创建成功",
+              type: "success",
+            });
             this.lineDialog.visible = false;
             this.getLinesByNbr(this.formMstr.data.nbr);
           });
         } else {
-          console.log('error submit!!');
+          console.log("error submit!!");
           return false;
         }
       });
@@ -280,23 +273,35 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           console.log(this.lineDialog.formData);
-          this.$post('/api/plat/v2/bid/line', Object.assign({ "nbr" : this.formMstr.data.nbr }, this.lineDialog.formData))
-          .then(res => {
+          this.$post(
+            "/api/plat/v2/bid/line",
+            Object.assign(
+              { nbr: this.formMstr.data.nbr },
+              this.lineDialog.formData
+            )
+          ).then((res) => {
             this.$message({
-            message: "行已保存，可继续创建新行",
-            type: "success",
-          });
+              message: "行已保存，可继续创建新行",
+              type: "success",
+            });
             this.lineDialog.visible = false;
             this.getLinesByNbr(this.formMstr.data.nbr);
           });
         } else {
-          console.log('error submit!!');
+          console.log("error submit!!");
           return false;
         }
       });
     },
     handleReset(formName) {
       this.$refs[formName].resetFields();
+    },
+    handleComboSelectPart(value) {
+      if (value && value.length) {
+        this.$set(this.lineDialog.formData, "part", value[0].part);
+        this.$set(this.lineDialog.formData, "um", value[0].um);
+        this.$set(this.combPartResult, "desc", value[0].desc);
+      }
     },
   },
 };
