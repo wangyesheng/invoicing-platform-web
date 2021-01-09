@@ -16,17 +16,12 @@ import router from "./router";
 
 import "@/icons"; // icon
 import "@/permission"; // permission control
-import { getRes, postRes, putRes, deleteRes } from "@/utils/request";
-import BaiduMap from 'vue-baidu-map';
+// import BaiduMap from 'vue-baidu-map';
  
-Vue.use(BaiduMap, {
-    ak: 'GpRqD2Sowifs********RRRRVl9'
-});
+// Vue.use(BaiduMap, {
+//     ak: 'GpRqD2Sowifs********RRRRVl9'
+// });
 
-Vue.prototype.$get = getRes;
-Vue.prototype.$post = postRes;
-Vue.prototype.$put = putRes;
-Vue.prototype.$delete = deleteRes;
 
 Vue.use(ElementUI, { size: "small", locale });
 

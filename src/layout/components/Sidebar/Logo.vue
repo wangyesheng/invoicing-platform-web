@@ -71,7 +71,7 @@ export default {
   width: 100%;
   height: 50px;
   line-height: 50px;
-  background: #fff;
+  background: #409EFF;
   text-align: center;
   overflow: hidden;
   box-shadow: 0 2px 10px 0 rgba(0, 0, 0, 0.1);
@@ -91,7 +91,7 @@ export default {
     & .sidebar-title {
       display: inline-block;
       margin: 0;
-      color: #409EFF;
+      color: #fff;
       font-weight: 600;
       line-height: 50px;
       font-size: 14px;

@@ -81,11 +81,11 @@ export default {
   height: 50px;
   overflow: hidden;
   position: relative;
-  background: #fff;
+  background: #409EFF;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.01), 0 10px 30px rgba(0, 0, 0, 0.08);
 
   .hamburger-container {
-    line-height: 50px;
+    line-height: 52px;
     height: 100%;
     float: left;
     cursor: pointer;
@@ -103,13 +103,11 @@ export default {
 
   .right-menu {
     float: right;
-    float: right;
     padding: 14px 30px;
-    color: #1890ff;
+    color: #fff;
 
     & /deep/ .el-icon-switch-button {
-      font-size: 24px;
-      font-weight: 600;
+      font-size: 20px;
       cursor: pointer;
       transition: all 0.3s;
     }

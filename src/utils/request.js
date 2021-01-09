@@ -1,7 +1,9 @@
 import axios from "axios";
 import { Message } from "element-ui";
+import Vue from "vue";
 import store from "@/store";
 import { getToken } from "@/utils/auth";
+
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
   // withCredentials: true, // send cookies when cross-domain requests
@@ -52,28 +54,28 @@ service.interceptors.response.use(
   }
 );
 
-export const getRes = (url, params) =>
+Vue.prototype.$get = (url, params) =>
   service({
     url,
     method: "get",
     params
   });
 
-export const postRes = (url, data) =>
+Vue.prototype.$post = (url, data) =>
   service({
     url,
     method: "post",
     data
   });
 
-export const putRes = (url, data) =>
+Vue.prototype.$put = (url, data) =>
   service({
     url,
     method: "put",
     data
   });
-
-export const deleteRes = (url, params) =>
+  
+Vue.prototype.$delete = (url, params) =>
   service({
     url,
     method: "post",
