@@ -7,7 +7,20 @@
     />
 
     <div class="right-menu">
-      <el-dropdown
+      <el-popconfirm
+        title="确定要退出吗？"
+        cancel-button-text='再等等'
+        confirm-button-text='确定'
+        confirm-button-type="text"
+        @confirm="logout"
+      >
+        <i
+          slot="reference"
+          class="el-icon-switch-button"
+        />
+      </el-popconfirm>
+
+      <!-- <el-dropdown
         class="avatar-container"
         trigger="hover"
         placement="bottom"
@@ -32,7 +45,7 @@
             </el-dropdown-item>
           </el-dropdown-menu>
         </div>
-      </el-dropdown>
+      </el-dropdown> -->
     </div>
   </div>
 </template>
@@ -55,17 +68,9 @@ export default {
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar');
     },
-    logout() {
-      this.$confirm('Are you sure you want to log out?', 'Tips', {
-        confirmButtonText: 'Sure',
-        cancelButtonText: 'Cancel',
-        type: 'warning',
-      })
-        .then(async () => {
-          await this.$store.dispatch('user/logout');
-          this.$router.push(`/login?redirect=${this.$route.fullPath}`);
-        })
-        .catch(() => {});
+    async logout() {
+      await this.$store.dispatch('user/logout');
+      this.$router.push(`/login?redirect=${this.$route.fullPath}`);
     },
   },
 };
@@ -98,6 +103,16 @@ export default {
 
   .right-menu {
     float: right;
+    float: right;
+    padding: 14px 30px;
+    color: #1890ff;
+
+    & /deep/ .el-icon-switch-button {
+      font-size: 24px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
 
     .avatar-container {
       margin-right: 30px;

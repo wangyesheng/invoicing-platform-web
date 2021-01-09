@@ -145,7 +145,7 @@ export const asyncRoutes = [{
     redirect: "/po/index",
     meta: {
       title: "采购管理",
-      icon: "bidding"
+      icon: "purchase"
     },
     children: [{
         path: "/po/operation",
@@ -171,7 +171,7 @@ export const asyncRoutes = [{
     redirect: "/ship/index",
     meta: {
       title: "发货管理",
-      icon: "bidding"
+      icon: "deliver"
     },
     children: [{
         path: "/ship/operation",
@@ -204,7 +204,7 @@ export const asyncRoutes = [{
     redirect: "/receipt/index",
     meta: {
       title: "收货管理",
-      icon: "bidding"
+      icon: "receiver"
     },
     children: [{
         path: "/receipt/operation",
@@ -230,7 +230,7 @@ export const asyncRoutes = [{
     redirect: "/invoice/index",
     meta: {
       title: "发票管理",
-      icon: "bidding"
+      icon: "invoice"
     },
     children: [{
         path: "/invoice/operation",

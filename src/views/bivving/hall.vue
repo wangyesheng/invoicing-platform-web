@@ -1,7 +1,10 @@
 <template>
   <div class="app-content">
     <div class="eos-operation-wrap">
-      <el-form inline :model="queryCondition">
+      <el-form
+        inline
+        :model="queryCondition"
+      >
         <el-form-item label="编号">
           <el-input
             clearable
@@ -43,7 +46,10 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleSearch">查询</el-button>
+          <el-button
+            type="primary"
+            @click="handleSearch"
+          >查询</el-button>
         </el-form-item>
         <!-- <el-form-item>
           <el-button
@@ -56,28 +62,52 @@
 
     <el-card shadow="never">
       <el-table :data="rows">
-        <el-table-column prop="nbr" label="编号" width="180"> </el-table-column>
-        <el-table-column prop="effDate" label="开始日期"> </el-table-column>
-        <el-table-column prop="dueDate" label="结束日期"> </el-table-column>
-        <el-table-column prop="state" label="状态">
+        <el-table-column
+          prop="nbr"
+          label="编号"
+          width="180"
+        > </el-table-column>
+        <el-table-column
+          prop="effDate"
+          label="开始日期"
+        > </el-table-column>
+        <el-table-column
+          prop="dueDate"
+          label="结束日期"
+        > </el-table-column>
+        <el-table-column
+          prop="state"
+          label="状态"
+        >
           <template slot-scope="scope">
             <eos-tag :type="scope.row._stateTag">{{
               scope.row._stateLabel
             }}</eos-tag>
           </template>
         </el-table-column>
-        <el-table-column prop="bivDate" label="竞标日期"> </el-table-column>
+        <el-table-column
+          prop="bivDate"
+          label="竞标日期"
+        > </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="scope">
-            <el-button type="text" @click="handleShowLineDialog(scope.row)"
-              >进入大厅</el-button
-            >
+            <el-button
+              type="text"
+              @click="handleShowLineDialog(scope.row)"
+            >进入大厅</el-button>
           </template>
         </el-table-column>
       </el-table>
     </el-card>
-    <el-dialog title="行信息" width="60%" :visible.sync="lineDialog.visible">
-      <el-table style="width: 100%" :data="lines">
+    <el-dialog
+      title="行信息"
+      width="60%"
+      :visible.sync="lineDialog.visible"
+    >
+      <el-table
+        style="width: 100%"
+        :data="lines"
+      >
         <el-table-column
           v-for="item in schema.lines"
           :key="item.line"
@@ -86,14 +116,19 @@
         >
         </el-table-column>
       </el-table>
-      <span slot="footer" class="dialog-footer">
+      <span
+        slot="footer"
+        class="dialog-footer"
+      >
         <el-button @click="lineDialog.visible = false">取 消</el-button>
-        <el-button type="primary" @click="lineDialog.visible = false"
-          >保存</el-button
-        >
-        <el-button type="primary" @click="lineDialog.visible = false"
-          >确定竞标</el-button
-        >
+        <el-button
+          type="primary"
+          @click="lineDialog.visible = false"
+        >保存</el-button>
+        <el-button
+          type="primary"
+          @click="lineDialog.visible = false"
+        >确定竞标</el-button>
       </span>
     </el-dialog>
     <el-drawer
@@ -108,10 +143,11 @@
         class="box-card"
         shadow="hover"
       >
-        <div slot="header" class="clearfix">
-          <span
-            >L{{ item.line }}&nbsp;{{ item.part }}&nbsp;{{ item.desc }}</span
-          >
+        <div
+          slot="header"
+          class="clearfix"
+        >
+          <span>L{{ item.line }}&nbsp;{{ item.part }}&nbsp;{{ item.desc }}</span>
         </div>
         <el-table
           :show-header="false"
@@ -120,16 +156,37 @@
           tooltip-effect="dark"
           style="width: 100%"
         >
-          <el-table-column type="selection" width="55" />
-          <el-table-column prop="supp" label="编号" width="120" />
-          <el-table-column prop="price" label="报价" width="120" />
-          <el-table-column prop="diffPrice" label="差价" width="120" />
-          <el-table-column prop="suppName" label="名称" />
+          <el-table-column
+            type="selection"
+            width="55"
+          />
+          <el-table-column
+            prop="supp"
+            label="编号"
+            width="120"
+          />
+          <el-table-column
+            prop="price"
+            label="报价"
+            width="120"
+          />
+          <el-table-column
+            prop="diffPrice"
+            label="差价"
+            width="120"
+          />
+          <el-table-column
+            prop="suppName"
+            label="名称"
+          />
           <el-table-column label="">
             <template slot-scope="scope">
-              <el-button type="text" @click="handleWin(scope.row)">{{
-                scope.row.state > 2 ? "取消" : "中标"
-              }}</el-button>
+              <el-button
+                type="text"
+                @click="handleWin(scope.row)"
+              >
+                {{scope.row.state > 2 ? "取消" : "中标"}}
+              </el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -139,9 +196,9 @@
 </template>
 
 <script>
-import bivvingMixin from "@/mixins/bivvingMixin";
-import { BIDDING_STATES } from "@/constant";
-import { extract } from "@/utils";
+import bivvingMixin from '@/mixins/bivvingMixin';
+import { BIDDING_STATES } from '@/constant';
+import { extract } from '@/utils';
 
 export default {
   mixins: [bivvingMixin],
@@ -149,10 +206,10 @@ export default {
     return {
       rows: [],
       queryCondition: {
-        nbr: "",
-        effDate: "",
-        dueDate: "",
-        state: "",
+        nbr: '',
+        effDate: '',
+        dueDate: '',
+        state: '',
       },
       lineDialog: {
         visible: false,
@@ -168,7 +225,7 @@ export default {
   methods: {
     async queryAsync() {
       const data = await this.$get(
-        "/api/plat/v2/biv/hall",
+        '/api/plat/v2/biv/hall',
         this.queryCondition
       );
       this.rows = (data || []).map((x) => {
@@ -183,11 +240,11 @@ export default {
     async handleShowLineDialog(entity) {
       this.selectdRow = entity;
       // 获取行
-      this.lines = await this.$get("/api/plat/v2/bid/det", {
+      this.lines = await this.$get('/api/plat/v2/bid/det', {
         nbr: entity.nbr,
       });
       // 获取竞标信息，包含供应商、报价和差价等
-      const bivinfos = await this.$get("/api/plat/v2/bid/bivinfo", {
+      const bivinfos = await this.$get('/api/plat/v2/bid/bivinfo', {
         nbr: entity.nbr,
       });
       this.lines.forEach((line) => {
@@ -205,12 +262,12 @@ export default {
     handleWin(winner) {
       winner.state = winner.state == 3 ? 2 : 3;
       this.$post(
-        "/api/plat/v2/bid/zhongb",
-        extract(winner, "nbr", "supp", "line", "state")
+        '/api/plat/v2/bid/zhongb',
+        extract(winner, 'nbr', 'supp', 'line', 'state')
       ).then((res) => {
         this.$message({
-          message: "已经选定供应商`" + winner.supp + "`中标",
-          type: "success",
+          message: '已经选定供应商`' + winner.supp + '`中标',
+          type: 'success',
         });
       });
     },

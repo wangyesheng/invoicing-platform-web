@@ -4,6 +4,9 @@
       v-if="showLogo"
       :collapse="isCollapse"
     />
+    <app-user :collapse="isCollapse">
+
+    </app-user>
     <el-scrollbar wrap-class="scrollbar-wrapper">
       <el-menu
         :default-active="activeMenu"
@@ -30,11 +33,12 @@
 import { mapGetters } from 'vuex';
 import Logo from './Logo';
 import SidebarItem from './SidebarItem';
+import AppUser from './AppUser';
 import variables from '@/styles/variables.scss';
 import { constantRoutes, asyncRoutes } from '@/router';
 
 export default {
-  components: { SidebarItem, Logo },
+  components: { SidebarItem, Logo, AppUser },
   computed: {
     ...mapGetters(['permission_routes', 'sidebar']),
     activeMenu() {

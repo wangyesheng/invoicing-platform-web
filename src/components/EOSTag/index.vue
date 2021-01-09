@@ -54,6 +54,10 @@ export default {
   opacity: 1;
 }
 
+.eos-tag-size-mini {
+  line-height: 18px;
+}
+
 .eos-tag-size-small {
   line-height: 24px;
 }
