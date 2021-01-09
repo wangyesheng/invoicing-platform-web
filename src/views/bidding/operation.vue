@@ -134,7 +134,7 @@
 
 <script>
 import biddingMixin from "@/mixins/biddingMixin";
-import { parseTime } from "@/utils";
+import { parseTime, clone } from "@/utils";
 
 export default {
   mixins: [biddingMixin],
@@ -147,6 +147,7 @@ export default {
           effDate: "",
           dueDate: "",
           remark: "",
+          state: 0,
         },
         rules: {
           nbr: [{ required: true, message: "请输入标书编号", trigger: "blur" }],
@@ -243,19 +244,17 @@ export default {
           this.formMstr.data.effDate,
           "{y}-{m}-{d}"
         );
-        const data = await this.$post(
-          "/api/plat/v2/bid",
-          Object.assign({ saving: true }, this.formMstr.data) // saving表示临时存储数据的，不涉及状态的确认
-        );
-        console.log(data);
+        await this.$post("/api/plat/v2/bid", this.formMstr.data);
       }
       this.lineDialog.visible = true;
     },
     handleMstrSumbit(formName) {
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          console.log(this.lineDialog.formData);
-          this.$post("/api/plat/v2/bid", this.formMstr.data).then((res) => {
+          this.$post(
+            "/api/plat/v2/bid",
+            clone(this.formMstr.data, ["state", 1])
+          ).then((res) => {
             this.$message({
               message: "标书已经创建成功",
               type: "success",
