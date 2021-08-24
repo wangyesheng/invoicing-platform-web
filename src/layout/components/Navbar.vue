@@ -78,14 +78,14 @@ export default {
 
 <style lang="scss" scoped>
 .navbar {
-  height: 50px;
+  height: 72px;
   overflow: hidden;
   position: relative;
   background: #409EFF;
   box-shadow: 0 1px 1px rgba(0, 0, 0, 0.01), 0 10px 30px rgba(0, 0, 0, 0.08);
 
   .hamburger-container {
-    line-height: 52px;
+    line-height: 72px;
     height: 100%;
     float: left;
     cursor: pointer;
@@ -103,7 +103,7 @@ export default {
 
   .right-menu {
     float: right;
-    padding: 14px 30px;
+    padding: 25px 30px;
     color: #fff;
 
     & /deep/ .el-icon-switch-button {

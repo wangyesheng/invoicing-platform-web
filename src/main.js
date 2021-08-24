@@ -5,25 +5,25 @@ import "normalize.css/normalize.css"; // A modern alternative to CSS resets
 import ElementUI from "element-ui";
 import "element-ui/lib/theme-chalk/index.css";
 import locale from "element-ui/lib/locale/lang/zh-CN"; // lang i18n
+import DynamicForm from 'vue-dynamic-form-component' // 动态表单
 
 import "@/styles/index.scss"; // global css
 
-import "@/config/ui";
+import "@/components";
 
 import App from "./App";
 import store from "./store";
 import router from "./router";
 
+
 import "@/icons"; // icon
 import "@/permission"; // permission control
-// import BaiduMap from 'vue-baidu-map';
- 
-// Vue.use(BaiduMap, {
-//     ak: 'GpRqD2Sowifs********RRRRVl9'
-// });
 
-
-Vue.use(ElementUI, { size: "small", locale });
+Vue.use(ElementUI, {
+  size: "small",
+  locale
+});
+Vue.use(DynamicForm)
 
 Vue.config.productionTip = false;
 

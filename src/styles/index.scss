@@ -63,6 +63,7 @@ div:focus {
 .app-content {
   margin: 0 10px 10px;
 
+
   .eos-operation-wrap {
     background-color: #fff;
     margin-bottom: 10px;
@@ -72,5 +73,27 @@ div:focus {
     .el-form-item {
       margin-bottom: 10px;
     }
+  }
+}
+
+.content-wrap {
+  padding: 10px 20px;
+
+  .action-wrap {
+    padding: 15px;
+    background: #fff;
+    border-radius: 5px;
+    box-shadow: 0 1px 5px 0 rgba(0, 0, 0, 0.1);
+    margin-bottom: 10px;
+    overflow: hidden;
+
+    .el-form-item {
+      margin-bottom: 0;
+
+      &:last-child {
+        float: right;
+      }
+    }
+
   }
 }

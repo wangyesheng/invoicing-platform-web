@@ -41,7 +41,7 @@
 
     &.has-logo {
       .el-scrollbar {
-        height: calc(100% - 150px);
+        height: calc(100% - 172px);
       }
     }
 
@@ -114,11 +114,11 @@
 
   .hideSidebar {
     .sidebar-container {
-      width: 50px !important;
+      width: 72px !important;
     }
 
     .main-container {
-      margin-left: 50px;
+      margin-left: 72px;
     }
 
     .submenu-title-noDropdown {
@@ -129,7 +129,7 @@
         padding: 0 !important;
 
         .svg-icon {
-          margin-left: 18px;
+          margin-left: 28px;
         }
       }
     }
@@ -141,7 +141,7 @@
         padding: 0 !important;
 
         .svg-icon {
-          margin-left: 18px;
+          margin-left: 28px;
         }
 
         .el-submenu__icon-arrow {

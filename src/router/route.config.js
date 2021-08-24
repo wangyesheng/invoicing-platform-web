@@ -94,6 +94,14 @@ export const asyncRoutes = [{
         meta: {
           title: "部件管理"
         }
+      },
+      {
+        path: "/location/index",
+        name: "LOCATION",
+        component: () => import("@/views/location/index"),
+        meta: {
+          title: "库位管理"
+        }
       }
     ]
   },

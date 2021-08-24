@@ -8,7 +8,6 @@
       auto-complete="on"
       label-position="left"
     >
-
       <div class="title-container">
         <h3 class="title">PSD管理系统</h3>
       </div>
@@ -43,50 +42,52 @@
           auto-complete="on"
           @keyup.enter.native="handleLogin"
         />
-        <span
-          class="show-pwd"
-          @click="showPwd"
-        >
-          <svg-icon :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'" />
+        <span class="show-pwd" @click="showPwd">
+          <svg-icon
+            :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
+          />
         </span>
       </el-form-item>
 
       <el-button
         :loading="loading"
         type="primary"
-        style="width:100%;margin-bottom:30px;"
+        style="width: 100%; margin-bottom: 30px"
         @click.native.prevent="handleLogin"
-      >登录</el-button>
+        >登录</el-button
+      >
     </el-form>
   </div>
 </template>
 
 <script>
-import { validUsername } from '@/utils/validate';
+import { validUsername } from "@/utils/validate";
 
 export default {
-  name: 'Login',
+  name: "Login",
   data() {
     const validateUsername = (rule, value, callback) => {
       if (!value) {
-        callback(new Error('请输入账号！'));
+        callback(new Error("请输入账号！"));
       } else {
         callback();
       }
     };
     return {
       loginForm: {
-        username: '',
-        password: '',
+        username: "",
+        password: "",
       },
       loginRules: {
         username: [
-          { required: true, trigger: 'blur', validator: validateUsername },
+          { required: true, trigger: "blur", validator: validateUsername },
         ],
-        password: [{ required: true, trigger: 'blur', message: '请输入密码！' }],
+        password: [
+          { required: true, trigger: "blur", message: "请输入密码！" },
+        ],
       },
       loading: false,
-      passwordType: 'password',
+      passwordType: "password",
       redirect: undefined,
     };
   },
@@ -100,10 +101,45 @@ export default {
   },
   methods: {
     showPwd() {
-      if (this.passwordType === 'password') {
-        this.passwordType = '';
+
+      const instance = {
+        get: {
+          url: "", // 接口
+          fields: [
+            { key: "name", slot: false },
+            { key: "age", slot: false },
+            { key: "address", slot: true, render: "tag" },
+          ], // 字段
+          pagnation: true, // 是否需要分页
+        },
+        
+        post: {
+          url: "",
+          descriptors: {
+            name: {
+              type: "string", // 控件类型，字段类型
+              required: true, // 是否必须
+              props: { placeholder: "please input the number" }, // element-ui 组件自带的 props
+              events: {}, // 表单元素的一些事件
+            },
+          },
+          data: {
+            name: "",
+          }, // 双向绑定的数据源
+        },
+
+        put: "同 post",
+        
+        delete: {
+          url: "",
+          params: {},
+        },
+      };
+
+      if (this.passwordType === "password") {
+        this.passwordType = "";
       } else {
-        this.passwordType = 'password';
+        this.passwordType = "password";
       }
       this.$nextTick(() => {
         this.$refs.password.focus();
@@ -115,19 +151,21 @@ export default {
           this.loading = true;
           try {
             const res = await this.$store.dispatch(
-              'user/login',
+              "user/login",
               this.loginForm
             );
             console.log(res);
-            this.$router.push({ path: this.redirect || '/' });
+            this.$router.push({ path: this.redirect || "/" });
             this.loading = false;
           } catch (error) {
             this.loading = false;
           }
           // this.$router.push({ path: this.redirect || '/' });
         } else {
-          console.log('error submit!!');
+          console.log("error submit!!");
           return false;
+
+          console.log(obj);
         }
       });
     },

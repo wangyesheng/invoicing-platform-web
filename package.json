@@ -24,6 +24,7 @@
     "path-to-regexp": "2.4.0",
     "vue": "2.6.10",
     "vue-baidu-map": "^0.21.22",
+    "vue-dynamic-form-component": "^2.8.1",
     "vue-router": "3.0.6",
     "vuex": "3.1.0"
   },

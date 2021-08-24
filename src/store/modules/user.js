@@ -1,4 +1,4 @@
-import { checkLoginRes, getUserinfoRes } from "@/api/user";
+import { checkLoginRes } from "@/api/user";
 import { getToken, setToken, removeToken } from "@/utils/auth";
 import { asyncRoutes, constantRoutes, resetRouter } from "@/router";
 
