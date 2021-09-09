@@ -33,7 +33,7 @@
             type="primary"
             @click="
               () => {
-                getLocations();
+                getDepts();
               }
             "
           >
@@ -41,7 +41,7 @@
           </el-button>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleShowLocationDialog(null)">
+          <el-button type="primary" @click="handleShowDeptDialog(null)">
             新增
           </el-button>
         </el-form-item>
@@ -49,12 +49,12 @@
     </div>
     <el-card shadow="never">
       <eos-dynamic-table
-        :columns="locationTable.columns"
-        :data="locationTable.data"
+        :columns="deptTable.columns"
+        :data="deptTable.data"
       >
         <el-table-column slot="action" label="操作">
           <template slot-scope="{ row }">
-            <el-button type="text" @click="handleShowLocationDialog(row)">
+            <el-button type="text" @click="handleShowDeptDialog(row)">
               编辑
             </el-button>
             <el-popconfirm
@@ -69,17 +69,17 @@
     </el-card>
     <el-dialog
       width="30%"
-      :title="locationDialog.title"
-      :visible.sync="locationDialog.visible"
+      :title="deptDialog.title"
+      :visible.sync="deptDialog.visible"
       :close-on-click-modal="false"
     >
       <dynamic-form
-        ref="locationFormRef"
-        v-model="locationDialog.formData"
-        :descriptors="locationDialog.formDescriptors"
+        ref="deptFormRef"
+        v-model="deptDialog.formData"
+        :descriptors="deptDialog.formDescriptors"
       />
       <span slot="footer">
-        <el-button @click="locationDialog.visible = false">取 消</el-button>
+        <el-button @click="deptDialog.visible = false">取 消</el-button>
         <el-button type="primary" @click="onSubmit">确 定</el-button>
       </span>
     </el-dialog>
@@ -92,15 +92,14 @@ export default {
     return {
       queryCondition: {
         nbr: "",
-        name: "",
         status: "",
       },
-      locationTable: {
+      deptTable: {
         columns: [],
         data: [],
         total: 0,
       },
-      locationDialog: {
+      deptDialog: {
         title: "",
         visible: false,
         formDescriptors: {},
@@ -110,7 +109,7 @@ export default {
   },
 
   mounted() {
-    Promise.all([this.getMianView(), this.getLocations()]);
+    Promise.all([this.getMianView(), this.getDepts()]);
   },
 
   methods: {
@@ -118,55 +117,55 @@ export default {
       const {
         form: { descriptors },
         table: { columns },
-      } = await this.$get("/api/discovery/view/kw/main");
-      this.locationDialog.formDescriptors = descriptors;
-      this.locationTable.columns = columns;
+      } = await this.$get("/api/discovery/view/ks/main");
+      this.deptDialog.formDescriptors = descriptors;
+      this.deptTable.columns = columns;
     },
-    async getLocations() {
+    async getDepts() {
       const data = await this.$get(
-        "/api/plat/v2/kw/query",
+        "/api/plat/v2/ks/query",
         this.queryCondition
       );
-      this.locationTable.data = data;
+      this.deptTable.data = data;
     },
-    handleShowLocationDialog(scope) {
+    handleShowDeptDialog(scope) {
       if (scope == null) {
-        this.locationDialog.title = "新增";
-        this.locationDialog.formData = {};
+        this.deptDialog.title = "新增";
+        this.deptDialog.formData = {};
       } else {
-        this.locationDialog.title = "编辑";
-        this.locationDialog.formData = { ...scope };
+        this.deptDialog.title = "编辑";
+        this.deptDialog.formData = { ...scope };
       }
-      this.$refs.locationFormRef && this.$refs.locationFormRef.resetFields();
-      this.locationDialog.visible = true;
+      this.$refs.deptFormRef && this.$refs.deptFormRef.resetFields();
+      this.deptDialog.visible = true;
     },
     onSubmit() {
-      this.$refs.locationFormRef.validate(async (valid) => {
+      this.$refs.deptFormRef.validate(async (valid) => {
         if (valid) {
           const reqData = {
-            ...this.locationDialog.formData,
+            ...this.deptDialog.formData,
           };
           let data;
           if (reqData.status) {
             const nbr = reqData.nbr;
             delete reqData.nbr;
-            data = await this.$put(`/api/plat/v2/kw/_/${nbr}`, reqData);
+            data = await this.$put(`/api/plat/v2/ks/_/${nbr}`, reqData);
           } else {
-            data = await this.$post(`/api/plat/v2/kw/_`, reqData);
+            data = await this.$post(`/api/plat/v2/ks/_`, reqData);
           }
           if (data) {
             this.$message.success("操作成功！");
-            this.locationDialog.visible = false;
-            this.getLocations();
+            this.deptDialog.visible = false;
+            this.getDepts();
           }
         }
       });
     },
     async handleConfirmDelete(nbr) {
-      const data = await this.$delete(`/api/plat/v2/kw/${nbr}`);
+      const data = await this.$delete(`/api/plat/v2/ks/${nbr}`);
       if (data) {
         this.$message.success("操作成功！");
-        this.getLocations();
+        this.getDepts();
       }
     },
   },

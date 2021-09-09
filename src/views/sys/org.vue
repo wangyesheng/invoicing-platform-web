@@ -33,7 +33,7 @@
             type="primary"
             @click="
               () => {
-                getLocations();
+                getOrgs();
               }
             "
           >
@@ -41,25 +41,25 @@
           </el-button>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleShowLocationDialog(null)">
-            新增
+          <el-button type="primary" @click="handleShowOrgDialog(null)">
+            新增根组织
           </el-button>
         </el-form-item>
       </el-form>
     </div>
     <el-card shadow="never">
-      <eos-dynamic-table
-        :columns="locationTable.columns"
-        :data="locationTable.data"
-      >
+      <eos-dynamic-table :columns="orgTable.columns" :data="orgTable.data">
         <el-table-column slot="action" label="操作">
           <template slot-scope="{ row }">
-            <el-button type="text" @click="handleShowLocationDialog(row)">
+            <el-button type="text" @click="handleShowOrgDialog(row.orgid)">
+              新增子组织
+            </el-button>
+            <el-button type="text" @click="handleShowOrgDialog(row)">
               编辑
             </el-button>
             <el-popconfirm
               title="确定删除吗？"
-              @confirm="handleConfirmDelete(row.nbr)"
+              @confirm="handleConfirmDelete(row.orgid)"
             >
               <el-button slot="reference" type="text">删除</el-button>
             </el-popconfirm>
@@ -69,17 +69,17 @@
     </el-card>
     <el-dialog
       width="30%"
-      :title="locationDialog.title"
-      :visible.sync="locationDialog.visible"
+      :title="orgDialog.title"
+      :visible.sync="orgDialog.visible"
       :close-on-click-modal="false"
     >
       <dynamic-form
-        ref="locationFormRef"
-        v-model="locationDialog.formData"
-        :descriptors="locationDialog.formDescriptors"
+        ref="deptFormRef"
+        v-model="orgDialog.formData"
+        :descriptors="orgDialog.formDescriptors"
       />
       <span slot="footer">
-        <el-button @click="locationDialog.visible = false">取 消</el-button>
+        <el-button @click="orgDialog.visible = false">取 消</el-button>
         <el-button type="primary" @click="onSubmit">确 定</el-button>
       </span>
     </el-dialog>
@@ -91,16 +91,16 @@ export default {
   data() {
     return {
       queryCondition: {
-        nbr: "",
-        name: "",
-        status: "",
+        id: null,
+        isactive: null,
+        name: null,
       },
-      locationTable: {
+      orgTable: {
         columns: [],
         data: [],
         total: 0,
       },
-      locationDialog: {
+      orgDialog: {
         title: "",
         visible: false,
         formDescriptors: {},
@@ -110,7 +110,7 @@ export default {
   },
 
   mounted() {
-    Promise.all([this.getMianView(), this.getLocations()]);
+    Promise.all([this.getMianView(), this.getOrgs()]);
   },
 
   methods: {
@@ -118,55 +118,75 @@ export default {
       const {
         form: { descriptors },
         table: { columns },
-      } = await this.$get("/api/discovery/view/kw/main");
-      this.locationDialog.formDescriptors = descriptors;
-      this.locationTable.columns = columns;
+      } = await this.$get("/api/discovery/view/org/main");
+
+      descriptors.isactive = {
+        type: descriptors.isactive.type,
+        label: descriptors.isactive.label,
+        required: descriptors.isactive.required,
+        message: descriptors.isactive.message,
+        component: {
+          name: "el-radio-group", // required
+          children: descriptors.isactive.source.map((x) => ({
+            name: "el-radio",
+            props: {
+              label: x.value, // value
+            },
+            children: x.label,
+          })),
+        },
+      };
+      this.orgDialog.formDescriptors = descriptors;
+      this.orgTable.columns = columns;
     },
-    async getLocations() {
-      const data = await this.$get(
-        "/api/plat/v2/kw/query",
-        this.queryCondition
-      );
-      this.locationTable.data = data;
+    async getOrgs() {
+      const data = await this.$get("/api/plat/v2/org/query");
+      this.orgTable.data = data;
     },
-    handleShowLocationDialog(scope) {
+    handleShowOrgDialog(scope) {
       if (scope == null) {
-        this.locationDialog.title = "新增";
-        this.locationDialog.formData = {};
+        this.orgDialog.title = "新增";
+        this.orgDialog.formData = {};
+      } else if (typeof scope == "string") {
+        this.orgDialog.title = "新增";
+        this.orgDialog.formData = {
+          parentid: scope,
+        };
       } else {
-        this.locationDialog.title = "编辑";
-        this.locationDialog.formData = { ...scope };
+        this.orgDialog.title = "编辑";
+        this.orgDialog.formData = { ...scope };
       }
-      this.$refs.locationFormRef && this.$refs.locationFormRef.resetFields();
-      this.locationDialog.visible = true;
+      this.$refs.deptFormRef && this.$refs.deptFormRef.resetFields();
+      this.orgDialog.visible = true;
     },
     onSubmit() {
-      this.$refs.locationFormRef.validate(async (valid) => {
+      this.$refs.deptFormRef.validate(async (valid) => {
         if (valid) {
           const reqData = {
-            ...this.locationDialog.formData,
+            ...this.orgDialog.formData,
           };
           let data;
-          if (reqData.status) {
-            const nbr = reqData.nbr;
-            delete reqData.nbr;
-            data = await this.$put(`/api/plat/v2/kw/_/${nbr}`, reqData);
+          if (this.orgDialog.title == "编辑") {
+            const orgid = reqData.orgid;
+            delete reqData.orgid;
+            delete reqData.pname;
+            data = await this.$put(`/api/plat/v2/org/_/${orgid}`, reqData);
           } else {
-            data = await this.$post(`/api/plat/v2/kw/_`, reqData);
+            data = await this.$post(`/api/plat/v2/org/_`, reqData);
           }
           if (data) {
             this.$message.success("操作成功！");
-            this.locationDialog.visible = false;
-            this.getLocations();
+            this.orgDialog.visible = false;
+            this.getOrgs();
           }
         }
       });
     },
-    async handleConfirmDelete(nbr) {
-      const data = await this.$delete(`/api/plat/v2/kw/${nbr}`);
+    async handleConfirmDelete(orgid) {
+      const data = await this.$delete(`/api/plat/v2/org/${orgid}`);
       if (data) {
         this.$message.success("操作成功！");
-        this.getLocations();
+        this.getOrgs();
       }
     },
   },

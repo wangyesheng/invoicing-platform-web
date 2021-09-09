@@ -102,6 +102,22 @@ export const asyncRoutes = [{
         meta: {
           title: "库位管理"
         }
+      },
+      {
+        path: "/sys/department",
+        name: "DEPARTMENT",
+        component: () => import("@/views/sys/department"),
+        meta: {
+          title: "科室管理"
+        }
+      },
+      {
+        path: "/sys/org",
+        name: "ORGANIZATION",
+        component: () => import("@/views/sys/org"),
+        meta: {
+          title: "组织管理"
+        }
       }
     ]
   },

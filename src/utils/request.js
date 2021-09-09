@@ -78,7 +78,7 @@ Vue.prototype.$put = (url, data) =>
 Vue.prototype.$delete = (url, params) =>
   service({
     url,
-    method: "post",
+    method: "delete",
     params
   });
 
