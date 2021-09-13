@@ -79,22 +79,22 @@ export const asyncRoutes = [{
           title: "权限管理"
         }
       },
-      {
-        path: "/part/operation",
-        name: "PART_OPERATION",
-        component: () => import("@/views/part/operation"),
-        meta: {
-          title: "新建部件"
-        }
-      },
-      {
-        path: "/part/index",
-        name: "PART",
-        component: () => import("@/views/part/index"),
-        meta: {
-          title: "部件管理"
-        }
-      },
+      // {
+      //   path: "/part/operation",
+      //   name: "PART_OPERATION",
+      //   component: () => import("@/views/part/operation"),
+      //   meta: {
+      //     title: "新建部件"
+      //   }
+      // },
+      // {
+      //   path: "/part/index",
+      //   name: "PART",
+      //   component: () => import("@/views/part/index"),
+      //   meta: {
+      //     title: "部件管理"
+      //   }
+      // },
       {
         path: "/location/index",
         name: "LOCATION",
@@ -103,14 +103,14 @@ export const asyncRoutes = [{
           title: "库位管理"
         }
       },
-      {
-        path: "/sys/department",
-        name: "DEPARTMENT",
-        component: () => import("@/views/sys/department"),
-        meta: {
-          title: "科室管理"
-        }
-      },
+      // {
+      //   path: "/sys/department",
+      //   name: "DEPARTMENT",
+      //   component: () => import("@/views/sys/department"),
+      //   meta: {
+      //     title: "科室管理"
+      //   }
+      // },
       {
         path: "/sys/org",
         name: "ORGANIZATION",

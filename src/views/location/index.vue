@@ -42,7 +42,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleShowLocationDialog(null)">
-            新增
+            新增库位
           </el-button>
         </el-form-item>
       </el-form>

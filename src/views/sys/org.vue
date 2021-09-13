@@ -87,7 +87,11 @@
 </template>
 
 <script>
+import formDescriptorsMixin from "@/mixins/formDescriptorsMixin";
+
 export default {
+  mixins: [formDescriptorsMixin],
+
   data() {
     return {
       queryCondition: {
@@ -119,24 +123,7 @@ export default {
         form: { descriptors },
         table: { columns },
       } = await this.$get("/api/discovery/view/org/main");
-
-      descriptors.isactive = {
-        type: descriptors.isactive.type,
-        label: descriptors.isactive.label,
-        required: descriptors.isactive.required,
-        message: descriptors.isactive.message,
-        component: {
-          name: "el-radio-group", // required
-          children: descriptors.isactive.source.map((x) => ({
-            name: "el-radio",
-            props: {
-              label: x.value, // value
-            },
-            children: x.label,
-          })),
-        },
-      };
-      this.orgDialog.formDescriptors = descriptors;
+      this.orgDialog.formDescriptors = this.renderFormDescriptors(descriptors);
       this.orgTable.columns = columns;
     },
     async getOrgs() {

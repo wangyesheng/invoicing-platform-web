@@ -58,7 +58,7 @@ export default {
       cursor: pointer;
       width: 38px;
       height: 38px;
-      border-radius: 50%;
+      border-radius: 5px;
     }
     span {
       display: inline-block;
