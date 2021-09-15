@@ -55,9 +55,10 @@ const actions = {
       checkLoginRes({ username: username.trim(), password: password })
         .then(response => {
           commit("SET_TOKEN", response.token);
+          commit("SET_USERINFO", response);
           setToken(response.token);
           localStorage.setItem("platform_userinfo", JSON.stringify(response));
-          resolve();
+          resolve(true);
         })
         .catch(error => {
           reject(error);

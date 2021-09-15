@@ -61,8 +61,6 @@
 </template>
 
 <script>
-import { validUsername } from "@/utils/validate";
-
 export default {
   name: "Login",
   data() {
@@ -101,41 +99,6 @@ export default {
   },
   methods: {
     showPwd() {
-
-      const instance = {
-        get: {
-          url: "", // 接口
-          fields: [
-            { key: "name", slot: false },
-            { key: "age", slot: false },
-            { key: "address", slot: true, render: "tag" },
-          ], // 字段
-          pagnation: true, // 是否需要分页
-        },
-        
-        post: {
-          url: "",
-          descriptors: {
-            name: {
-              type: "string", // 控件类型，字段类型
-              required: true, // 是否必须
-              props: { placeholder: "please input the number" }, // element-ui 组件自带的 props
-              events: {}, // 表单元素的一些事件
-            },
-          },
-          data: {
-            name: "",
-          }, // 双向绑定的数据源
-        },
-
-        put: "同 post",
-        
-        delete: {
-          url: "",
-          params: {},
-        },
-      };
-
       if (this.passwordType === "password") {
         this.passwordType = "";
       } else {
@@ -150,22 +113,20 @@ export default {
         if (valid) {
           this.loading = true;
           try {
-            const res = await this.$store.dispatch(
+            const value = await this.$store.dispatch(
               "user/login",
               this.loginForm
             );
-            console.log(res);
-            this.$router.push({ path: this.redirect || "/" });
-            this.loading = false;
+            value && this.$router.push({ path: this.redirect || "/" });
           } catch (error) {
-            this.loading = false;
+            this.$notify.error({
+              title: "出了点小问题~",
+              message: error,
+            });
           }
-          // this.$router.push({ path: this.redirect || '/' });
+          this.loading = false;
         } else {
-          console.log("error submit!!");
           return false;
-
-          console.log(obj);
         }
       });
     },

@@ -152,10 +152,11 @@ export default {
             required: true,
 
             control: "select",
-            options: [
-              { label: "管理员", value: "ADMIN" },
-              { label: "测试", value: "TEST" },
-            ],
+            interfaceUrl: "xxxx",
+            // options: [
+            //   { label: "管理员", value: "ADMIN" },
+            //   { label: "测试", value: "TEST" },
+            // ],
 
             // component: {
             //   name: "el-select", // required
@@ -192,11 +193,11 @@ export default {
           address: {
             type: "array",
             label: "地址",
-            required:true,
+            required: true,
             // control: "select",
             // source:areas
             component: {
-              name: "el-cascader", // 
+              name: "el-cascader", //
               props: {
                 options: areas,
                 props: { expandTrigger: "hover" },
@@ -205,17 +206,16 @@ export default {
             },
           },
           hobbies: {
-            type: "array", 
+            type: "array",
             label: "爱好",
             required: true,
 
             control: "select",
-            multiple:true,
+            multiple: true,
             options: [
               { label: "管理员", value: "ADMIN" },
               { label: "测试", value: "TEST" },
             ],
-
 
             component: {
               name: "el-select",
@@ -247,7 +247,7 @@ export default {
               ],
             },
           },
-          status: { type: "boolean", label: "状态",required:true },
+          status: { type: "boolean", label: "状态", required: true },
           pettes: {
             type: "array",
             label: "宠物",

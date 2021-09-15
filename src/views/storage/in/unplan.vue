@@ -28,9 +28,7 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary">
-            查询
-          </el-button>
+          <el-button type="primary"> 查询 </el-button>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleShowStorageDialog(null)">
@@ -80,48 +78,60 @@
 
 <script>
 import formDescriptorsMixin from "@/mixins/formDescriptorsMixin";
+import { mapGetters } from "vuex";
 
 export default {
   mixins: [formDescriptorsMixin],
 
   data() {
+    const userinfo = this.$store.getters;
+    console.log(userinfo);
     return {
       queryCondition: {
-        id: null,
-        isactive: null,
-        name: null
+        nbr: '',
+        part: '',
+        startTime: '',
+        endTime: '',
       },
       storageTable: {
         columns: [],
         data: [],
-        total: 0
+        total: 0,
       },
       storageDialog: {
         title: "",
         visible: false,
         formDescriptors: {},
-        formData: {}
-      }
+        formData: {
+          operator: userinfo.account,
+        },
+      },
     };
   },
 
+  computed: {
+    ...mapGetters(["userinfo"]),
+  },
+
   mounted() {
-    Promise.all([this.getMianView()]);
+    Promise.all([this.getMianView(), this.getStorages()]);
   },
 
   methods: {
     async getMianView() {
       const {
         form: { descriptors },
-        table: { columns }
+        table: { columns },
       } = await this.$get("/api/discovery/view/unplan/main");
-      this.storageDialog.formDescriptors = this.renderFormDescriptors(
-        descriptors
-      );
+      this.storageDialog.formDescriptors =
+        this.renderFormDescriptors(descriptors);
       this.storageTable.columns = columns;
     },
     async getStorages() {
-      const data = await this.$get("/api/plat/v2/org/query");
+      const data = await this.$get(
+        "/api/plat/v2/receipt/unplan",
+        this.queryCondition
+      );
       this.storageTable.data = data;
     },
     handleShowStorageDialog(scope) {
@@ -136,24 +146,25 @@ export default {
       this.storageDialog.visible = true;
     },
     onSubmit() {
-      this.$refs.storageFormRef.validate(async valid => {
+      this.$refs.storageFormRef.validate(async (valid) => {
         if (valid) {
           const reqData = {
-            ...this.storageDialog.formData
+            ...this.storageDialog.formData,
           };
-          let data;
-          if (this.storageDialog.title == "编辑") {
-            const orgid = reqData.orgid;
-            delete reqData.orgid;
-            delete reqData.pname;
-            data = await this.$put(`/api/plat/v2/org/_/${orgid}`, reqData);
-          } else {
-            data = await this.$post(`/api/plat/v2/receipt/unplan`, reqData);
-          }
-          if (data) {
-            this.$message.success("操作成功！");
-            this.storageDialog.visible = false;
-          }
+          console.log(reqData);
+          // let data;
+          // if (this.storageDialog.title == "编辑") {
+          //   const orgid = reqData.orgid;
+          //   delete reqData.orgid;
+          //   delete reqData.pname;
+          //   data = await this.$put(`/api/plat/v2/org/_/${orgid}`, reqData);
+          // } else {
+          //   data = await this.$post(`/api/plat/v2/receipt/unplan`, reqData);
+          // }
+          // if (data) {
+          //   this.$message.success("操作成功！");
+          //   this.storageDialog.visible = false;
+          // }
         }
       });
     },
@@ -162,7 +173,7 @@ export default {
       if (data) {
         this.$message.success("操作成功！");
       }
-    }
-  }
+    },
+  },
 };
 </script>
