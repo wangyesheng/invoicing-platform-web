@@ -19,7 +19,8 @@ import Layout from "@/layout";
   }
  */
 
-export const constantRoutes = [{
+export const constantRoutes = [
+  {
     path: "/login",
     component: () => import("@/views/login/index"),
     hidden: true
@@ -34,19 +35,22 @@ export const constantRoutes = [{
     path: "/",
     component: Layout,
     redirect: "/dashboard",
-    children: [{
-      path: "dashboard",
-      name: "Dashboard",
-      component: () => import("@/views/dashboard/index"),
-      meta: {
-        title: "工作台",
-        icon: "dashboard"
+    children: [
+      {
+        path: "dashboard",
+        name: "Dashboard",
+        component: () => import("@/views/dashboard/index"),
+        meta: {
+          title: "工作台",
+          icon: "dashboard"
+        }
       }
-    }]
+    ]
   }
 ];
 
-export const asyncRoutes = [{
+export const asyncRoutes = [
+  {
     path: "/sys",
     component: Layout,
     name: "SYS",
@@ -55,7 +59,8 @@ export const asyncRoutes = [{
       title: "系统设置",
       icon: "system"
     },
-    children: [{
+    children: [
+      {
         path: "/sys/user",
         name: "SYS_USER",
         component: () => import("@/views/sys/user"),
@@ -103,20 +108,33 @@ export const asyncRoutes = [{
           title: "库位管理"
         }
       },
-      // {
-      //   path: "/sys/department",
-      //   name: "DEPARTMENT",
-      //   component: () => import("@/views/sys/department"),
-      //   meta: {
-      //     title: "科室管理"
-      //   }
-      // },
       {
         path: "/sys/org",
         name: "ORGANIZATION",
         component: () => import("@/views/sys/org"),
         meta: {
           title: "组织管理"
+        }
+      }
+    ]
+  },
+  {
+    path: "/storage",
+    component: Layout,
+    redirect: "/storage/in/un-plan",
+    alwaysShow: true,
+    name:'STORAGE',
+    meta: {
+      title: "出入库管理",
+      icon: "bidding"
+    },
+    children: [
+      {
+        path: "/storage/in/unplan",
+        name: "STORAGE_IN_UNPLAN",
+        component: () => import("@/views/storage/in/unplan"),
+        meta: {
+          title: "计划化入库"
         }
       }
     ]
@@ -129,7 +147,8 @@ export const asyncRoutes = [{
       title: "招标管理",
       icon: "bidding"
     },
-    children: [{
+    children: [
+      {
         path: "/bidding/operation",
         name: "BIDDING_OPERATION",
         component: () => import("@/views/bidding/operation"),
@@ -171,7 +190,8 @@ export const asyncRoutes = [{
       title: "采购管理",
       icon: "purchase"
     },
-    children: [{
+    children: [
+      {
         path: "/po/operation",
         name: "PO_OPERATION",
         component: () => import("@/views/po/operation"),
@@ -197,7 +217,8 @@ export const asyncRoutes = [{
       title: "发货管理",
       icon: "deliver"
     },
-    children: [{
+    children: [
+      {
         path: "/ship/operation",
         name: "SHIP_OPERATION",
         component: () => import("@/views/ship/operation"),
@@ -212,7 +233,8 @@ export const asyncRoutes = [{
         meta: {
           title: "发货单管理"
         }
-      }, {
+      },
+      {
         path: "/ship/express",
         name: "EXPRESS",
         component: () => import("@/views/ship/express"),
@@ -230,7 +252,8 @@ export const asyncRoutes = [{
       title: "收货管理",
       icon: "receiver"
     },
-    children: [{
+    children: [
+      {
         path: "/receipt/operation",
         name: "RECP_OPERATION",
         component: () => import("@/views/receipt/operation"),
@@ -256,7 +279,8 @@ export const asyncRoutes = [{
       title: "发票管理",
       icon: "invoice"
     },
-    children: [{
+    children: [
+      {
         path: "/invoice/operation",
         name: "IN_OPERATION",
         component: () => import("@/views/invoice/operation"),
