@@ -84,33 +84,29 @@ export default {
   mixins: [formDescriptorsMixin],
 
   data() {
-    const userinfo = this.$store.getters;
-    console.log(userinfo);
     return {
       queryCondition: {
-        nbr: '',
-        part: '',
-        startTime: '',
-        endTime: '',
+        nbr: "",
+        part: "",
+        startTime: "",
+        endTime: ""
       },
       storageTable: {
         columns: [],
         data: [],
-        total: 0,
+        total: 0
       },
       storageDialog: {
         title: "",
         visible: false,
         formDescriptors: {},
-        formData: {
-          operator: userinfo.account,
-        },
-      },
+        formData: {}
+      }
     };
   },
 
   computed: {
-    ...mapGetters(["userinfo"]),
+    ...mapGetters(["userinfo"])
   },
 
   mounted() {
@@ -121,10 +117,11 @@ export default {
     async getMianView() {
       const {
         form: { descriptors },
-        table: { columns },
+        table: { columns }
       } = await this.$get("/api/discovery/view/unplan/main");
-      this.storageDialog.formDescriptors =
-        this.renderFormDescriptors(descriptors);
+      this.storageDialog.formDescriptors = this.renderFormDescriptors(
+        descriptors
+      );
       this.storageTable.columns = columns;
     },
     async getStorages() {
@@ -137,7 +134,10 @@ export default {
     handleShowStorageDialog(scope) {
       if (scope == null) {
         this.storageDialog.title = "新增";
-        this.storageDialog.formData = {};
+        this.storageDialog.formData = {
+          operator: this.userinfo.account,
+          _operator: this.userinfo.userId
+        };
       } else {
         this.storageDialog.title = "编辑";
         this.storageDialog.formData = { ...scope };
@@ -146,25 +146,21 @@ export default {
       this.storageDialog.visible = true;
     },
     onSubmit() {
-      this.$refs.storageFormRef.validate(async (valid) => {
+      this.$refs.storageFormRef.validate(async valid => {
         if (valid) {
           const reqData = {
             ...this.storageDialog.formData,
+            operator: this.storageDialog.formData._operator
           };
-          console.log(reqData);
-          // let data;
-          // if (this.storageDialog.title == "编辑") {
-          //   const orgid = reqData.orgid;
-          //   delete reqData.orgid;
-          //   delete reqData.pname;
-          //   data = await this.$put(`/api/plat/v2/org/_/${orgid}`, reqData);
-          // } else {
-          //   data = await this.$post(`/api/plat/v2/receipt/unplan`, reqData);
-          // }
-          // if (data) {
-          //   this.$message.success("操作成功！");
-          //   this.storageDialog.visible = false;
-          // }
+          Object.keys(reqData).forEach(key => {
+            if (key.startsWith("_")) delete reqData[key];
+          });
+          const data = await this.$post(`/api/plat/v2/receipt/unplan`, reqData);
+          if (data) {
+            this.$message.success("操作成功！");
+            this.storageDialog.visible = false;
+            this.getStorages();
+          }
         }
       });
     },
@@ -173,7 +169,7 @@ export default {
       if (data) {
         this.$message.success("操作成功！");
       }
-    },
-  },
+    }
+  }
 };
 </script>
