@@ -1,7 +1,7 @@
 <style lang="scss" scoped></style>
 <template>
   <div class="content-wrap">
-    <div class="action-wrap">
+    <!-- <div class="action-wrap">
       <el-form inline>
         <el-form-item label="编号">
           <el-input
@@ -36,7 +36,13 @@
           </el-button>
         </el-form-item>
       </el-form>
-    </div>
+    </div> -->
+    <Query
+      :condition="{
+        nbr: { control: 'input', label: '编号', value: 10001 },
+        area: { control: 'select', label: '区域', value: 'shanghai' },
+      }"
+    />
     <el-card shadow="never">
       <eos-dynamic-table
         :columns="storageTable.columns"
@@ -80,8 +86,14 @@
 import formDescriptorsMixin from "@/mixins/formDescriptorsMixin";
 import { mapGetters } from "vuex";
 
+import Query from "@/components/CRUD/Query";
+
 export default {
   mixins: [formDescriptorsMixin],
+
+  components: {
+    Query
+  },
 
   data() {
     return {
@@ -118,7 +130,7 @@ export default {
       const {
         form: { descriptors },
         table: { columns }
-      } = await this.$get("/api/discovery/view/requisition/main");
+      } = await this.$get("/api/discovery/view/returnStock/main");
       this.storageDialog.formDescriptors = this.renderFormDescriptors(
         descriptors
       );
@@ -126,7 +138,7 @@ export default {
     },
     async getStorages() {
       const data = await this.$get(
-        "/api/plat/v2/requisition/query",
+        "/api/plat/v2/returnStock/query",
         this.queryCondition
       );
       this.storageTable.data = data;
@@ -155,8 +167,8 @@ export default {
           Object.keys(reqData).forEach(key => {
             if (key.startsWith("_")) delete reqData[key];
           });
-          console.log(reqData)
-          const data = await this.$post(`/api/plat/v2/requisition/_`, reqData);
+          console.log(reqData);
+          const data = await this.$post(`/api/plat/v2/returnStock/_`, reqData);
           if (data) {
             this.$message.success("操作成功！");
             this.storageDialog.visible = false;

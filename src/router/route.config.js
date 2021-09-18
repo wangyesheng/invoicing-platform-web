@@ -134,7 +134,23 @@ export const asyncRoutes = [
         name: "STORAGE_IN_UNPLAN",
         component: () => import("@/views/storage/in/unplan"),
         meta: {
-          title: "计划化入库"
+          title: "入库"
+        }
+      },
+      {
+        path: "/storage/out/unplan",
+        name: "STORAGE_OUT_UNPLAN",
+        component: () => import("@/views/storage/out/unplan"),
+        meta: {
+          title: "出库"
+        }
+      },
+      {
+        path: "/storage/withdrawal",
+        name: "STORAGE_WITHDRAWAL",
+        component: () => import("@/views/storage/withdrawal/index"),
+        meta: {
+          title: "退库"
         }
       }
     ]
