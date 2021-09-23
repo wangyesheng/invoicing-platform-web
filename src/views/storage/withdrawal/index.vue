@@ -1,68 +1,41 @@
 <style lang="scss" scoped></style>
 <template>
   <div class="content-wrap">
-    <!-- <div class="action-wrap">
-      <el-form inline>
-        <el-form-item label="编号">
-          <el-input
-            v-model="queryCondition.nbr"
-            placeholder="请输入编号"
-            clearable
-          />
-        </el-form-item>
-        <el-form-item label="名称">
-          <el-input
-            v-model="queryCondition.name"
-            placeholder="请输入名称"
-            clearable
-          />
-        </el-form-item>
-        <el-form-item label="状态">
-          <el-select
-            v-model="queryCondition.status"
-            placeholder="请选择状态"
-            clearable
-          >
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary"> 查询 </el-button>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="handleShowStorageDialog(null)">
-            新增领用单
-          </el-button>
-        </el-form-item>
-      </el-form>
-    </div> -->
     <Query
       :condition="{
-        nbr: { control: 'input', label: '编号', value: 10001 },
-        area: { control: 'select', label: '区域', value: 'shanghai' },
+        nbr: { control: 'input', label: '编号', value: '' },
+        part: { control: 'input', label: '物品编号', value: '' },
+        timerange: { control: 'date', label: '时间区间', value: [] },
       }"
-    />
-    <el-card shadow="never">
-      <eos-dynamic-table
-        :columns="storageTable.columns"
-        :data="storageTable.data"
-      >
-        <!-- <el-table-column slot="action" label="操作">
-          <template slot-scope="{ row }">
-            <el-button type="text" @click="handleShowStorageDialog(row)">
-              编辑
-            </el-button>
-            <el-popconfirm
-              title="确定删除吗？"
-              @confirm="handleConfirmDelete(row.orgid)"
-            >
-              <el-button slot="reference" type="text">删除</el-button>
-            </el-popconfirm>
-          </template>
-        </el-table-column> -->
-      </eos-dynamic-table>
-    </el-card>
+      @on-search="handleSearch"
+    >
+      <el-form-item slot="effect">
+        <el-button type="primary" @click="handleShowStorageDialog(null)">
+          新增领用单
+        </el-button>
+      </el-form-item>
+    </Query>
+
+    <Table
+      border
+      :columns="storageTable.columns"
+      :data="storageTable.data"
+      :columnAttrs="{ align: 'center' }"
+    >
+      <el-table-column slot="action" label="操作">
+        <template slot-scope="{ row }">
+          <el-button type="text" @click="handleShowStorageDialog(row)">
+            编辑
+          </el-button>
+          <el-popconfirm
+            title="确定删除吗？"
+            @confirm="handleConfirmDelete(row.orgid)"
+          >
+            <el-button slot="reference" type="text">删除</el-button>
+          </el-popconfirm>
+        </template>
+      </el-table-column>
+    </Table>
     <el-dialog
       width="30%"
       :title="storageDialog.title"
@@ -87,12 +60,14 @@ import formDescriptorsMixin from "@/mixins/formDescriptorsMixin";
 import { mapGetters } from "vuex";
 
 import Query from "@/components/CRUD/Query";
+import Table from "@/components/CRUD/container/Table";
 
 export default {
   mixins: [formDescriptorsMixin],
 
   components: {
-    Query
+    Query,
+    Table,
   },
 
   data() {
@@ -101,24 +76,24 @@ export default {
         nbr: "",
         part: "",
         startTime: "",
-        endTime: ""
+        endTime: "",
       },
       storageTable: {
         columns: [],
         data: [],
-        total: 0
+        total: 0,
       },
       storageDialog: {
         title: "",
         visible: false,
         formDescriptors: {},
-        formData: {}
-      }
+        formData: {},
+      },
     };
   },
 
   computed: {
-    ...mapGetters(["userinfo"])
+    ...mapGetters(["userinfo"]),
   },
 
   mounted() {
@@ -129,12 +104,14 @@ export default {
     async getMianView() {
       const {
         form: { descriptors },
-        table: { columns }
+        table: { columns },
       } = await this.$get("/api/discovery/view/returnStock/main");
-      this.storageDialog.formDescriptors = this.renderFormDescriptors(
-        descriptors
-      );
+      this.storageDialog.formDescriptors =
+        this.renderFormDescriptors(descriptors);
       this.storageTable.columns = columns;
+    },
+    handleSearch(value) {
+      console.log(value);
     },
     async getStorages() {
       const data = await this.$get(
@@ -148,7 +125,7 @@ export default {
         this.storageDialog.title = "新增";
         this.storageDialog.formData = {
           operator: this.userinfo.account,
-          _operator: this.userinfo.userId
+          _operator: this.userinfo.userId,
         };
       } else {
         this.storageDialog.title = "编辑";
@@ -158,13 +135,13 @@ export default {
       this.storageDialog.visible = true;
     },
     onSubmit() {
-      this.$refs.storageFormRef.validate(async valid => {
+      this.$refs.storageFormRef.validate(async (valid) => {
         if (valid) {
           const reqData = {
             ...this.storageDialog.formData,
-            operator: this.storageDialog.formData._operator
+            operator: this.storageDialog.formData._operator,
           };
-          Object.keys(reqData).forEach(key => {
+          Object.keys(reqData).forEach((key) => {
             if (key.startsWith("_")) delete reqData[key];
           });
           console.log(reqData);
@@ -182,7 +159,7 @@ export default {
       if (data) {
         this.$message.success("操作成功！");
       }
-    }
-  }
+    },
+  },
 };
 </script>
