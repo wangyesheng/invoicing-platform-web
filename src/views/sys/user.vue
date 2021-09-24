@@ -171,9 +171,7 @@ export default {
         const layer = data[i];
         if (layer.parentid) {
           this.walk(layer, orgs);
-        } else {
-          continue;
-        }
+        } 
       }
       this.assignOrgDialog.orgs = orgs;
     },
