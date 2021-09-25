@@ -32,6 +32,7 @@
       </template>
     </el-table-column>
     <slot name="action" />
+    <slot name="extraAction" />
   </el-table>
 </template>
 

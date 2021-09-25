@@ -1,3 +1,18 @@
+<template>
+  <el-card shadow="never">
+    <eos-dynamic-table
+      :columns="columns"
+      :data="data"
+      :columnAttrs="columnAttrs"
+      v-bind="$attrs"
+      v-on="$listeners"
+    >
+      <template slot="action">
+        <slot name="action" />
+      </template>
+    </eos-dynamic-table>
+  </el-card>
+</template>
 <script>
 export default {
   props: {
@@ -13,24 +28,6 @@ export default {
       type: Object,
       default: () => {},
     },
-  },
-
-  render(h) {
-    return (
-      <el-card shadow="never">
-        <eos-dynamic-table
-          columns={this.columns}
-          data={this.data}
-          columnAttrs={this.columnAttrs}
-          {...{
-            attrs: this.$attrs,
-            on: this.$listeners,
-          }}
-        >
-          {this.$slots.action}
-        </eos-dynamic-table>
-      </el-card>
-    );
   },
 };
 </script>

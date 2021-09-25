@@ -1,7 +1,7 @@
 <script>
 export default {
   props: {
-    condition: {
+    config: {
       type: Object,
       default: () => {},
     },
@@ -14,8 +14,8 @@ export default {
   },
 
   created() {
-    for (let key in this.condition) {
-      this.formItems.push({ key, ...this.condition[key] });
+    for (let key in this.config) {
+      this.formItems.push({ key, ...this.config[key] });
     }
   },
 

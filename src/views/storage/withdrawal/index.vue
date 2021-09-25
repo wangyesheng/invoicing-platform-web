@@ -1,28 +1,28 @@
 <style lang="scss" scoped></style>
 <template>
   <div class="content-wrap">
-    <Query
-      :condition="{
+    <CRUD
+      :query-config="{
         nbr: { control: 'input', label: '编号', value: '' },
         part: { control: 'input', label: '物品编号', value: '' },
         timerange: { control: 'date', label: '时间区间', value: [] },
       }"
+      :table-config="{
+        columns: storageTable.columns,
+        data: storageTable.data,
+        columnAttrs: { align: 'center' },
+        tableAttrs: { border: true },
+      }"
+      :effect-config="{
+        title: '编辑',
+        ref: 'storage',
+        formData: storageDialog.formData,
+        formDescriptors: storageDialog.formDescriptors,
+      }"
       @on-search="handleSearch"
     >
-      <el-form-item slot="effect">
-        <el-button type="primary" @click="handleShowStorageDialog(null)">
-          新增领用单
-        </el-button>
-      </el-form-item>
-    </Query>
-
-    <Table
-      border
-      :columns="storageTable.columns"
-      :data="storageTable.data"
-      :columnAttrs="{ align: 'center' }"
-    >
-      <el-table-column slot="action" label="操作">
+      <!-- <el-button slot="extraAction" slot-scope="{ row }">Click</el-button> -->
+      <!-- <el-table-column slot="action" label="操作">
         <template slot-scope="{ row }">
           <el-button type="text" @click="handleShowStorageDialog(row)">
             编辑
@@ -34,9 +34,13 @@
             <el-button slot="reference" type="text">删除</el-button>
           </el-popconfirm>
         </template>
-      </el-table-column>
-    </Table>
-    <el-dialog
+      </el-table-column> -->
+      <span slot="footer">
+        <el-button @click="storageDialog.visible = false">取 消</el-button>
+        <el-button type="primary" @click="onSubmit">确 定</el-button>
+      </span>
+    </CRUD>
+    <!-- <el-dialog
       width="30%"
       :title="storageDialog.title"
       :visible.sync="storageDialog.visible"
@@ -51,23 +55,21 @@
         <el-button @click="storageDialog.visible = false">取 消</el-button>
         <el-button type="primary" @click="onSubmit">确 定</el-button>
       </span>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 
 <script>
-import formDescriptorsMixin from "@/mixins/formDescriptorsMixin";
 import { mapGetters } from "vuex";
 
-import Query from "@/components/CRUD/Query";
-import Table from "@/components/CRUD/container/Table";
+import CRUD from "@/components/CRUD/index.vue";
+import formDescriptorsMixin from "@/mixins/formDescriptorsMixin";
 
 export default {
   mixins: [formDescriptorsMixin],
 
   components: {
-    Query,
-    Table,
+    CRUD,
   },
 
   data() {
@@ -113,6 +115,9 @@ export default {
     handleSearch(value) {
       console.log(value);
     },
+    // handleTableRowClick(...args) {
+    //   console.log(args);
+    // },
     async getStorages() {
       const data = await this.$get(
         "/api/plat/v2/returnStock/query",
@@ -154,11 +159,15 @@ export default {
         }
       });
     },
+    handleEdit(scope) {
+      console.log(scope);
+    },
     async handleConfirmDelete(orgid) {
-      const data = await this.$delete(`/api/plat/v2/org/${orgid}`);
-      if (data) {
-        this.$message.success("操作成功！");
-      }
+      console.log(orgid);
+      // const data = await this.$delete(`/api/plat/v2/org/${orgid}`);
+      // if (data) {
+      //   this.$message.success("操作成功！");
+      // }
     },
   },
 };
