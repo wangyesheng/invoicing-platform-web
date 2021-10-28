@@ -1,14 +1,20 @@
 import router from "./router";
 import store from "./store";
-import { Message } from "element-ui";
+import {
+  Message
+} from "element-ui";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
-import { getToken } from "@/utils/auth";
+import {
+  getToken
+} from "@/utils/auth";
 import getPageTitle from "@/utils/get-page-title";
 
-NProgress.configure({ showSpinner: false });
+NProgress.configure({
+  showSpinner: false
+});
 
-const whiteList = ["/login",'/dashboard'];
+const whiteList = ["/login", '/dashboard'];
 
 router.beforeEach(async (to, from, next) => {
   NProgress.start();
@@ -16,9 +22,25 @@ router.beforeEach(async (to, from, next) => {
   const hasToken = getToken();
   if (hasToken) {
     if (to.path === "/login") {
-      next({ path: "/" });
+      next({
+        path: "/"
+      });
     } else {
-      next();
+      if (Object.keys(store.getters.apiMap).length > 0) {
+        next()
+      } else {
+        try {
+          const data = await store.dispatch('app/getApiMap');
+          data && next({
+            ...to,
+            replace: true
+          })
+        } catch (error) {
+          await store.dispatch('user/resetToken')
+          Message.error(error || 'Has Error')
+          next(`/login?redirect=${to.path}`)
+        }
+      }
       // if (store.getters.hasGetRules) {
       //   next()
       // } else {

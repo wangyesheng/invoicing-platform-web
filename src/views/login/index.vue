@@ -117,7 +117,9 @@ export default {
               "user/login",
               this.loginForm
             );
-            value && this.$router.push({ path: this.redirect || "/" });
+            if (value) {
+              this.$router.push({ path: this.redirect || "/" });
+            }
           } catch (error) {
             this.$notify.error({
               title: "出了点小问题~",

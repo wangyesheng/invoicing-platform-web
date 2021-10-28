@@ -1,4 +1,7 @@
 import Cookies from 'js-cookie'
+import {
+  getApiMapRes
+} from "@/api/user";
 
 const state = {
   sidebar: {
@@ -6,7 +9,7 @@ const state = {
     withoutAnimation: false
   },
   device: 'desktop',
-  interfaces: []
+  apiMap: {},
 }
 
 const mutations = {
@@ -27,8 +30,8 @@ const mutations = {
   TOGGLE_DEVICE: (state, device) => {
     state.device = device
   },
-  SET_INTERFACE(state, payload) {
-    state.interfaces = payload
+  SET_API_MAP(state, payload) {
+    state.apiMap = payload
   }
 }
 
@@ -49,6 +52,19 @@ const actions = {
     commit
   }, device) {
     commit('TOGGLE_DEVICE', device)
+  },
+  getApiMap({
+    commit
+  }) {
+    return new Promise(async (reslove, reject) => {
+      try {
+        const data = await getApiMapRes()
+        commit('SET_API_MAP', data)
+        reslove(true)
+      } catch (error) {
+        reject(error)
+      }
+    })
   }
 }
 

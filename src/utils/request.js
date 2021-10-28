@@ -31,6 +31,7 @@ service.interceptors.request.use(
 // response interceptor
 service.interceptors.response.use(
   response => {
+    
     const { code, msg, data } = response.data;
     if (code !== 0) {
       Message({
