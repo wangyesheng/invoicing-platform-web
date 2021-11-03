@@ -60,7 +60,7 @@ export const asyncRoutes = [{
         name: "SYS_USER",
         component: () => import("@/views/sys/user"),
         meta: {
-          title: "用户管理"
+          title: "用户"
         }
       },
       {
@@ -68,7 +68,7 @@ export const asyncRoutes = [{
         name: "SYS_ROLE",
         component: () => import("@/views/sys/role"),
         meta: {
-          title: "角色管理"
+          title: "角色"
         }
       },
       {
@@ -76,31 +76,7 @@ export const asyncRoutes = [{
         name: "SYS_PERMISSION",
         component: () => import("@/views/sys/permission"),
         meta: {
-          title: "权限管理"
-        }
-      },
-      {
-        path: "/part/operation",
-        name: "PART_OPERATION",
-        component: () => import("@/views/part/operation"),
-        meta: {
-          title: "新建部件"
-        }
-      },
-      {
-        path: "/part/index",
-        name: "PART",
-        component: () => import("@/views/part/index"),
-        meta: {
-          title: "部件管理"
-        }
-      },
-      {
-        path: "/location/index",
-        name: "LOCATION",
-        component: () => import("@/views/location/index"),
-        meta: {
-          title: "库位管理"
+          title: "权限"
         }
       },
       {
@@ -108,7 +84,35 @@ export const asyncRoutes = [{
         name: "ORGANIZATION",
         component: () => import("@/views/sys/org"),
         meta: {
-          title: "组织管理"
+          title: "组织"
+        }
+      }
+    ]
+  },
+  {
+    path: "/base",
+    component: Layout,
+    redirect: "/base/part/index",
+    alwaysShow: true,
+    name: 'base',
+    meta: {
+      title: "基础管理",
+      icon: "bidding"
+    },
+    children: [{
+        path: "/base/part/index",
+        name: "part",
+        component: () => import("@/views/part/index"),
+        meta: {
+          title: "部件"
+        }
+      },
+      {
+        path: "/base/location/index",
+        name: "location",
+        component: () => import("@/views/location/index"),
+        meta: {
+          title: "库位"
         }
       }
     ]
@@ -136,7 +140,7 @@ export const asyncRoutes = [{
         name: "STORAGE_OUT_UNPLAN",
         component: () => import("@/views/storage/out/unplan"),
         meta: {
-          title: "出库"
+          title: "领用"
         }
       },
       {

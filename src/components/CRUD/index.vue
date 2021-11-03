@@ -16,18 +16,21 @@
         <slot name="containerAction" />
       </template>
       <template v-else>
-        <el-table-column slot="containerAction" label="操作">
+        <el-table-column v-if="hadEffect" slot="containerAction" label="操作">
           <template slot-scope="{ row }">
-            <el-button type="text" @click="onEffect('put', row)">
+            <el-button
+              v-if="tableConfig.effect.put"
+              type="text"
+              @click="onEffect('put', row)"
+            >
               编辑
             </el-button>
             <el-popconfirm
+              v-if="tableConfig.effect.delete"
               title="确定删除吗？"
               @confirm="onEffect('delete', row)"
             >
-              <el-button slot="reference" type="text">
-                删除
-              </el-button>
+              <el-button slot="reference" type="text"> 删除 </el-button>
             </el-popconfirm>
           </template>
         </el-table-column>
@@ -54,31 +57,38 @@ export default {
   components: {
     Container,
     Effect,
-    Query
+    Query,
   },
 
   props: {
     queryConfig: {
       type: Object,
-      default: () => {}
+      default: () => {},
     },
     tableConfig: {
       type: Object,
-      default: () => {}
+      default: () => {},
     },
     urls: {
       type: Object,
-      default: () => {}
-    }
+      default: () => {},
+    },
   },
 
   data() {
     return {
       config: {
         container: { columns: [], data: [] },
-        effect: { formDescriptors: {} }
-      }
+        effect: { formDescriptors: {} },
+      },
     };
+  },
+
+  computed: {
+    // 是否显示副作用操作（编辑、删除）
+    hadEffect() {
+      return this.tableConfig.effect.put || this.tableConfig.effect.delete;
+    },
   },
 
   mounted() {
@@ -90,11 +100,10 @@ export default {
     async getView() {
       const {
         form: { descriptors },
-        table: { columns }
+        table: { columns },
       } = await this.$get(this.urls.view);
-      this.config.effect.formDescriptors = this.renderFormDescriptors(
-        descriptors
-      );
+      this.config.effect.formDescriptors =
+        this.renderFormDescriptors(descriptors);
       this.config.container.columns = columns;
     },
     async query(payload) {
@@ -152,7 +161,7 @@ export default {
     async remove(url, scope) {
       const data = await this.$delete(`${url}/${scope.nbr}`);
       console.log(data);
-    }
-  }
+    },
+  },
 };
 </script>

@@ -10,20 +10,22 @@
             control: 'date',
             label: '时间区间',
             value: '',
-            mapFields: { [0]: 'startTime', [1]: 'endTime' }
-          }
-        }
+            mapFields: { [0]: 'startTime', [1]: 'endTime' },
+          },
+        },
       }"
       :table-config="{
         columnAttrs: { align: 'center' },
-        tableAttrs: { border: true }
+        tableAttrs: { border: true },
+        effect: {
+          put: false,
+          delete: false,
+        },
       }"
       :urls="{
         view: '/api/discovery/view/returnStock/main',
         get: '/api/eims/v1/returnStock/query',
         post: '/api/eims/v1/returnStock',
-        put: '/api/eims/v1/returnStock',
-        delete: '/api/eims/v1/returnStock'
       }"
     >
       <!-- <span slot="queryAction">
@@ -51,13 +53,3 @@
     </CRUD>
   </div>
 </template>
-
-<script>
-import CRUD from "@/components/CRUD/index.vue";
-
-export default {
-  components: {
-    CRUD
-  }
-};
-</script>
