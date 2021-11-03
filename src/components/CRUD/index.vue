@@ -1,27 +1,43 @@
 <template>
-  <div class="crud-wrap">
-    <query :config="queryConfig" @on-search="$listeners['on-search']" />
+  <div ref="crudRef" class="crud-wrap">
+    <query :config="queryConfig" @on-search="onSearch">
+      <template slot="queryAction">
+        <slot name="queryAction" />
+      </template>
+    </query>
     <container
-      :columns="tableConfig.columns"
-      :data="tableConfig.data"
+      :columns="config.container.columns"
+      :data="config.container.data"
       :columnAttrs="tableConfig.columnAttrs"
       v-bind="tableConfig.tableAttrs"
       v-on="$listeners"
     >
-      <el-table-column slot="action" label="操作">
-        <template slot-scope="{ row }">
-          <slot name="extraAction" :row="row" />
-          <el-button type="text" @click="onEffect('edit', row)">编辑</el-button>
-          <el-popconfirm
-            title="确定删除吗？"
-            @confirm="onEffect('remove', row)"
-          >
-            <el-button slot="reference" type="text">删除</el-button>
-          </el-popconfirm>
-        </template>
-      </el-table-column>
+      <template v-if="$slots.containerAction" slot="containerAction">
+        <slot name="containerAction" />
+      </template>
+      <template v-else>
+        <el-table-column slot="containerAction" label="操作">
+          <template slot-scope="{ row }">
+            <el-button type="text" @click="onEffect('put', row)">
+              编辑
+            </el-button>
+            <el-popconfirm
+              title="确定删除吗？"
+              @confirm="onEffect('delete', row)"
+            >
+              <el-button slot="reference" type="text">
+                删除
+              </el-button>
+            </el-popconfirm>
+          </template>
+        </el-table-column>
+      </template>
     </container>
-    <effect ref="effectRef" :config="effectConfig"> </effect>
+    <effect ref="effectRef" :config="config.effect">
+      <template slot="effectAction">
+        <slot name="effectAction" />
+      </template>
+    </effect>
   </div>
 </template>
 
@@ -30,38 +46,85 @@ import Container from "./container/Table";
 import Effect from "./effect/Dialog";
 import Query from "./Query";
 
+import formDescriptorsMixin from "@/mixins/formDescriptorsMixin";
+
 export default {
+  mixins: [formDescriptorsMixin],
+
   components: {
     Container,
     Effect,
-    Query,
+    Query
   },
 
   props: {
     queryConfig: {
       type: Object,
-      default: () => {},
+      default: () => {}
     },
     tableConfig: {
       type: Object,
-      default: () => {},
+      default: () => {}
     },
-    effectConfig: {
+    urls: {
       type: Object,
-      default: () => {},
-    },
+      default: () => {}
+    }
+  },
+
+  data() {
+    return {
+      config: {
+        container: { columns: [], data: [] },
+        effect: { formDescriptors: {} }
+      }
+    };
+  },
+
+  mounted() {
+    this.getView();
+    this.query();
   },
 
   methods: {
-    onEffect(type, scope) {
-      switch (type) {
-        case "edit":
-          this.beforeDoEffect(type, scope);
-          break;
-        case "remove":
-          this.beforeDoEffect(type, scope);
-          break;
+    async getView() {
+      const {
+        form: { descriptors },
+        table: { columns }
+      } = await this.$get(this.urls.view);
+      this.config.effect.formDescriptors = this.renderFormDescriptors(
+        descriptors
+      );
+      this.config.container.columns = columns;
+    },
+    async query(payload) {
+      const condition = this.mapQueryCondition(payload);
+      const data = await this.$get(this.urls.get, condition);
+      this.config.container.data = data;
+    },
+    mapQueryCondition(payload) {
+      let condition = {};
+      if (payload) {
+        condition = payload;
+      } else {
+        const target = this.queryConfig.fields;
+        for (const key in target) {
+          const layer = target[key];
+          if (key == "timerange") {
+            condition[layer.mapFields[0]] = "";
+            condition[layer.mapFields[1]] = "";
+          } else {
+            condition[key] = "";
+          }
+        }
       }
+      return condition;
+    },
+    onSearch(payload) {
+      this.query(payload);
+    },
+    onEffect(type, scope) {
+      this.beforeDoEffect(type, scope);
     },
     beforeDoEffect(type, scope) {
       const effectName = `on-${type}-effect`;
@@ -75,14 +138,21 @@ export default {
     },
     doEffect(type, scope) {
       switch (type) {
-        case "edit":
-          this.effectConfig.formData = { ...scope };
-          this.$refs.effectRef.setVisible();
+        case "post":
+          this.$refs.effectRef.setVisible(type, this.urls[type], scope);
           break;
-        case "remove":
+        case "put":
+          this.$refs.effectRef.setVisible(type, this.urls[type], scope);
+          break;
+        case "delete":
+          this.remove(this.urls[type], scope);
           break;
       }
     },
-  },
+    async remove(url, scope) {
+      const data = await this.$delete(`${url}/${scope.nbr}`);
+      console.log(data);
+    }
+  }
 };
 </script>

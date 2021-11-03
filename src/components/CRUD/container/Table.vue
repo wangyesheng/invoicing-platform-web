@@ -7,8 +7,8 @@
       v-bind="$attrs"
       v-on="$listeners"
     >
-      <template slot="action">
-        <slot name="action" />
+      <template slot="containerAction">
+        <slot name="containerAction" />
       </template>
     </eos-dynamic-table>
   </el-card>
@@ -18,16 +18,16 @@ export default {
   props: {
     data: {
       type: Array,
-      default: () => [],
+      default: () => []
     },
     columns: {
       type: Array,
-      default: () => [],
+      default: () => []
     },
     columnAttrs: {
       type: Object,
-      default: () => {},
-    },
+      default: () => {}
+    }
   },
 };
 </script>

@@ -42,19 +42,19 @@
         :columns="storageTable.columns"
         :data="storageTable.data"
       >
-        <!-- <el-table-column slot="action" label="操作">
+        <el-table-column slot="action" label="操作">
           <template slot-scope="{ row }">
-            <el-button type="text" @click="handleShowStorageDialog(row)">
+            <!-- <el-button type="text" @click="handleShowStorageDialog(row)">
               编辑
-            </el-button>
+            </el-button> -->
             <el-popconfirm
               title="确定删除吗？"
-              @confirm="handleConfirmDelete(row.orgid)"
+              @confirm="handleConfirmDelete(row)"
             >
               <el-button slot="reference" type="text">删除</el-button>
             </el-popconfirm>
           </template>
-        </el-table-column> -->
+        </el-table-column>
       </eos-dynamic-table>
     </el-card>
     <el-dialog
@@ -165,8 +165,8 @@ export default {
         }
       });
     },
-    async handleConfirmDelete(orgid) {
-      const data = await this.$delete(`/eims/v2/org/${orgid}`);
+    async handleConfirmDelete(scope) {
+      const data = await this.$delete(`/eims/v1/requisition/${scope.nbr}`);
       if (data) {
         this.$message.success("操作成功！");
       }

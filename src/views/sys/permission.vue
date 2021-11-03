@@ -12,7 +12,7 @@
 <template>
   <div class="content-wrap">
     <Query
-      :condition="{
+      :config="{
         funId: { control: 'input', label: '编号', value: '' },
         name: { control: 'input', label: '权限名称', value: '' },
         isActive: { control: 'input', label: '状态', value: '' }

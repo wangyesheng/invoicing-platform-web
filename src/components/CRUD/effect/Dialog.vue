@@ -1,22 +1,24 @@
 <template>
   <el-dialog
     width="30%"
+    :title="title"
     :visible.sync="visible"
     :close-on-click-modal="false"
-    :title="config.title"
   >
     <dynamic-form
-      v-model="config.formData"
       ref="formRef"
+      v-model="formData"
       :descriptors="config.formDescriptors"
     />
-    <template slot="footer">
-      <slot name="footer"></slot>
-    </template>
-    <!-- <span slot="footer">
-      <el-button @click="storageDialog.visible = false">取 消</el-button>
-      <el-button type="primary" @click="onSubmit">确 定</el-button>
-    </span> -->
+    <span slot="footer">
+      <template v-if="$slots.effectAction">
+        <slot name="effectAction" />
+      </template>
+      <template v-else>
+        <el-button @click="onReset">重 置</el-button>
+        <el-button type="primary" @click="onSubmit">确 定</el-button>
+      </template>
+    </span>
   </el-dialog>
 </template>
 
@@ -25,22 +27,64 @@ export default {
   props: {
     config: {
       type: Object,
-      default: () => {},
-    },
+      default: () => {}
+    }
   },
 
   data() {
     return {
       visible: false,
+      title: "",
+      formData: {}
     };
   },
 
   methods: {
-    setVisible() {
-      console.log(this.$refs.formRef);
-      this.$refs.formRef && this.$refs.formRef.resetFields();
-      this.visible = !this.visible;
+    setVisible(httpMethod, url, scope) {
+      this.$nextTick(() => {
+        this.httpMethod = httpMethod;
+        this.requestUrl = url;
+        if (scope) {
+          this.title = "编辑";
+          this.formData = scope;
+        } else {
+          this.title = "新增";
+          this.formData = {};
+        }
+        this.visible = !this.visible;
+        this.resetFields();
+      });
     },
-  },
+    onReset() {
+      this.formData = {};
+      this.resetFields();
+    },
+    async onSubmit() {
+      // this.$refs.formRef.validate(async valid => {
+      //   if (valid) {
+
+      //   }
+      // });
+      const reqData = {
+        ...this.formData,
+        operator: "1ED16CA0-50EB-4453-AC77-65140FED5460"
+      };
+      Object.keys(reqData).forEach(key => {
+        if (key.startsWith("_")) delete reqData[key];
+      });
+      const data =
+        (await this.httpMethod) == "post"
+          ? this.$post(this.requestUrl, reqData)
+          : this.$put(this.requestUrl, reqData);
+      if (data) {
+        this.$parent.query()
+        this.$message.success("操作成功！");
+        this.visible = false;
+      }
+    },
+    resetFields() {
+      this.$refs.formRef && this.$refs.formRef.resetFields();
+    }
+  }
 };
 </script>

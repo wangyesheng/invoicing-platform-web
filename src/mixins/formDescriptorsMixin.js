@@ -1,8 +1,15 @@
 export default {
+  mounted() {
+    this.dateFields = [];
+  },
+
   methods: {
     renderFormDescriptors(descriptors) {
       for (const key in descriptors) {
         const layer = descriptors[key];
+        if (layer.type == "date") {
+          this.dateFields.push(key);
+        }
         layer.control && renderControl(layer, this);
       }
       return descriptors;
@@ -42,7 +49,7 @@ const renderControl = async (scope, vm) => {
 };
 
 const getData = async (url, propsMap = {}, vm) => {
-  const data = await vm.$get(url.replace('plat/v2', 'eims/v1'));
+  const data = await vm.$get(url.replace("plat/v2", "eims/v1"));
   return data.map(x => ({
     name: "el-option",
     props: {

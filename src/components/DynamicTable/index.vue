@@ -31,8 +31,11 @@
         </slot>
       </template>
     </el-table-column>
+    <!-- 满足外界直接使用该组件传递的 action 插槽 -->
     <slot name="action" />
-    <slot name="extraAction" />
+
+    <!-- CRUD 的 container 组件传递的 containerAction 插槽 -->
+    <slot name="containerAction" />
   </el-table>
 </template>
 
@@ -41,22 +44,22 @@ export default {
   props: {
     data: {
       type: Array,
-      default: () => [],
+      default: () => []
     },
     columns: {
       type: Array,
-      default: () => [],
+      default: () => []
     },
     columnAttrs: {
       type: Object,
-      default: () => {},
-    },
+      default: () => {}
+    }
   },
 
   methods: {
     renderTag(source, value) {
       return source[value];
-    },
-  },
+    }
+  }
 };
 </script>

@@ -49,7 +49,7 @@
             </el-button>
             <el-popconfirm
               title="确定删除吗？"
-              @confirm="handleConfirmDelete(row.orgid)"
+              @confirm="handleConfirmDelete(row)"
             >
               <el-button slot="reference" type="text">删除</el-button>
             </el-popconfirm>
@@ -140,7 +140,12 @@ export default {
         };
       } else {
         this.storageDialog.title = "编辑";
-        this.storageDialog.formData = { ...scope };
+        for (const key in scope) {
+          if (this.dateFields.includes(key)) {
+            scope[key] = new Date(scope[key]);
+          }
+          this.storageDialog.formData[key] = scope[key];
+        }
       }
       this.$refs.storageFormRef && this.$refs.storageFormRef.resetFields();
       this.storageDialog.visible = true;
@@ -152,7 +157,6 @@ export default {
             ...this.storageDialog.formData,
             operator: this.storageDialog.formData._operator
           };
-          console.log(reqData)
           Object.keys(reqData).forEach(key => {
             if (key.startsWith("_")) delete reqData[key];
           });
@@ -165,8 +169,8 @@ export default {
         }
       });
     },
-    async handleConfirmDelete(orgid) {
-      const data = await this.$delete(`/api/eims/v1/receipt/${orgid}`);
+    async handleConfirmDelete(scope) {
+      const data = await this.$delete(`/api/eims/v1/receipt/${scope.nbr}`);
       if (data) {
         this.$message.success("操作成功！");
       }
