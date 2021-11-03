@@ -42,7 +42,7 @@ const renderControl = async (scope, vm) => {
 };
 
 const getData = async (url, propsMap = {}, vm) => {
-  const data = await vm.$get(url);
+  const data = await vm.$get(url.replace('plat/v2', 'eims/v1'));
   return data.map(x => ({
     name: "el-option",
     props: {

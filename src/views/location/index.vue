@@ -124,7 +124,7 @@ export default {
     },
     async getLocations() {
       const data = await this.$get(
-        "/api/plat/v2/kw/query",
+        "/api/eims/v1/kw/query",
         this.queryCondition
       );
       this.locationTable.data = data;
@@ -150,9 +150,9 @@ export default {
           if (reqData.status) {
             const nbr = reqData.nbr;
             delete reqData.nbr;
-            data = await this.$put(`/api/plat/v2/kw/_/${nbr}`, reqData);
+            data = await this.$put(`/api/eims/v1/kw/_/${nbr}`, reqData);
           } else {
-            data = await this.$post(`/api/plat/v2/kw/_`, reqData);
+            data = await this.$post(`/api/eims/v1/kw/_`, reqData);
           }
           if (data) {
             this.$message.success("操作成功！");
@@ -163,7 +163,7 @@ export default {
       });
     },
     async handleConfirmDelete(nbr) {
-      const data = await this.$delete(`/api/plat/v2/kw/${nbr}`);
+      const data = await this.$delete(`/api/eims/v1/kw/${nbr}`);
       if (data) {
         this.$message.success("操作成功！");
         this.getLocations();

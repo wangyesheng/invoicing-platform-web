@@ -127,7 +127,7 @@ export default {
       this.orgTable.columns = columns;
     },
     async getOrgs() {
-      const data = await this.$get("/api/plat/v2/org/query");
+      const data = await this.$get("/api/core/v1/org/query");
       this.orgTable.data = data;
     },
     handleShowOrgDialog(scope) {
@@ -157,9 +157,9 @@ export default {
             const orgid = reqData.orgid;
             delete reqData.orgid;
             delete reqData.pname;
-            data = await this.$put(`/api/plat/v2/org/_/${orgid}`, reqData);
+            data = await this.$put(`/api/core/v1/org/${orgid}`, reqData);
           } else {
-            data = await this.$post(`/api/plat/v2/org/_`, reqData);
+            data = await this.$post(`/api/core/v1/org`, reqData);
           }
           if (data) {
             this.$message.success("操作成功！");
@@ -170,7 +170,7 @@ export default {
       });
     },
     async handleConfirmDelete(orgid) {
-      const data = await this.$delete(`/api/plat/v2/org/${orgid}`);
+      const data = await this.$delete(`/api/core/v1/org/${orgid}`);
       if (data) {
         this.$message.success("操作成功！");
         this.getOrgs();

@@ -126,7 +126,7 @@ export default {
     },
     async getStorages() {
       const data = await this.$get(
-        "/api/plat/v2/receipt/unplan",
+        "/api/eims/v1/receipt/unplan",
         this.queryCondition
       );
       this.storageTable.data = data;
@@ -152,10 +152,11 @@ export default {
             ...this.storageDialog.formData,
             operator: this.storageDialog.formData._operator
           };
+          console.log(reqData)
           Object.keys(reqData).forEach(key => {
             if (key.startsWith("_")) delete reqData[key];
           });
-          const data = await this.$post(`/api/plat/v2/receipt/unplan`, reqData);
+          const data = await this.$post(`/api/eims/v1/receipt/unplan`, reqData);
           if (data) {
             this.$message.success("操作成功！");
             this.storageDialog.visible = false;
@@ -165,7 +166,7 @@ export default {
       });
     },
     async handleConfirmDelete(orgid) {
-      const data = await this.$delete(`/api/plat/v2/org/${orgid}`);
+      const data = await this.$delete(`/api/eims/v1/receipt/${orgid}`);
       if (data) {
         this.$message.success("操作成功！");
       }

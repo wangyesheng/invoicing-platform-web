@@ -141,7 +141,7 @@ export default {
     },
     async getPermissions() {
       const data = await this.$get(
-        "/api/plat/v2/fun/query",
+        "/api/core/v1/fun/query",
         this.queryCondition
       );
       this.permissionTable.data = data;
@@ -208,14 +208,14 @@ export default {
           };
           let data;
           if (this.permissionDialog.title == "新增") {
-            data = await this.$post(`/api/plat/v2/fun/_`, reqData);
+            data = await this.$post(`/api/core/v1/fun`, reqData);
           } else {
             delete reqData.funId;
             delete reqData.pName;
             delete reqData.level;
             delete reqData.children;
             data = await this.$put(
-              `/api/plat/v2/fun/_/${this.permissionDialog.formData.funId}`,
+              `/api/core/v1/fun/${this.permissionDialog.formData.funId}`,
               reqData
             );
           }
@@ -228,7 +228,7 @@ export default {
       });
     },
     async handleConfirmDelete(id) {
-      const data = await this.$delete(`/api/plat/v2/fun/_/${id}`);
+      const data = await this.$delete(`/api/core/v1/fun/${id}`);
       if (data) {
         this.$message.success("操作成功！");
         this.getPermissions();

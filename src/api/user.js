@@ -5,7 +5,7 @@ export function checkLoginRes({
   password
 }) {
   return request({
-    url: "/api/core/v2/auth/logon",
+    url: "/api/core/v1/auth/logon",
     method: "post",
     data: {
       account: username,

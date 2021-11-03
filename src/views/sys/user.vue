@@ -163,7 +163,7 @@ export default {
       this.userTable.columns = columns;
     },
     async getOrgs() {
-      const data = await this.$get("/api/plat/v2/org/query");
+      const data = await this.$get("/api/core/v1/org/query");
       const orgs = data
         .filter((x) => !x.parentid)
         .map((x) => ({ ...x, children: [] }));
@@ -189,7 +189,7 @@ export default {
     },
     async getUsers() {
       const data = await this.$get(
-        "/api/plat/v2/user/query",
+        "/api/core/v1/user/query",
         this.queryCondition
       );
       this.userTable.data = data;
@@ -213,12 +213,12 @@ export default {
     },
     handleAssignSubmit() {
       this.$confirm("确认为该用户分配该组织吗？", "提示", {
-        confirmButtonText: "确定",
+        confirmButtonText: "确定",  
         cancelButtonText: "取消",
         type: "warning",
       })
         .then(async () => {
-          const data = await this.$post("/api/plat/v2/user/org", {
+          const data = await this.$post("/api/core/v1/user/org", {
             userId: this.assignOrgDialog.currentUser.userId,
             orgId: this.checkedOrgId,
           });
@@ -231,6 +231,7 @@ export default {
         .catch(() => {});
     },
     onTreeChecked(node) {
+      console.log(node)
       this.checkedOrgId = node.orgid;
     },
     onSubmit() {
@@ -243,9 +244,9 @@ export default {
           if (this.userDialog.title == "编辑") {
             const userId = reqData.userId;
             delete reqData.userId;
-            data = await this.$put(`/api/plat/v2/user/_/${userId}`, reqData);
+            data = await this.$put(`/api/core/v1/user/${userId}`, reqData);
           } else {
-            data = await this.$post(`/api/plat/v2/user/_`, reqData);
+            data = await this.$post(`/api/core/v1/user`, reqData);
           }
           if (data) {
             this.$message.success("操作成功！");
@@ -256,7 +257,7 @@ export default {
       });
     },
     async handleConfirmDelete(userId) {
-      const data = await this.$delete(`/api/plat/v2/user/_/${userId}`);
+      const data = await this.$delete(`/api/core/v1/user/${userId}`);
       if (data) {
         this.$message.success("操作成功！");
         this.getUsers();

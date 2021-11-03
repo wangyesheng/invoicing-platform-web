@@ -120,7 +120,7 @@ export default {
     // },
     async getStorages() {
       const data = await this.$get(
-        "/api/plat/v2/returnStock/query",
+        "/api/eims/v1/returnStock/query",
         this.queryCondition
       );
       this.storageTable.data = data;
@@ -150,7 +150,7 @@ export default {
             if (key.startsWith("_")) delete reqData[key];
           });
           console.log(reqData);
-          const data = await this.$post(`/api/plat/v2/returnStock/_`, reqData);
+          const data = await this.$post(`/api/eims/v1/returnStock`, reqData);
           if (data) {
             this.$message.success("操作成功！");
             this.storageDialog.visible = false;

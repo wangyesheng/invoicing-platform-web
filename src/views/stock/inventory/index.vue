@@ -31,20 +31,20 @@
           <el-button type="primary"> 查询 </el-button>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleShowStorageDialog(null)">
-            新增领用单
+          <el-button type="primary" @click="handleShowDialog(null)">
+            盘点
           </el-button>
         </el-form-item>
       </el-form>
     </div>
     <el-card shadow="never">
       <eos-dynamic-table
-        :columns="storageTable.columns"
-        :data="storageTable.data"
+        :columns="inventoryTable.columns"
+        :data="inventoryTable.data"
       >
         <!-- <el-table-column slot="action" label="操作">
           <template slot-scope="{ row }">
-            <el-button type="text" @click="handleShowStorageDialog(row)">
+            <el-button type="text" @click="handleShowDialog(row)">
               编辑
             </el-button>
             <el-popconfirm
@@ -59,17 +59,17 @@
     </el-card>
     <el-dialog
       width="30%"
-      :title="storageDialog.title"
-      :visible.sync="storageDialog.visible"
+      :title="inventoryDialog.title"
+      :visible.sync="inventoryDialog.visible"
       :close-on-click-modal="false"
     >
       <dynamic-form
-        ref="storageFormRef"
-        v-model="storageDialog.formData"
-        :descriptors="storageDialog.formDescriptors"
+        ref="inventoryFormRef"
+        v-model="inventoryDialog.formData"
+        :descriptors="inventoryDialog.formDescriptors"
       />
       <span slot="footer">
-        <el-button @click="storageDialog.visible = false">取 消</el-button>
+        <el-button @click="inventoryDialog.visible = false">取 消</el-button>
         <el-button type="primary" @click="onSubmit">确 定</el-button>
       </span>
     </el-dialog>
@@ -91,12 +91,12 @@ export default {
         startTime: "",
         endTime: ""
       },
-      storageTable: {
+      inventoryTable: {
         columns: [],
         data: [],
         total: 0
       },
-      storageDialog: {
+      inventoryDialog: {
         title: "",
         visible: false,
         formDescriptors: {},
@@ -110,7 +110,7 @@ export default {
   },
 
   mounted() {
-    Promise.all([this.getMianView(), this.getStorages()]);
+    Promise.all([this.getMianView(), this.getData()]);
   },
 
   methods: {
@@ -118,58 +118,48 @@ export default {
       const {
         form: { descriptors },
         table: { columns }
-      } = await this.$get("/api/discovery/view/requisition/main");
-      this.storageDialog.formDescriptors = this.renderFormDescriptors(
+      } = await this.$get("/api/discovery/view/inventory/main");
+      this.inventoryDialog.formDescriptors = this.renderFormDescriptors(
         descriptors
       );
-      this.storageTable.columns = columns;
+      this.inventoryTable.columns = columns;
     },
-    async getStorages() {
+    async getData() {
       const data = await this.$get(
-        "/api/eims/v1/requisition/query",
+        "/api/eims/v1/inventory/query",
         this.queryCondition
       );
-      this.storageTable.data = data;
+      this.inventoryTable.data = data;
     },
-    handleShowStorageDialog(scope) {
+    handleShowDialog(scope) {
       if (scope == null) {
-        this.storageDialog.title = "新增";
-        this.storageDialog.formData = {
+        this.inventoryDialog.title = "新增";
+        this.inventoryDialog.formData = {
           operator: this.userinfo.account,
           _operator: this.userinfo.userId
         };
-      } else {
-        this.storageDialog.title = "编辑";
-        this.storageDialog.formData = { ...scope };
       }
-      this.$refs.storageFormRef && this.$refs.storageFormRef.resetFields();
-      this.storageDialog.visible = true;
+      this.$refs.inventoryFormRef && this.$refs.inventoryFormRef.resetFields();
+      this.inventoryDialog.visible = true;
     },
     onSubmit() {
-      this.$refs.storageFormRef.validate(async valid => {
+      this.$refs.inventoryFormRef.validate(async valid => {
         if (valid) {
           const reqData = {
-            ...this.storageDialog.formData,
-            operator: this.storageDialog.formData._operator
+            ...this.inventoryDialog.formData,
+            operator: this.inventoryDialog.formData._operator
           };
           Object.keys(reqData).forEach(key => {
             if (key.startsWith("_")) delete reqData[key];
           });
-          console.log(reqData)
-          const data = await this.$post(`/api/eims/v1/requisition`, reqData);
+          const data = await this.$post(`/api/eims/v1/inventory`, reqData);
           if (data) {
             this.$message.success("操作成功！");
-            this.storageDialog.visible = false;
-            this.getStorages();
+            this.inventoryDialog.visible = false;
+            this.getData();
           }
         }
       });
-    },
-    async handleConfirmDelete(orgid) {
-      const data = await this.$delete(`/eims/v2/org/${orgid}`);
-      if (data) {
-        this.$message.success("操作成功！");
-      }
     }
   }
 };

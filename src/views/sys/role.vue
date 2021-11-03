@@ -106,7 +106,7 @@ export default {
     },
     async getRoles() {
       const data = await this.$get(
-        "/api/plat/v2/role/query",
+        "/api/core/v1/role/query",
         this.queryCondition
       );
       this.roleTable.data = data;
@@ -134,12 +134,12 @@ export default {
           };
           let data;
           if (this.roleDialog.title == "新增") {
-            data = await this.$post(`/api/plat/v2/role/_`, reqData);
+            data = await this.$post(`/api/core/v1/role`, reqData);
           } else {
             delete reqData.roleId;
             delete reqData.pName;
             data = await this.$put(
-              `/api/plat/v2/role/_/${this.roleDialog.formData.roleId}`,
+              `/api/core/v1/role/${this.roleDialog.formData.roleId}`,
               reqData
             );
           }
@@ -152,7 +152,7 @@ export default {
       });
     },
     async handleConfirmDelete(id) {
-      const data = await this.$delete(`/api/plat/v2/role/_/${id}`);
+      const data = await this.$delete(`/api/core/v1/role/${id}`);
       if (data) {
         this.$message.success("操作成功！");
         this.getRoles();

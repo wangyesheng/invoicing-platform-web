@@ -9,14 +9,14 @@
             placeholder="请输入编号"
           />
         </el-form-item>
-       <el-form-item label="名称">
+        <el-form-item label="名称">
           <el-input
             clearable
             v-model="queryCondition.desc"
             placeholder="请输入名称"
           />
         </el-form-item>
-         <el-form-item label="域">
+        <el-form-item label="域">
           <el-input
             clearable
             v-model="queryCondition.domain"
@@ -37,9 +37,11 @@
 
     <el-card shadow="never">
       <el-table :data="rows">
-        <el-table-column prop="part" label="编号" width="120"> </el-table-column>
-        <el-table-column prop="desc" label="名称" width="150"> </el-table-column>
-         <el-table-column prop="um" label="单位" width="120"> </el-table-column>
+        <el-table-column prop="part" label="编号" width="120">
+        </el-table-column>
+        <el-table-column prop="desc" label="名称" width="150">
+        </el-table-column>
+        <el-table-column prop="um" label="单位" width="120"> </el-table-column>
         <el-table-column prop="domain" label="域" width="150">
         </el-table-column>
         <el-table-column label="操作">
@@ -64,44 +66,47 @@
 
 <script>
 import shipMixin from "@/mixins/shipMixin";
+import formDescriptorsMixin from "@/mixins/formDescriptorsMixin";
 import { PO_STATES } from "@/constant";
 
 export default {
-  mixins: [shipMixin],
+  mixins: [shipMixin, formDescriptorsMixin],
   data() {
     return {
       rows: [],
       queryCondition: {
         part: "",
         domain: "",
-         desc: ""
+        desc: "",
       },
     };
   },
   mounted() {
+    this.getMianView()
     this.queryAsync();
   },
   methods: {
+    async getMianView() {
+      const {
+        form: { descriptors },
+        table: { columns },
+      } = await this.$get("/api/discovery/view/part/main");
+      // this.storageDialog.formDescriptors =
+      //   this.renderFormDescriptors(descriptors);
+      // this.storageTable.columns = columns;
+      console.log(descriptors, columns);
+    },
     async queryAsync() {
       const result = await this.$get(
-        "/api/plat/v2/part/query",
+        "/api/eims/v1/part/query",
         this.queryCondition
       );
       this.rows = (result || []).map((x) => {
         return {
-          ...x
+          ...x,
         };
       });
     },
-    handleEdit() {},
-    handleDelete() {},
-    handleAction1(nbr) {
-      alert("打印");
-    },
-    handleSearch() {
-      this.queryAsync();
-    },
-    handleReset() {},
   },
 };
 </script>
