@@ -92,7 +92,7 @@ export const asyncRoutes = [{
   {
     path: "/base",
     component: Layout,
-    redirect: "/base/part/index",
+    redirect: "/base/part",
     alwaysShow: true,
     name: 'base',
     meta: {
@@ -100,7 +100,7 @@ export const asyncRoutes = [{
       icon: "bidding"
     },
     children: [{
-        path: "/base/part/index",
+        path: "/base/part",
         name: "part",
         component: () => import("@/views/part/index"),
         meta: {
@@ -108,7 +108,7 @@ export const asyncRoutes = [{
         }
       },
       {
-        path: "/base/location/index",
+        path: "/base/location",
         name: "location",
         component: () => import("@/views/location/index"),
         meta: {
@@ -172,7 +172,7 @@ export const asyncRoutes = [{
         }
       },
       {
-        path: "/stock/inventory/index",
+        path: "/stock/inventory",
         name: "stock_inventory",
         component: () => import("@/views/stock/inventory/index"),
         meta: {
@@ -180,7 +180,7 @@ export const asyncRoutes = [{
         }
       },
       {
-        path: "/stock/income/index",
+        path: "/stock/income",
         name: "stock_income",
         component: () => import("@/views/stock/income/index"),
         meta: {

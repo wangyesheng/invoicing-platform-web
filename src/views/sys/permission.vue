@@ -13,13 +13,15 @@
   <div class="content-wrap">
     <Query
       :config="{
-        funId: { control: 'input', label: '编号', value: '' },
-        name: { control: 'input', label: '权限名称', value: '' },
-        isActive: { control: 'input', label: '状态', value: '' }
+        fields: {
+          funId: { control: 'input', label: '编号', value: '' },
+          name: { control: 'input', label: '权限名称', value: '' },
+          isActive: { control: 'input', label: '状态', value: '' },
+        },
       }"
       @on-search="handleSearch"
     >
-      <el-form-item slot="effect">
+      <el-form-item slot="queryAction">
         <el-button type="primary" @click="handleShowDialog(null)">
           新增目录权限
         </el-button>
@@ -89,13 +91,13 @@
 
 <script>
 import formDescriptorsMixin from "@/mixins/formDescriptorsMixin";
-import Query from "@/components/CRUD/Query";
+import Query from "@/components/CRUD/query";
 
 export default {
   mixins: [formDescriptorsMixin],
 
   components: {
-    Query
+    Query,
   },
 
   data() {
@@ -103,19 +105,19 @@ export default {
       queryCondition: {
         funId: "",
         name: "",
-        isActive: ""
+        isActive: "",
       },
       permissionTable: {
         columns: [],
         data: [],
         treeData: [],
-        total: 0
+        total: 0,
       },
       permissionDialog: {
         title: "",
         visible: false,
         formDescriptors: {},
-        formData: {}
+        formData: {},
       },
     };
   },
@@ -132,11 +134,10 @@ export default {
     async getMianView() {
       const {
         form: { descriptors },
-        table: { columns }
+        table: { columns },
       } = await this.$get("/api/discovery/view/fun/main");
-      this.permissionDialog.formDescriptors = this.renderFormDescriptors(
-        descriptors
-      );
+      this.permissionDialog.formDescriptors =
+        this.renderFormDescriptors(descriptors);
       this.permissionTable.columns = columns;
     },
     async getPermissions() {
@@ -146,14 +147,14 @@ export default {
       );
       this.permissionTable.data = data;
       this.permissionTable.treeData = data
-        .filter(x => !x.parentId)
-        .map(x => ({
+        .filter((x) => !x.parentId)
+        .map((x) => ({
           ...x,
           level: {
             type: "warning",
-            label: "目录"
+            label: "目录",
           },
-          children: []
+          children: [],
         }));
       for (let i = 0; i < data.length; i++) {
         const layer = data[i];
@@ -171,13 +172,13 @@ export default {
               layer.funId.length == 6
                 ? {
                     type: "success",
-                    label: "菜单"
+                    label: "菜单",
                   }
                 : {
                     type: "danger",
-                    label: "按钮"
+                    label: "按钮",
                   },
-            children: []
+            children: [],
           });
         } else {
           this.walk(layer, source[i].children);
@@ -190,7 +191,7 @@ export default {
       } else if (typeof scope == "string") {
         this.permissionDialog.title = "新增";
         this.permissionDialog.formData = {
-          parentId: scope
+          parentId: scope,
         };
       } else {
         this.permissionDialog.title = "编辑";
@@ -201,10 +202,10 @@ export default {
       this.permissionDialog.visible = true;
     },
     onSubmit() {
-      this.$refs.permissionFormRef.validate(async valid => {
+      this.$refs.permissionFormRef.validate(async (valid) => {
         if (valid) {
           const reqData = {
-            ...this.permissionDialog.formData
+            ...this.permissionDialog.formData,
           };
           let data;
           if (this.permissionDialog.title == "新增") {
@@ -233,7 +234,7 @@ export default {
         this.$message.success("操作成功！");
         this.getPermissions();
       }
-    }
-  }
+    },
+  },
 };
 </script>

@@ -47,7 +47,7 @@
 <script>
 import Container from "./container/Table";
 import Effect from "./effect/Dialog";
-import Query from "./Query";
+import Query from "./query";
 
 import formDescriptorsMixin from "@/mixins/formDescriptorsMixin";
 
@@ -159,8 +159,12 @@ export default {
       }
     },
     async remove(url, scope) {
-      const data = await this.$delete(`${url}/${scope.nbr}`);
-      console.log(data);
+      const [_url, key] = url.split(":");
+      const data = await this.$delete(`${_url}${scope[key]}`);
+      if (data) {
+        this.$message.success("操作成功！");
+        this.query();
+      }
     },
   },
 };

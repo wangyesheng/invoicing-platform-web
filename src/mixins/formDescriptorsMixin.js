@@ -1,14 +1,19 @@
 export default {
   mounted() {
     this.dateFields = [];
+    this.needOperator = false
   },
 
   methods: {
     renderFormDescriptors(descriptors) {
       for (const key in descriptors) {
         const layer = descriptors[key];
+        // 解决表单字段是 date 类型之后编辑时需要 new Date 包装下
         if (layer.type == "date") {
           this.dateFields.push(key);
+        }
+        if (key == 'operator') {
+          this.needOperator = true
         }
         layer.control && renderControl(layer, this);
       }

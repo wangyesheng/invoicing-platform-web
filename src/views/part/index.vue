@@ -19,8 +19,8 @@
         view: '/api/discovery/view/part/main',
         get: '/api/eims/v1/part/query',
         post: '/api/eims/v1/part',
-        put: '/api/eims/v1/part',
-        delete: '/api/eims/v1/part',
+        put: '/api/eims/v1/part/:part',
+        delete: '/api/eims/v1/part/:part',
       }"
     />
   </div>

@@ -2,14 +2,16 @@
 <template>
   <div class="content-wrap">
     <Query
-      :condition="{
-        roleId: { control: 'input', label: '角色编号', value: '' },
-        name: { control: 'input', label: '角色名称', value: '' },
-        isActive: { control: 'input', label: '状态', value: '' }
+      :config="{
+        fields: {
+          roleId: { control: 'input', label: '角色编号', value: '' },
+          name: { control: 'input', label: '角色名称', value: '' },
+          isActive: { control: 'select', label: '状态', value: '' },
+        },
       }"
       @on-search="handleSearch"
     >
-      <el-form-item slot="effect">
+      <el-form-item slot="queryAction">
         <el-button type="primary" @click="handleShowRoleDialog(null)">
           新增父级角色
         </el-button>
@@ -57,13 +59,13 @@
 
 <script>
 import formDescriptorsMixin from "@/mixins/formDescriptorsMixin";
-import Query from "@/components/CRUD/Query";
+import Query from "@/components/CRUD/query";
 
 export default {
   mixins: [formDescriptorsMixin],
 
   components: {
-    Query
+    Query,
   },
 
   data() {
@@ -71,19 +73,19 @@ export default {
       queryCondition: {
         name: "",
         roleId: "",
-        isActive: ""
+        isActive: "",
       },
       roleTable: {
         columns: [],
         data: [],
-        total: 0
+        total: 0,
       },
       roleDialog: {
         title: "",
         visible: false,
         formDescriptors: {},
-        formData: {}
-      }
+        formData: {},
+      },
     };
   },
 
@@ -99,7 +101,7 @@ export default {
     async getMianView() {
       const {
         form: { descriptors },
-        table: { columns }
+        table: { columns },
       } = await this.$get("/api/discovery/view/role/main");
       this.roleDialog.formDescriptors = this.renderFormDescriptors(descriptors);
       this.roleTable.columns = columns;
@@ -117,7 +119,7 @@ export default {
       } else if (typeof scope == "string") {
         this.roleDialog.title = "新增";
         this.roleDialog.formData = {
-          parentId: scope
+          parentId: scope,
         };
       } else {
         this.roleDialog.title = "编辑";
@@ -127,10 +129,10 @@ export default {
       this.roleDialog.visible = true;
     },
     onSubmit() {
-      this.$refs.roleFormRef.validate(async valid => {
+      this.$refs.roleFormRef.validate(async (valid) => {
         if (valid) {
           const reqData = {
-            ...this.roleDialog.formData
+            ...this.roleDialog.formData,
           };
           let data;
           if (this.roleDialog.title == "新增") {
@@ -157,7 +159,7 @@ export default {
         this.$message.success("操作成功！");
         this.getRoles();
       }
-    }
-  }
+    },
+  },
 };
 </script>

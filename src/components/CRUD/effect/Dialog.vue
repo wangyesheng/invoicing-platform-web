@@ -15,7 +15,7 @@
         <slot name="effectAction" />
       </template>
       <template v-else>
-        <el-button @click="onReset">重 置</el-button>
+        <el-button @click="visible = false">取 消</el-button>
         <el-button type="primary" @click="onSubmit">确 定</el-button>
       </template>
     </span>
@@ -23,6 +23,8 @@
 </template>
 
 <script>
+import { mapGetters } from "vuex";
+
 export default {
   props: {
     config: {
@@ -39,17 +41,31 @@ export default {
     };
   },
 
+  computed: {
+    ...mapGetters(["userinfo"]),
+  },
+
   methods: {
     setVisible(httpMethod, url, scope) {
       this.$nextTick(() => {
         this.httpMethod = httpMethod;
         this.requestUrl = url;
+        if (this.$parent.needOperator) {
+          this.formData = {
+            _operator: this.userinfo.userId,
+            operator: this.userinfo.userName,
+          };
+        } else {
+          this.formData = {};
+        }
         if (scope) {
           this.title = "编辑";
-          this.formData = scope;
+          this.formData = {
+            ...this.formData,
+            ...scope,
+          };
         } else {
           this.title = "新增";
-          this.formData = {};
         }
         this.visible = !this.visible;
         this.resetFields();
@@ -60,26 +76,39 @@ export default {
       this.resetFields();
     },
     async onSubmit() {
-      // this.$refs.formRef.validate(async valid => {
-      //   if (valid) {
+      this.$refs.formRef.validate(async (valid) => {
+        if (valid) {
+          const [url, key] = this.requestUrl.split(":");
 
-      //   }
-      // });
-      const reqData = {
-        ...this.formData,
-        // operator: "1ED16CA0-50EB-4453-AC77-65140FED5460",
-      };
-      Object.keys(reqData).forEach((key) => {
-        if (key.startsWith("_")) delete reqData[key];
+          let reqData = {
+              ...this.formData,
+            },
+            params;
+
+          if (key) {
+            params = this.formData[key];
+            delete reqData[key];
+          }
+
+          if (this.$parent.needOperator) {
+            reqData.operator = reqData._operator;
+          }
+
+          Object.keys(reqData).forEach((key) => {
+            key.startsWith("_") && delete reqData[key];
+          });
+
+          const data = await (this.httpMethod == "post"
+            ? this.$post(url, reqData)
+            : this.$put(`${url}${params}`, reqData));
+
+          if (data) {
+            this.$message.success("操作成功！");
+            this.visible = false;
+            this.$parent.query();
+          }
+        }
       });
-      const data = await (this.httpMethod == "post"
-        ? this.$post(this.requestUrl, reqData)
-        : this.$put(this.requestUrl, reqData));
-      if (data) {
-        this.$message.success("操作成功！");
-        this.visible = false;
-        await this.$parent.query();
-      }
     },
     resetFields() {
       this.$refs.formRef && this.$refs.formRef.resetFields();
