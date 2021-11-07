@@ -48,7 +48,7 @@
       </el-form>
     </div>
     <el-card shadow="never">
-      <eos-dynamic-table :columns="orgTable.columns" :data="orgTable.data">
+      <!-- <eos-dynamic-table :columns="orgTable.columns" :data="orgTable.data">
         <el-table-column slot="action" label="操作">
           <template slot-scope="{ row }">
             <el-button type="text" @click="handleShowOrgDialog(row.orgid)">
@@ -65,7 +65,39 @@
             </el-popconfirm>
           </template>
         </el-table-column>
-      </eos-dynamic-table>
+      </eos-dynamic-table> -->
+      <el-table
+        :data="orgTable.data"
+        row-key="orgid"
+        default-expand-all
+        :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+      >
+        <el-table-column prop="orgid" label="编号" />
+        <el-table-column prop="name" label="名称" />
+        <el-table-column prop="isactive" label="状态">
+          <template slot-scope="{ row }">
+            <el-tag :type="row.isactive == 1 ? 'primary' : 'info'">
+              {{ row.isactive == 1 ? "有效" : "无效" }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作">
+          <template slot-scope="{ row }">
+            <el-button type="text" @click="handleShowOrgDialog(row.orgid)">
+              新增子组织
+            </el-button>
+            <el-button type="text" @click="handleShowOrgDialog(row)">
+              编辑
+            </el-button>
+            <el-popconfirm
+              title="确定删除吗？"
+              @confirm="handleConfirmDelete(row.orgid)"
+            >
+              <el-button slot="reference" type="text">删除</el-button>
+            </el-popconfirm>
+          </template>
+        </el-table-column>
+      </el-table>
     </el-card>
     <el-dialog
       width="30%"
@@ -128,7 +160,28 @@ export default {
     },
     async getOrgs() {
       const data = await this.$get("/api/core/v1/org/query");
-      this.orgTable.data = data;
+      const root = this.renderOrgTree(data);
+      console.log(root);
+      this.orgTable.data = root;
+    },
+    renderOrgTree(data) {
+      const root = data.filter((x) => !x.parentid);
+      for (let i = 0; i < root.length; i++) {
+        next(root[i], data);
+      }
+
+      function next(parent, data) {
+        parent.children = [];
+        for (let i = 0; i < data.length; i++) {
+          const layer = data[i];
+          if (layer.parentid == parent.orgid) {
+            parent.children.push(layer);
+            next(layer, data);
+          }
+        }
+      }
+
+      return root;
     },
     handleShowOrgDialog(scope) {
       if (scope == null) {
