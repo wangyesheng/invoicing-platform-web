@@ -19,7 +19,7 @@
     </Query>
 
     <el-card shadow="never">
-      <eos-dynamic-table :columns="roleTable.columns" :data="roleTable.data">
+      <!-- <eos-dynamic-table :columns="roleTable.columns" :data="roleTable.data">
         <el-table-column slot="action" label="操作">
           <template slot-scope="{ row }">
             <el-button type="text" @click="handleShowRoleDialog(row.roleId)">
@@ -36,7 +36,39 @@
             </el-popconfirm>
           </template>
         </el-table-column>
-      </eos-dynamic-table>
+      </eos-dynamic-table> -->
+      <el-table
+        row-key="roleId"
+        default-expand-all
+        :data="roleTable.data"
+        :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
+      >
+        <el-table-column prop="roleId" label="编号" />
+        <el-table-column prop="name" label="名称" />
+        <el-table-column prop="isActive" label="状态">
+          <template slot-scope="{ row }">
+            <el-tag :type="row.isActive == 1 ? 'primary' : 'info'">
+              {{ row.isActive == 1 ? "有效" : "无效" }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column label="操作">
+          <template slot-scope="{ row }">
+            <el-button type="text" @click="handleShowRoleDialog(row.roleId)">
+              新增子级角色
+            </el-button>
+            <el-button type="text" @click="handleShowRoleDialog(row)">
+              编辑
+            </el-button>
+            <el-popconfirm
+              title="确定删除吗？"
+              @confirm="handleConfirmDelete(row.roleId)"
+            >
+              <el-button slot="reference" type="text">删除</el-button>
+            </el-popconfirm>
+          </template>
+        </el-table-column>
+      </el-table>
     </el-card>
     <el-dialog
       width="30%"
@@ -111,7 +143,25 @@ export default {
         "/api/core/v1/role/query",
         this.queryCondition
       );
-      this.roleTable.data = data;
+      this.roleTable.data = this.renderRoleTree(data);
+    },
+    renderRoleTree(data) {
+      const root = data.filter((x) => !x.parentId);
+      for (let i = 0; i < root.length; i++) {
+        const parent = root[i];
+        next(parent, data);
+      }
+      function next(parent, children) {
+        parent.children = [];
+        for (let j = 0; j < children.length; j++) {
+          const child = children[j];
+          if (child.parentId == parent.roleId) {
+            parent.children.push(child);
+            next(child, children);
+          }
+        }
+      }
+      return root;
     },
     handleShowRoleDialog(scope) {
       if (scope == null) {
@@ -140,6 +190,7 @@ export default {
           } else {
             delete reqData.roleId;
             delete reqData.pName;
+            delete reqData.children
             data = await this.$put(
               `/api/core/v1/role/${this.roleDialog.formData.roleId}`,
               reqData

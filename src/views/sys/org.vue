@@ -67,9 +67,9 @@
         </el-table-column>
       </eos-dynamic-table> -->
       <el-table
-        :data="orgTable.data"
         row-key="orgid"
         default-expand-all
+        :data="orgTable.data"
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
       >
         <el-table-column prop="orgid" label="编号" />
@@ -210,6 +210,7 @@ export default {
             const orgid = reqData.orgid;
             delete reqData.orgid;
             delete reqData.pname;
+            delete reqData.children;
             data = await this.$put(`/api/core/v1/org/${orgid}`, reqData);
           } else {
             data = await this.$post(`/api/core/v1/org`, reqData);
