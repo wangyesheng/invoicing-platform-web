@@ -51,7 +51,7 @@
       <!-- <eos-dynamic-table :columns="orgTable.columns" :data="orgTable.data">
         <el-table-column slot="action" label="操作">
           <template slot-scope="{ row }">
-            <el-button type="text" @click="handleShowOrgDialog(row.orgid)">
+            <el-button type="text" @click="handleShowOrgDialog(row.id)">
               新增子组织
             </el-button>
             <el-button type="text" @click="handleShowOrgDialog(row)">
@@ -59,7 +59,7 @@
             </el-button>
             <el-popconfirm
               title="确定删除吗？"
-              @confirm="handleConfirmDelete(row.orgid)"
+              @confirm="handleConfirmDelete(row.id)"
             >
               <el-button slot="reference" type="text">删除</el-button>
             </el-popconfirm>
@@ -67,12 +67,12 @@
         </el-table-column>
       </eos-dynamic-table> -->
       <el-table
-        row-key="orgid"
+        row-key="id"
         default-expand-all
         :data="orgTable.data"
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
       >
-        <el-table-column prop="orgid" label="编号" />
+        <el-table-column prop="id" label="编号" />
         <el-table-column prop="name" label="名称" />
         <el-table-column prop="isactive" label="状态">
           <template slot-scope="{ row }">
@@ -83,7 +83,7 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="{ row }">
-            <el-button type="text" @click="handleShowOrgDialog(row.orgid)">
+            <el-button type="text" @click="handleShowOrgDialog(row.id)">
               新增子组织
             </el-button>
             <el-button type="text" @click="handleShowOrgDialog(row)">
@@ -91,7 +91,7 @@
             </el-button>
             <el-popconfirm
               title="确定删除吗？"
-              @confirm="handleConfirmDelete(row.orgid)"
+              @confirm="handleConfirmDelete(row.id)"
             >
               <el-button slot="reference" type="text">删除</el-button>
             </el-popconfirm>
@@ -161,11 +161,10 @@ export default {
     async getOrgs() {
       const data = await this.$get("/api/core/v1/org/query");
       const root = this.renderOrgTree(data);
-      console.log(root);
       this.orgTable.data = root;
     },
     renderOrgTree(data) {
-      const root = data.filter((x) => !x.parentid);
+      const root = data.filter((x) => !x.parentId);
       for (let i = 0; i < root.length; i++) {
         next(root[i], data);
       }
@@ -174,7 +173,7 @@ export default {
         parent.children = [];
         for (let i = 0; i < data.length; i++) {
           const layer = data[i];
-          if (layer.parentid == parent.orgid) {
+          if (layer.parentId == parent.id) {
             parent.children.push(layer);
             next(layer, data);
           }
@@ -190,7 +189,7 @@ export default {
       } else if (typeof scope == "string") {
         this.orgDialog.title = "新增";
         this.orgDialog.formData = {
-          parentid: scope,
+          parentId: scope,
         };
       } else {
         this.orgDialog.title = "编辑";
@@ -207,11 +206,11 @@ export default {
           };
           let data;
           if (this.orgDialog.title == "编辑") {
-            const orgid = reqData.orgid;
-            delete reqData.orgid;
+            const id = reqData.id;
+            delete reqData.id;
             delete reqData.pname;
             delete reqData.children;
-            data = await this.$put(`/api/core/v1/org/${orgid}`, reqData);
+            data = await this.$put(`/api/core/v1/org/${id}`, reqData);
           } else {
             data = await this.$post(`/api/core/v1/org`, reqData);
           }
@@ -223,8 +222,8 @@ export default {
         }
       });
     },
-    async handleConfirmDelete(orgid) {
-      const data = await this.$delete(`/api/core/v1/org/${orgid}`);
+    async handleConfirmDelete(id) {
+      const data = await this.$delete(`/api/core/v1/org/${id}`);
       if (data) {
         this.$message.success("操作成功！");
         this.getOrgs();

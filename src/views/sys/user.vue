@@ -53,7 +53,10 @@
       <eos-dynamic-table :columns="userTable.columns" :data="userTable.data">
         <el-table-column slot="action" label="操作">
           <template slot-scope="{ row }">
-            <el-button type="text" @click="handleShowAssignOrgDialog(row)">
+            <el-button type="text" @click="handleShowAssignDialog(row, 'role')">
+              分配角色
+            </el-button>
+            <el-button type="text" @click="handleShowAssignDialog(row, 'org')">
               分配组织
             </el-button>
             <el-button type="text" @click="handleShowUserDialog(row)">
@@ -87,28 +90,25 @@
     </el-dialog>
     <el-dialog
       width="30%"
-      :title="assignOrgDialog.title"
-      :visible.sync="assignOrgDialog.visible"
+      :title="assignDialog.title"
+      :visible.sync="assignDialog.visible"
       :close-on-click-modal="false"
     >
       <div class="assign-wrap">
-        <el-tag>{{ assignOrgDialog.currentUser.userName }}</el-tag>
         <el-tree
           show-checkbox
           default-expand-all
-          node-key="orgid"
-          ref="orgTreeRef"
-          :data="assignOrgDialog.orgs"
-          :default-checked-keys="[assignOrgDialog.currentUser.orgId]"
+          node-key="id"
+          ref="assignTreeRef"
+          :data="assignDialog.data"
           :props="{
             children: 'children',
             label: 'name',
           }"
-          @check="onTreeChecked"
         />
       </div>
       <span slot="footer" class="dialog-footer">
-        <el-button @click="assignOrgDialog.visible = false">取 消</el-button>
+        <el-button @click="assignDialog.visible = false">取 消</el-button>
         <el-button type="primary" @click="handleAssignSubmit">确 定</el-button>
       </span>
     </el-dialog>
@@ -139,18 +139,18 @@ export default {
         formDescriptors: {},
         formData: {},
       },
-      assignOrgDialog: {
+      assignDialog: {
         title: "",
         visible: false,
-        orgs: [],
+        data: [],
         currentUser: {},
-        defaultCheckedOrgIds: [],
+        flag: null, // 当前操作的是角色还是组织,
       },
     };
   },
 
   mounted() {
-    Promise.all([this.getMianView(), this.getUsers(), this.getOrgs()]);
+    Promise.all([this.getMianView(), this.getUsers()]);
   },
 
   methods: {
@@ -164,28 +164,32 @@ export default {
     },
     async getOrgs() {
       const data = await this.$get("/api/core/v1/org/query");
-      const orgs = data
-        .filter((x) => !x.parentid)
-        .map((x) => ({ ...x, children: [] }));
-      for (let i = 0; i < data.length; i++) {
-        const layer = data[i];
-        if (layer.parentid) {
-          this.walk(layer, orgs);
-        } 
-      }
-      this.assignOrgDialog.orgs = orgs;
+      this.assignDialog.data = this.orgTree = this.renderTree(data);
     },
-    walk(layer, orgs) {
-      for (let i = 0; i < orgs.length; i++) {
-        if (layer.parentid == orgs[i].orgid) {
-          orgs[i].children.push({
-            ...layer,
-            children: [],
-          });
-        } else {
-          this.walk(layer, orgs[i].children);
+    async getRoles() {
+      const data = await this.$get("/api/core/v1/role/query");
+      this.assignDialog.data = this.roleTree = this.renderTree(data);
+    },
+    renderTree(data) {
+      const root = data.filter((x) => !x.parentId);
+      for (let i = 0; i < root.length; i++) {
+        next(root[i], data);
+      }
+
+      function next(parent, data) {
+        parent.children = [];
+        for (let i = 0; i < data.length; i++) {
+          const layer = data[i];
+          if (layer.parentId == parent.id) {
+            parent.children.push({
+              ...layer,
+              key: layer.id,
+            });
+            next(layer, data);
+          }
         }
       }
+      return root;
     },
     async getUsers() {
       const data = await this.$get(
@@ -205,34 +209,73 @@ export default {
       this.$refs.userFormRef && this.$refs.userFormRef.resetFields();
       this.userDialog.visible = true;
     },
-    handleShowAssignOrgDialog(scope) {
-      this.$refs.orgTreeRef && this.$refs.orgTreeRef.setCheckedNodes([]);
-      this.assignOrgDialog.title = "分配组织";
-      this.assignOrgDialog.currentUser = scope;
-      this.assignOrgDialog.visible = true;
+    async handleShowAssignDialog(scope, flag) {
+      this.assignDialog.visible = true;
+      this.assignDialog.flag = flag;
+      this.assignDialog.currentUser = scope;
+      let checkKeys = [];
+      if (flag == "role") {
+        const data = await this.$get(
+          `/api/core/v1/userRole/query?userId=${scope.userId}`
+        );
+        checkKeys = data.map((x) => x.roleId);
+        this.assignDialog.title = "分配角色";
+        this.roleTree
+          ? (this.assignDialog.data = this.roleTree)
+          :  this.getRoles();
+      } else {
+         const data = await this.$get(
+          `/api/core/v1/userOrg/query?userId=${scope.userId}`
+        );
+        checkKeys = data.map((x) => x.orgId);
+        this.assignDialog.title = "分配组织";
+        this.orgTree
+          ? (this.assignDialog.data = this.orgTree)
+          :  this.getOrgs();
+      }
+      this.$refs.assignTreeRef &&
+        this.$refs.assignTreeRef.setCheckedKeys(checkKeys);
     },
     handleAssignSubmit() {
-      this.$confirm("确认为该用户分配该组织吗？", "提示", {
-        confirmButtonText: "确定",  
-        cancelButtonText: "取消",
-        type: "warning",
-      })
+      this.$confirm(
+        `确认为该用户分配所选定的${
+          this.assignDialog.flag == "role" ? "角色" : "组织"
+        }吗？`,
+        "提示",
+        {
+          confirmButtonText: "确定",
+          cancelButtonText: "取消",
+          type: "warning",
+        }
+      )
         .then(async () => {
-          const data = await this.$post("/api/core/v1/user/org", {
-            userId: this.assignOrgDialog.currentUser.userId,
-            orgId: this.checkedOrgId,
-          });
-          if (data) {
-            this.$message.success("设置成功！");
-            this.assignOrgDialog.visible = false;
-            this.getUsers();
+          const keys = this.$refs.assignTreeRef.getCheckedKeys();
+          const { userId } = this.assignDialog.currentUser;
+          if (keys.length > 0) {
+            const data =
+              this.assignDialog.flag == "role"
+                ? await this.$post("/api/core/v1/userRole/_", {
+                    userId,
+                    userRole: keys.map((roleId) => ({
+                      roleId,
+                      userId,
+                    })),
+                  })
+                : await this.$post("/api/core/v1/userOrg/_", {
+                    userId,
+                    userOrg: keys.map((orgId) => ({
+                      orgId,
+                      userId,
+                    })),
+                  });
+            if (data) {
+              this.$message.success("设置成功！");
+              this.assignDialog.visible = false;
+              this.getUsers();
+            }
           }
         })
         .catch(() => {});
-    },
-    onTreeChecked(node) {
-      console.log(node)
-      this.checkedOrgId = node.orgid;
     },
     onSubmit() {
       this.$refs.userFormRef.validate(async (valid) => {

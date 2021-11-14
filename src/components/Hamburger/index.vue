@@ -1,6 +1,6 @@
 <template>
   <div
-    style="padding: 0 20px;"
+    style="padding: 0 30px;"
     @click="toggleClick"
   >
     <svg-icon

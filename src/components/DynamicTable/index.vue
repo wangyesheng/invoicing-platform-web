@@ -6,6 +6,7 @@
       :key="idx"
       :prop="item.prop"
       :label="item.label"
+      show-overflow-tooltip
     >
       <template slot-scope="{ row }">
         <slot :name="item.prop" :[item.prop]="row[item.prop]">

@@ -14,7 +14,7 @@
     <Query
       :config="{
         fields: {
-          funId: { control: 'input', label: '编号', value: '' },
+          id: { control: 'input', label: '编号', value: '' },
           name: { control: 'input', label: '权限名称', value: '' },
           isActive: { control: 'input', label: '状态', value: '' },
         },
@@ -31,7 +31,7 @@
     <el-card shadow="never">
       <el-table
         :data="permissionTable.treeData"
-        row-key="funId"
+        row-key="id"
         default-expand-all
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
       >
@@ -43,8 +43,19 @@
         </el-table-column>
         <el-table-column prop="level" label="层级">
           <template slot-scope="{ row }">
-            <el-tag effect="plain" :type="row.level.type">
+            <el-tag
+              effect="plain"
+              :type="row.level.type"
+              :style="{ marginLeft: row.level.offest }"
+            >
               {{ row.level.label }}
+            </el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column prop="isActive" label="状态">
+          <template slot-scope="{ row }">
+            <el-tag :type="row.isActive == 1 ? 'primary' : 'info'">
+              {{ row.isActive == 1 ? "有效" : "无效" }}
             </el-tag>
           </template>
         </el-table-column>
@@ -52,17 +63,17 @@
           <template slot-scope="{ row }">
             <el-button
               type="text"
-              @click="handleShowDialog(row.funId)"
-              v-if="row.funId.length == 3 || row.funId.length == 6"
+              @click="handleShowDialog(row.id)"
+              v-if="row.id.length == 3 || row.id.length == 6"
             >
-              {{ row.funId.length == 3 ? "新增菜单权限" : "新增按钮权限" }}
+              {{ row.id.length == 3 ? "新增菜单权限" : "新增按钮权限" }}
             </el-button>
             <el-button type="text" @click="handleShowDialog(row)">
               编辑
             </el-button>
             <el-popconfirm
               title="确定删除吗？"
-              @confirm="handleConfirmDelete(row.funId)"
+              @confirm="handleConfirmDelete(row.id)"
             >
               <el-button slot="reference" type="text">删除</el-button>
             </el-popconfirm>
@@ -103,7 +114,7 @@ export default {
   data() {
     return {
       queryCondition: {
-        funId: "",
+        id: "",
         name: "",
         isActive: "",
       },
@@ -165,18 +176,20 @@ export default {
     },
     walk(layer, source) {
       for (let i = 0; i < source.length; i++) {
-        if (layer.parentId == source[i].funId) {
+        if (layer.parentId == source[i].id) {
           source[i].children.push({
             ...layer,
             level:
-              layer.funId.length == 6
+              layer.id.length == 6
                 ? {
                     type: "success",
                     label: "菜单",
+                    offest: "10px",
                   }
                 : {
                     type: "danger",
                     label: "按钮",
+                    offest: "20px",
                   },
             children: [],
           });
@@ -211,12 +224,12 @@ export default {
           if (this.permissionDialog.title == "新增") {
             data = await this.$post(`/api/core/v1/fun`, reqData);
           } else {
-            delete reqData.funId;
+            delete reqData.id;
             delete reqData.pName;
             delete reqData.level;
             delete reqData.children;
             data = await this.$put(
-              `/api/core/v1/fun/${this.permissionDialog.formData.funId}`,
+              `/api/core/v1/fun/${this.permissionDialog.formData.id}`,
               reqData
             );
           }

@@ -4,7 +4,7 @@
     <Query
       :config="{
         fields: {
-          roleId: { control: 'input', label: '角色编号', value: '' },
+          id: { control: 'input', label: '角色编号', value: '' },
           name: { control: 'input', label: '角色名称', value: '' },
           isActive: { control: 'select', label: '状态', value: '' },
         },
@@ -22,7 +22,7 @@
       <!-- <eos-dynamic-table :columns="roleTable.columns" :data="roleTable.data">
         <el-table-column slot="action" label="操作">
           <template slot-scope="{ row }">
-            <el-button type="text" @click="handleShowRoleDialog(row.roleId)">
+            <el-button type="text" @click="handleShowRoleDialog(row.id)">
               新增子级角色
             </el-button>
             <el-button type="text" @click="handleShowRoleDialog(row)">
@@ -30,7 +30,7 @@
             </el-button>
             <el-popconfirm
               title="确定删除吗？"
-              @confirm="handleConfirmDelete(row.roleId)"
+              @confirm="handleConfirmDelete(row.id)"
             >
               <el-button slot="reference" type="text">删除</el-button>
             </el-popconfirm>
@@ -38,12 +38,12 @@
         </el-table-column>
       </eos-dynamic-table> -->
       <el-table
-        row-key="roleId"
+        row-key="id"
         default-expand-all
         :data="roleTable.data"
         :tree-props="{ children: 'children', hasChildren: 'hasChildren' }"
       >
-        <el-table-column prop="roleId" label="编号" />
+        <el-table-column prop="id" label="编号" />
         <el-table-column prop="name" label="名称" />
         <el-table-column prop="isActive" label="状态">
           <template slot-scope="{ row }">
@@ -54,7 +54,10 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="{ row }">
-            <el-button type="text" @click="handleShowRoleDialog(row.roleId)">
+            <el-button type="text" @click="handleShowAssignDialog(row)">
+              分配权限
+            </el-button>
+            <el-button type="text" @click="handleShowRoleDialog(row.id)">
               新增子级角色
             </el-button>
             <el-button type="text" @click="handleShowRoleDialog(row)">
@@ -62,7 +65,7 @@
             </el-button>
             <el-popconfirm
               title="确定删除吗？"
-              @confirm="handleConfirmDelete(row.roleId)"
+              @confirm="handleConfirmDelete(row.id)"
             >
               <el-button slot="reference" type="text">删除</el-button>
             </el-popconfirm>
@@ -86,6 +89,30 @@
         <el-button type="primary" @click="onSubmit">确 定</el-button>
       </span>
     </el-dialog>
+    <el-dialog
+      width="30%"
+      :title="assignDialog.title"
+      :visible.sync="assignDialog.visible"
+      :close-on-click-modal="false"
+    >
+      <div class="assign-wrap">
+        <el-tree
+          show-checkbox
+          default-expand-all
+          node-key="id"
+          ref="assignTreeRef"
+          :data="assignDialog.data"
+          :props="{
+            children: 'children',
+            label: 'desc',
+          }"
+        />
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="assignDialog.visible = false">取 消</el-button>
+        <el-button type="primary" @click="handleAssignSubmit">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -104,7 +131,7 @@ export default {
     return {
       queryCondition: {
         name: "",
-        roleId: "",
+        id: "",
         isActive: "",
       },
       roleTable: {
@@ -118,11 +145,17 @@ export default {
         formDescriptors: {},
         formData: {},
       },
+      assignDialog: {
+        title: "",
+        visible: false,
+        data: [],
+        currentRole: {},
+      },
     };
   },
 
   mounted() {
-    Promise.all([this.getMianView(), this.getRoles()]);
+    Promise.all([this.getMianView(), this.getRoles(), this.getPermissions()]);
   },
 
   methods: {
@@ -143,9 +176,13 @@ export default {
         "/api/core/v1/role/query",
         this.queryCondition
       );
-      this.roleTable.data = this.renderRoleTree(data);
+      this.roleTable.data = this.renderTree(data);
     },
-    renderRoleTree(data) {
+    async getPermissions() {
+      const data = await this.$get("/api/core/v1/fun/query");
+      this.assignDialog.data = this.renderTree(data);
+    },
+    renderTree(data) {
       const root = data.filter((x) => !x.parentId);
       for (let i = 0; i < root.length; i++) {
         const parent = root[i];
@@ -155,13 +192,19 @@ export default {
         parent.children = [];
         for (let j = 0; j < children.length; j++) {
           const child = children[j];
-          if (child.parentId == parent.roleId) {
+          if (child.parentId == parent.id) {
             parent.children.push(child);
             next(child, children);
           }
         }
       }
       return root;
+    },
+    handleShowAssignDialog(scope) {
+      this.$refs.assignTreeRef && this.$refs.assignTreeRef.setCheckedNodes([]);
+      this.assignDialog.title = `分配角色`;
+      this.assignDialog.currentRole = scope;
+      this.assignDialog.visible = true;
     },
     handleShowRoleDialog(scope) {
       if (scope == null) {
@@ -178,6 +221,31 @@ export default {
       this.$refs.roleFormRef && this.$refs.roleFormRef.resetFields();
       this.roleDialog.visible = true;
     },
+    handleAssignSubmit() {
+      this.$confirm("确认为该角色分配所选定的权限吗？", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(async () => {
+          const funIds = this.$refs.assignTreeRef.getCheckedKeys();
+          const { id: roleId } = this.assignDialog.currentRole;
+          if (funIds.length > 0) {
+            const data = await this.$post("/api/core/v1/roleFun/_", {
+              roleFun: funIds.map((funId) => ({
+                roleId,
+                funId,
+              })),
+            });
+            if (data) {
+              this.$message.success("设置成功！");
+              this.assignDialog.visible = false;
+              this.getRoles();
+            }
+          }
+        })
+        .catch(() => {});
+    },
     onSubmit() {
       this.$refs.roleFormRef.validate(async (valid) => {
         if (valid) {
@@ -188,11 +256,11 @@ export default {
           if (this.roleDialog.title == "新增") {
             data = await this.$post(`/api/core/v1/role`, reqData);
           } else {
-            delete reqData.roleId;
+            delete reqData.id;
             delete reqData.pName;
-            delete reqData.children
+            delete reqData.children;
             data = await this.$put(
-              `/api/core/v1/role/${this.roleDialog.formData.roleId}`,
+              `/api/core/v1/role/${this.roleDialog.formData.id}`,
               reqData
             );
           }
