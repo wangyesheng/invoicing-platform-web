@@ -200,7 +200,10 @@ export default {
       }
       return root;
     },
-    handleShowAssignDialog(scope) {
+    async handleShowAssignDialog(scope) {
+      const data = await this.$get(
+        `/api/core/v1/roleFun/query?roleId=${scope.id}`
+      );
       this.$refs.assignTreeRef && this.$refs.assignTreeRef.setCheckedNodes([]);
       this.assignDialog.title = `分配角色`;
       this.assignDialog.currentRole = scope;
@@ -232,6 +235,7 @@ export default {
           const { id: roleId } = this.assignDialog.currentRole;
           if (funIds.length > 0) {
             const data = await this.$post("/api/core/v1/roleFun/_", {
+              roleId,
               roleFun: funIds.map((funId) => ({
                 roleId,
                 funId,

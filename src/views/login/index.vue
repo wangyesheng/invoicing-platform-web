@@ -1,62 +1,84 @@
 <template>
-  <div class="login-container">
-    <el-form
-      ref="loginForm"
-      :model="loginForm"
-      :rules="loginRules"
-      class="login-form"
-      auto-complete="on"
-      label-position="left"
-    >
-      <div class="title-container">
-        <h3 class="title">库存管理系统</h3>
+  <div class="login">
+    <div class="login-card">
+      <div class="login-card-left">
+        <div class="content">
+          <!-- <div class="logo">MOON_STUDIO</div> -->
+          <div class="title">库存管理系统</div>
+          <div class="form-wrap">
+            <el-form
+              size="medium"
+              ref="loginForm"
+              class="login-form"
+              auto-complete="on"
+              label-position="left"
+              :model="loginForm"
+              :rules="loginRules"
+            >
+              <el-form-item prop="username" label="Username">
+                <el-input
+                  ref="username"
+                  v-model="loginForm.username"
+                  placeholder="Username"
+                  name="username"
+                  type="text"
+                  tabindex="1"
+                  auto-complete="on"
+                />
+              </el-form-item>
+
+              <el-form-item prop="password" label="Password">
+                <el-input
+                  :key="passwordType"
+                  ref="password"
+                  v-model="loginForm.password"
+                  :type="passwordType"
+                  placeholder="Password"
+                  name="password"
+                  tabindex="2"
+                  auto-complete="on"
+                  @keyup.enter.native="handleLogin"
+                />
+                <span class="show-pwd" @click="showPwd">
+                  <svg-icon
+                    :icon-class="
+                      passwordType === 'password' ? 'eye' : 'eye-open'
+                    "
+                  />
+                </span>
+              </el-form-item>
+              <el-form-item>
+                <el-button
+                  type="primary"
+                  :loading="loading"
+                  @click.native.prevent="handleLogin"
+                >
+                  Sign in
+                </el-button>
+              </el-form-item>
+            </el-form>
+          </div>
+        </div>
       </div>
-
-      <el-form-item prop="username">
-        <span class="svg-container">
-          <svg-icon icon-class="user" />
-        </span>
-        <el-input
-          ref="username"
-          v-model="loginForm.username"
-          placeholder="账号"
-          name="username"
-          type="text"
-          tabindex="1"
-          auto-complete="on"
-        />
-      </el-form-item>
-
-      <el-form-item prop="password">
-        <span class="svg-container">
-          <svg-icon icon-class="password" />
-        </span>
-        <el-input
-          :key="passwordType"
-          ref="password"
-          v-model="loginForm.password"
-          :type="passwordType"
-          placeholder="密码"
-          name="password"
-          tabindex="2"
-          auto-complete="on"
-          @keyup.enter.native="handleLogin"
-        />
-        <span class="show-pwd" @click="showPwd">
-          <svg-icon
-            :icon-class="passwordType === 'password' ? 'eye' : 'eye-open'"
-          />
-        </span>
-      </el-form-item>
-
-      <el-button
-        :loading="loading"
-        type="primary"
-        style="width: 100%; margin-bottom: 30px"
-        @click.native.prevent="handleLogin"
-        >登录</el-button
-      >
-    </el-form>
+      <div class="login-card-center">
+        <div class="login-card-center-circles">
+          <div class="login-card-center-circles-row">
+            <div class="login-card-center-circles-row-light"></div>
+            <div class="login-card-center-circles-row-deep"></div>
+          </div>
+          <div class="login-card-center-circles-row">
+            <div class="login-card-center-circles-row-light"></div>
+            <div class="login-card-center-circles-row-deep"></div>
+          </div>
+        </div>
+      </div>
+      <div class="login-card-right">
+        <div class="login-card-right-info">
+          <div class="login-card-right-info-details"></div>
+        </div>
+        <div class="login-card-right-petal"></div>
+      </div>
+    </div>
   </div>
 </template>
 
@@ -183,65 +205,160 @@ $cursor: #fff;
 </style>
 
 <style lang="scss" scoped>
-$bg: #001529;
-$dark_gray: #889aa4;
-$light_gray: #eee;
-
-.login-container {
-  min-height: 100%;
+.login {
   width: 100%;
-  background-color: $bg;
+  height: 100%;
+  background-color: #060238;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   overflow: hidden;
+  .form-wrap {
+    width: 100%;
+    ::v-deep {
+      .el-form-item__label {
+        font-size: 16px;
+      }
+      .el-input__inner {
+        height: 46px;
+        line-height: 46px;
+      }
 
-  .login-form {
-    position: relative;
-    width: 520px;
-    max-width: 100%;
-    padding: 160px 35px 0;
-    margin: 0 auto;
-    overflow: hidden;
-  }
-
-  .tips {
-    font-size: 14px;
-    color: #fff;
-    margin-bottom: 10px;
-
-    span {
-      &:first-of-type {
-        margin-right: 16px;
+      .el-button {
+        width: 100%;
+        height: 46px;
+        margin: 20px 0;
+        border-radius: 50px;
       }
     }
-  }
-
-  .svg-container {
-    padding: 6px 5px 6px 15px;
-    color: $dark_gray;
-    vertical-align: middle;
-    width: 30px;
-    display: inline-block;
-  }
-
-  .title-container {
-    position: relative;
-
-    .title {
-      font-size: 26px;
-      color: $light_gray;
-      margin: 0px auto 40px auto;
-      text-align: center;
-      font-weight: bold;
+    .show-pwd {
+      position: absolute;
+      right: 10px;
+      top: 42px;
+      font-size: 16px;
+      color: #889aa4;
+      cursor: pointer;
+      user-select: none;
     }
   }
-
-  .show-pwd {
-    position: absolute;
-    right: 10px;
-    top: 7px;
-    font-size: 16px;
-    color: $dark_gray;
-    cursor: pointer;
-    user-select: none;
+  &-card {
+    position: relative;
+    display: flex;
+    width: 1300px;
+    height: 800px;
+    min-height: 780px;
+    border-radius: 25px;
+    background-color: #fff;
+    &-left {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex: 1;
+      .content {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        width: 70%;
+        height: 50%;
+        .logo,
+        .title,
+        .username,
+        .password {
+          width: 100%;
+          text-align: left;
+        }
+        .title {
+          font-size: 38px;
+          font-weight: bold;
+          margin-bottom: 38px;
+        }
+        .username,
+        .password {
+          font-weight: bold;
+          margin: 10px 0;
+        }
+        .n-input {
+          border-radius: 5px;
+        }
+        .submit {
+          width: 100%;
+          margin: 20px 0;
+          .n-button {
+            width: 100%;
+          }
+        }
+        .forgot {
+          width: 100%;
+        }
+      }
+    }
+    &-center {
+      position: relative;
+      width: 400px;
+      &-circles {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-wrap: wrap;
+        width: 100%;
+        height: 50%;
+        &-row {
+          width: 100%;
+          height: 50%;
+          display: flex;
+          justify-content: flex-end;
+          &-light {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background-color: #fadca0;
+          }
+          &-deep {
+            width: 200px;
+            height: 200px;
+            border-radius: 50%;
+            background-color: #f3b63f;
+          }
+        }
+      }
+    }
+    &-right {
+      position: relative;
+      width: 400px;
+      &-info {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 50%;
+        border-top-right-radius: 25px;
+        background-color: #97a6e0;
+        &-details {
+          display: flex;
+          justify-content: center;
+          color: #fff;
+          width: 100%;
+          height: 100%;
+          border-top-right-radius: 25px;
+          border-bottom-right-radius: 100%;
+          background-color: #3e54d8;
+        }
+      }
+      &-petal {
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 100%;
+        height: 50%;
+        border-radius: 50%;
+        border-bottom-right-radius: 25px;
+        background-color: #ed6271;
+      }
+    }
   }
 }
 </style>
