@@ -210,6 +210,7 @@ export default {
       this.userDialog.visible = true;
     },
     async handleShowAssignDialog(scope, flag) {
+      this.assignDialog.loading = true;
       this.assignDialog.visible = true;
       this.assignDialog.flag = flag;
       this.assignDialog.currentUser = scope;
@@ -218,23 +219,22 @@ export default {
         const data = await this.$get(
           `/api/core/v1/userRole/query?userId=${scope.userId}`
         );
-        checkKeys = data.map((x) => x.roleId);
+        checkKeys = data ? data.map((x) => x.roleId) : [];
         this.assignDialog.title = "分配角色";
         this.roleTree
           ? (this.assignDialog.data = this.roleTree)
-          :  this.getRoles();
+          : this.getRoles();
       } else {
-         const data = await this.$get(
+        const data = await this.$get(
           `/api/core/v1/userOrg/query?userId=${scope.userId}`
         );
-        checkKeys = data.map((x) => x.orgId);
+        checkKeys = data ? data.map((x) => x.orgId) : [];
         this.assignDialog.title = "分配组织";
-        this.orgTree
-          ? (this.assignDialog.data = this.orgTree)
-          :  this.getOrgs();
+        this.orgTree ? (this.assignDialog.data = this.orgTree) : this.getOrgs();
       }
       this.$refs.assignTreeRef &&
         this.$refs.assignTreeRef.setCheckedKeys(checkKeys);
+      this.assignDialog.loading = false;
     },
     handleAssignSubmit() {
       this.$confirm(

@@ -95,7 +95,7 @@
       :visible.sync="assignDialog.visible"
       :close-on-click-modal="false"
     >
-      <div class="assign-wrap">
+      <div class="assign-wrap" v-loading="assignDialog.loading">
         <el-tree
           show-checkbox
           default-expand-all
@@ -150,6 +150,7 @@ export default {
         visible: false,
         data: [],
         currentRole: {},
+        loading: false,
       },
     };
   },
@@ -201,13 +202,18 @@ export default {
       return root;
     },
     async handleShowAssignDialog(scope) {
+      this.assignDialog.loading = true;
+      this.assignDialog.visible = true;
+      this.assignDialog.title = `分配权限`;
+      this.assignDialog.currentRole = scope;
       const data = await this.$get(
         `/api/core/v1/roleFun/query?roleId=${scope.id}`
       );
-      this.$refs.assignTreeRef && this.$refs.assignTreeRef.setCheckedNodes([]);
-      this.assignDialog.title = `分配角色`;
-      this.assignDialog.currentRole = scope;
-      this.assignDialog.visible = true;
+      this.$refs.assignTreeRef &&
+        this.$refs.assignTreeRef.setCheckedKeys(
+          data ? data.map((x) => x.funId) : []
+        );
+      this.assignDialog.loading = false;
     },
     handleShowRoleDialog(scope) {
       if (scope == null) {
