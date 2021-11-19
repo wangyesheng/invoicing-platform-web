@@ -24,7 +24,7 @@
       :visible.sync="userProfileDialog.visible"
     >
       <div class="profile-wrap">
-        <el-form label-suffix="：">
+        <el-form label-suffix="：" label-position="left">
           <el-form-item label="账号">
             <span class="value">{{ userinfo.account }}</span>
           </el-form-item>
@@ -50,7 +50,25 @@
               {{ item.funName }}
             </el-tag>
           </el-form-item>
-          <el-divider content-position="left">修改密码</el-divider>
+          <el-divider content-position="center">修改密码</el-divider>
+          <el-form-item label="旧密码">
+            <el-input
+              placeholder="请输入旧密码"
+              v-model="userProfileDialog.formData.oldPassword"
+            />
+          </el-form-item>
+          <el-form-item label="新密码">
+            <el-input
+              placeholder="请输入新密码"
+              v-model="userProfileDialog.formData.newPassword"
+            />
+          </el-form-item>
+          <el-form-item label="确认新密码">
+            <el-input
+              placeholder="请输入新密码"
+              v-model="userProfileDialog.formData.confirmNewPassword"
+            />
+          </el-form-item>
         </el-form>
       </div>
       <span slot="footer" class="dialog-footer">
@@ -85,16 +103,56 @@ export default {
     return {
       userProfileDialog: {
         visible: false,
+        formData: {
+          oldPassword: "",
+          newPassword: "",
+          confirmNewPassword: "",
+        },
       },
     };
   },
 
   methods: {
     onShowUserProfile() {
-      console.log(this.userinfo);
+      console.log(this.$route);
       this.userProfileDialog.visible = true;
     },
-    onSave() {},
+    onSave() {
+      this.$confirm(`确定修改密码吗？`, "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning",
+      })
+        .then(async () => {
+          const { oldPassword, newPassword, confirmNewPassword } =
+            this.userProfileDialog.formData;
+          if (confirmNewPassword != newPassword) {
+            this.$message.warning("两次输入的新密码不一致！");
+          } else if (oldPassword == newPassword) {
+            this.$message.warning("新旧密码相同！");
+          } else {
+            const data = await this.$put(
+              `/api/core/v1/auth/${this.userinfo.account}`,
+              {
+                password: oldPassword,
+                newPassword,
+              }
+            );
+            if (data) {
+              this.$notify({
+                title: "成功",
+                message: "密码修改成功，三秒后将重定向到登录页！",
+                type: "success",
+              });
+              setTimeout(async () => {
+                await this.$store.dispatch("user/logout");
+                this.$router.push("/login");
+              }, 3000);
+            }
+          }
+        })
+        .catch(() => {});
+    },
   },
 };
 </script>
@@ -137,11 +195,12 @@ export default {
 
     .el-form-item__label {
       font-size: 14px;
+      color: #878787;
     }
 
     .el-form-item__content {
       span.value {
-        font-size: 16px;
+        font-size: 14px;
         font-weight: 600;
         color: #666;
       }

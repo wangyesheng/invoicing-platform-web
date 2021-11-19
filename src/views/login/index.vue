@@ -15,11 +15,11 @@
               :model="loginForm"
               :rules="loginRules"
             >
-              <el-form-item prop="username" label="Username">
+              <el-form-item prop="username" label="用户名">
                 <el-input
                   ref="username"
                   v-model="loginForm.username"
-                  placeholder="Username"
+                  placeholder="请输入用户名"
                   name="username"
                   type="text"
                   tabindex="1"
@@ -27,13 +27,13 @@
                 />
               </el-form-item>
 
-              <el-form-item prop="password" label="Password">
+              <el-form-item prop="password" label="密码">
                 <el-input
                   :key="passwordType"
                   ref="password"
                   v-model="loginForm.password"
                   :type="passwordType"
-                  placeholder="Password"
+                  placeholder="请输入密码"
                   name="password"
                   tabindex="2"
                   auto-complete="on"
@@ -143,12 +143,8 @@ export default {
               this.$router.push({ path: this.redirect || "/" });
             }
           } catch (error) {
-            this.$notify.error({
-              title: "出了点小问题~",
-              message: error,
-            });
+            this.loading = false;
           }
-          this.loading = false;
         } else {
           return false;
         }

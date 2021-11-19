@@ -17,6 +17,7 @@ NProgress.configure({
 const whiteList = ["/login", '/dashboard'];
 
 router.beforeEach(async (to, from, next) => {
+  console.log(to)
   NProgress.start();
   document.title = getPageTitle(to.meta.title);
   const hasToken = getToken();

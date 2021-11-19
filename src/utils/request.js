@@ -1,8 +1,12 @@
 import axios from "axios";
-import { Message } from "element-ui";
+import {
+  Notification
+} from "element-ui";
 import Vue from "vue";
 import store from "@/store";
-import { getToken } from "@/utils/auth";
+import {
+  getToken
+} from "@/utils/auth";
 
 const service = axios.create({
   baseURL: process.env.VUE_APP_BASE_API,
@@ -31,25 +35,37 @@ service.interceptors.request.use(
 // response interceptor
 service.interceptors.response.use(
   response => {
-    
-    const { code, msg, data } = response.data;
+    const {
+      code,
+      msg,
+      message,
+      data
+    } = response.data;
     if (code !== 0) {
-      Message({
-        message: msg || "Error",
-        type: "error",
-        duration: 5 * 1000
+      Notification({
+        title: '提示',
+        type: "warning",
+        duration: 5 * 1000,
+        message: msg || message || '服务器开小差啦~',
       });
-      return Promise.reject(new Error(msg || "Error"));
+      return Promise.reject(new Error(msg || message || "服务器开小差啦~"));
     } else {
       return data;
     }
   },
   error => {
-    console.log("err" + error); // for debug
-    Message({
-      message: error.message,
-      type: "error",
-      duration: 5 * 1000
+    console.log("err", error.response); // for debug
+    const {
+      data: {
+        msg,
+        message
+      }
+    } = error.response
+    Notification({
+      title: '提示',
+      type: "warning",
+      duration: 5 * 1000,
+      message: msg || message || '服务器开小差啦~',
     });
     return Promise.reject(error);
   }
@@ -75,7 +91,7 @@ Vue.prototype.$put = (url, data) =>
     method: "put",
     data
   });
-  
+
 Vue.prototype.$delete = (url, params) =>
   service({
     url,
