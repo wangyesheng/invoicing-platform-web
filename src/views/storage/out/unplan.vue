@@ -8,7 +8,7 @@
           timerange: {
             control: 'date',
             label: '时间区间',
-            value: ['2021-1-1','2021-12-10'],
+            value: '',
             mapFields: { [0]: 'startTime', [1]: 'endTime' },
           },
         },

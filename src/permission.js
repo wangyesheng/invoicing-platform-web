@@ -14,10 +14,9 @@ NProgress.configure({
   showSpinner: false
 });
 
-const whiteList = ["/login", '/dashboard'];
+const whiteList = ["/login"];
 
 router.beforeEach(async (to, from, next) => {
-  console.log(to)
   NProgress.start();
   document.title = getPageTitle(to.meta.title);
   const hasToken = getToken();
@@ -28,7 +27,31 @@ router.beforeEach(async (to, from, next) => {
       });
     } else {
       if (Object.keys(store.getters.apiMap).length > 0) {
-        next()
+        console.log(store.getters.hasGetRules)
+        if (store.getters.hasGetRules) {
+          next()
+        } else {
+          try {
+            const accessRoutes = await store.dispatch('user/generateRoutes');
+            router.addRoutes([
+              ...accessRoutes,
+              {
+                path: '*',
+                redirect: '/404'
+              }
+            ])
+            console.log(router)
+            next({
+              ...to,
+              replace: true
+            })
+          } catch (error) {
+            await store.dispatch('user/resetToken')
+            Message.error(error || 'Has Error')
+            next(`/login?redirect=${to.path}`)
+            NProgress.done()
+          }
+        }
       } else {
         try {
           const data = await store.dispatch('app/getApiMap');
@@ -40,26 +63,9 @@ router.beforeEach(async (to, from, next) => {
           await store.dispatch('user/resetToken')
           Message.error(error || 'Has Error')
           next(`/login?redirect=${to.path}`)
+          NProgress.done()
         }
       }
-      // if (store.getters.hasGetRules) {
-      //   next()
-      // } else {
-      //   try {
-      //     const { permissions } = await store.dispatch('user/getUserinfo');
-      //     const accessRoutes = await store.dispatch('user/generateRoutes', permissions.pages);
-      //     router.addRoutes([
-      //       ...accessRoutes,
-      //       { path: '*', redirect: '/404' }
-      //     ])
-      //     next({ ...to, replace: true })
-      //   } catch (error) {
-      //     await store.dispatch('user/resetToken')
-      //     Message.error(error || 'Has Error')
-      //     next(`/login?redirect=${to.path}`)
-      //     NProgress.done()
-      //   }
-      // }
     }
     NProgress.done();
   } else {

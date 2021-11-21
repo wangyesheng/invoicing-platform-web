@@ -3,7 +3,7 @@ const getters = {
   device: state => state.app.device,
   apiMap: state => state.app.apiMap,
   token: state => state.user.token,
-  userinfo: state => JSON.parse(localStorage.getItem('platform_userinfo')),
+  userinfo: state => state.user.userinfo,
   hasGetRules: state => state.user.hasGetRules,
   permission_routes: state => state.user.authRoutes,
 }

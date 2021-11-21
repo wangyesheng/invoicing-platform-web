@@ -9,7 +9,7 @@ const createRouter = () =>
   new Router({
     mode: "hash",
     scrollBehavior: () => ({ y: 0 }),
-    routes: constantRoutes.concat(asyncRoutes)
+    routes: constantRoutes
   });
 
 const router = createRouter();

@@ -16,7 +16,6 @@
       }"
       :table-config="{
         columnAttrs: { align: 'center' },
-        tableAttrs: { border: true },
         effect: {
           put: false,
           delete: false,

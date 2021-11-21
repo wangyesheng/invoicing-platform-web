@@ -6,6 +6,7 @@
           nbr: { control: 'input', label: '编号', value: '' },
           part: { control: 'input', label: '部件编号', value: '' },
         },
+        hideEffect: true,
       }"
       :table-config="{
         columnAttrs: { align: 'center' },

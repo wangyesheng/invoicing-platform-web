@@ -34,7 +34,7 @@ function filterAsyncRoutes(routes, pages) {
 const getDefaultState = () => {
   return {
     token: getToken(),
-    userinfo: {},
+    userinfo: JSON.parse(localStorage.getItem('platform_userinfo')) || {},
     authRoutes: [],
     hasGetRules: false
   };
@@ -74,9 +74,8 @@ const actions = {
           username: username.trim(),
           password: password
         })
-        commit("SET_TOKEN", response.token);
-        commit("SET_USERINFO", response);
         setToken(response.token);
+        commit("SET_USERINFO", response);
         localStorage.setItem("platform_userinfo", JSON.stringify(response));
         resolve(true);
       } catch (error) {
@@ -106,22 +105,23 @@ const actions = {
 
   generateRoutes({
     commit
-  }, pages) {
+  }) {
     return new Promise(resolve => {
-      const accessedRoutes = filterAsyncRoutes(asyncRoutes, pages);
+      const accessedRoutes = filterAsyncRoutes(asyncRoutes, state.userinfo.funs.map(x => x.funRoute));
       commit("SET_ROUTES", accessedRoutes);
       commit("SET_RULES", true);
       resolve(accessedRoutes);
     });
   },
 
-  logout({
+  clearUserState({
     commit
   }) {
     return new Promise((resolve, reject) => {
+      localStorage.setItem("platform_userinfo", '{}');
       removeToken();
-      resetRouter();
       commit("RESET_STATE");
+      resetRouter();
       resolve();
     });
   },

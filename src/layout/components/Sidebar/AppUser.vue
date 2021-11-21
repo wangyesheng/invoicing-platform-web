@@ -5,14 +5,14 @@
   >
     <div class="inner" v-if="!collapse">
       <img
-        src="https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3806311023,739217486&fm=26&gp=0.jpg"
+        :src="require('../../../assets/user/avatar.png')"
         class="user-avatar"
       />
-      <span class="username">{{ appUser.userName }}</span>
+      <span class="username">{{ userinfo.userName }}</span>
     </div>
     <div class="inner" v-else>
       <img
-        src="https://ss1.bdstatic.com/70cFvXSh_Q1YnxGkpoWK1HF6hhy/it/u=3806311023,739217486&fm=26&gp=0.jpg"
+        :src="require('../../../assets/user/avatar.png')"
         class="user-avatar"
       />
     </div>
@@ -94,9 +94,6 @@ export default {
 
   computed: {
     ...mapGetters(["userinfo"]),
-    appUser() {
-      return JSON.parse(localStorage.getItem("platform_userinfo"));
-    },
   },
 
   data() {
@@ -114,7 +111,6 @@ export default {
 
   methods: {
     onShowUserProfile() {
-      console.log(this.$route);
       this.userProfileDialog.visible = true;
     },
     onSave() {
@@ -145,7 +141,7 @@ export default {
                 type: "success",
               });
               setTimeout(async () => {
-                await this.$store.dispatch("user/logout");
+                await this.$store.dispatch("user/clearUserState");
                 this.$router.push("/login");
               }, 3000);
             }
@@ -169,6 +165,7 @@ export default {
   .inner {
     display: flex;
     flex-direction: column;
+    align-items: center;
     padding: 18px 10px 10px;
     .user-avatar {
       cursor: pointer;

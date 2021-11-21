@@ -59,10 +59,10 @@ export default {
     isCollapse() {
       return !this.sidebar.opened;
     },
-    permission_routes() {
-      // 增加权限验证时，删掉此配置
-      return constantRoutes.concat(asyncRoutes);
-    },
+    // permission_routes() {
+    //   // 增加权限验证时，删掉此配置
+    //   return constantRoutes.concat(asyncRoutes);
+    // },
   },
 };
 </script>

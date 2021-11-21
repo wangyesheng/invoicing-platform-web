@@ -54,8 +54,8 @@
         </el-table-column>
         <el-table-column prop="isActive" label="状态">
           <template slot-scope="{ row }">
-            <el-tag :type="row.isActive == 1 ? 'primary' : 'info'">
-              {{ row.isActive == 1 ? "有效" : "无效" }}
+            <el-tag :type="row.isActive == 1 ? 'primary' : 'danger'">
+              {{ row.isActive == 1 ? "有效" : "禁用" }}
             </el-tag>
           </template>
         </el-table-column>
@@ -201,6 +201,7 @@ export default {
     handleShowDialog(scope) {
       if (scope == null) {
         this.permissionDialog.title = "新增";
+        this.permissionDialog.formData = {};
       } else if (typeof scope == "string") {
         this.permissionDialog.title = "新增";
         this.permissionDialog.formData = {

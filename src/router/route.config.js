@@ -24,18 +24,12 @@ export const constantRoutes = [{
     component: () => import("@/views/login/index"),
     hidden: true
   },
-
-  {
-    path: "/404",
-    component: () => import("@/views/404"),
-    hidden: true
-  },
   {
     path: "/",
     component: Layout,
     redirect: "/dashboard",
     children: [{
-      path: "dashboard",
+      path: "/dashboard",
       name: "Dashboard",
       component: () => import("@/views/dashboard/index"),
       meta: {
@@ -43,7 +37,12 @@ export const constantRoutes = [{
         icon: "dashboard"
       }
     }]
-  }
+  },
+  {
+    path: "/404",
+    component: () => import("@/views/404"),
+    hidden: true
+  },
 ];
 
 export const asyncRoutes = [{
@@ -132,7 +131,7 @@ export const asyncRoutes = [{
         name: "STORAGE_IN_UNPLAN",
         component: () => import("@/views/storage/in/unplan"),
         meta: {
-          title: "入库"
+          title: "入库单"
         }
       },
       {
@@ -140,7 +139,7 @@ export const asyncRoutes = [{
         name: "STORAGE_OUT_UNPLAN",
         component: () => import("@/views/storage/out/unplan"),
         meta: {
-          title: "领用"
+          title: "领用单"
         }
       },
       {
@@ -148,7 +147,7 @@ export const asyncRoutes = [{
         name: "STORAGE_WITHDRAWAL",
         component: () => import("@/views/storage/withdrawal/index"),
         meta: {
-          title: "退库"
+          title: "退库单"
         }
       }
     ]
@@ -168,7 +167,7 @@ export const asyncRoutes = [{
         name: "Stock",
         component: () => import("@/views/stock/index"),
         meta: {
-          title: "库存"
+          title: "库存明细"
         }
       },
       {
@@ -176,7 +175,7 @@ export const asyncRoutes = [{
         name: "stock_inventory",
         component: () => import("@/views/stock/inventory/index"),
         meta: {
-          title: "盘点"
+          title: "盘点计划"
         }
       },
       {

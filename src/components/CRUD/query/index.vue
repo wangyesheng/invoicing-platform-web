@@ -3,13 +3,13 @@ export default {
   props: {
     config: {
       type: Object,
-      default: () => {}
-    }
+      default: () => {},
+    },
   },
 
   data() {
     return {
-      formItems: []
+      formItems: [],
     };
   },
 
@@ -21,7 +21,7 @@ export default {
 
   methods: {
     onChange(key, value) {
-      const scope = this.formItems.find(x => x.key == key);
+      const scope = this.formItems.find((x) => x.key == key);
       scope.value = value;
     },
     onClick(flag) {
@@ -49,14 +49,14 @@ export default {
           this.$parent.onEffect("post", null);
           break;
       }
-    }
+    },
   },
 
   render(h) {
     return (
       <div class="action-wrap">
         <el-form inline>
-          {this.formItems.map(item => {
+          {this.formItems.map((item) => {
             return (
               <el-form-item key={item.key} label={item.label}>
                 {item.control == "input" ? (
@@ -64,7 +64,7 @@ export default {
                     value={item.value}
                     placeholder={`请输入${item.label}`}
                     clearable
-                    onInput={val => this.onChange(item.key, val)}
+                    onInput={(val) => this.onChange(item.key, val)}
                   />
                 ) : item.control == "date" ? (
                   <el-date-picker
@@ -73,14 +73,14 @@ export default {
                     range-separator="至"
                     start-placeholder="开始日期"
                     end-placeholder="结束日期"
-                    onInput={val => this.onChange(item.key, val)}
+                    onInput={(val) => this.onChange(item.key, val)}
                   />
                 ) : (
                   <el-select
                     value={item.value}
                     placeholder="请选择状态"
                     clearable
-                    onChange={val => this.onChange(item.key, val)}
+                    onChange={(val) => this.onChange(item.key, val)}
                   >
                     <el-option label="区域一" value="shanghai" />
                     <el-option label="区域二" value="beijing" />
@@ -94,18 +94,23 @@ export default {
               查询
             </el-button>
           </el-form-item>
-          <el-form-item>
-            {this.$slots.queryAction ? (
-              this.$slots.queryAction
-            ) : (
-              <el-button type="primary" onClick={() => this.onClick("effect")}>
-                新增
-              </el-button>
-            )}
-          </el-form-item>
+          {this.config.hideEffect ? null : (
+            <el-form-item>
+              {this.$slots.queryAction ? (
+                this.$slots.queryAction
+              ) : (
+                <el-button
+                  type="primary"
+                  onClick={() => this.onClick("effect")}
+                >
+                  新增
+                </el-button>
+              )}
+            </el-form-item>
+          )}
         </el-form>
       </div>
     );
-  }
+  },
 };
 </script>

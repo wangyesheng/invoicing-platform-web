@@ -60,16 +60,13 @@ export default {
   },
   computed: {
     ...mapGetters(['sidebar', 'userinfo']),
-    appUser() {
-      return JSON.parse(localStorage.getItem('platform_userinfo'));
-    },
   },
   methods: {
     toggleSideBar() {
       this.$store.dispatch('app/toggleSideBar');
     },
     async logout() {
-      await this.$store.dispatch('user/logout');
+      await this.$store.dispatch('user/clearUserState');
       this.$router.push(`/login?redirect=${this.$route.fullPath}`);
     },
   },

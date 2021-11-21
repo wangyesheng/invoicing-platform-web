@@ -15,6 +15,7 @@ import App from "./App";
 import store from "./store";
 import router from "./router";
 
+import Print from '@/utils/print'
 
 import "@/icons"; // icon
 import "@/permission"; // permission control
@@ -24,6 +25,8 @@ Vue.use(ElementUI, {
   locale
 });
 Vue.use(DynamicForm)
+
+Vue.use(Print)
 
 Vue.config.productionTip = false;
 

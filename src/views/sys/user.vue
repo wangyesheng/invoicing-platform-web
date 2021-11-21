@@ -287,6 +287,10 @@ export default {
           if (this.userDialog.title == "编辑") {
             const userId = reqData.userId;
             delete reqData.userId;
+            delete reqData.orgId;
+            delete reqData.orgName;
+            delete reqData.password;
+            delete reqData.account;
             data = await this.$put(`/api/core/v1/user/${userId}`, reqData);
           } else {
             data = await this.$post(`/api/core/v1/user`, reqData);

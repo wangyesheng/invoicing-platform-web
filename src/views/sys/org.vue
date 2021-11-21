@@ -76,8 +76,8 @@
         <el-table-column prop="name" label="名称" />
         <el-table-column prop="isactive" label="状态">
           <template slot-scope="{ row }">
-            <el-tag :type="row.isactive == 1 ? 'primary' : 'info'">
-              {{ row.isactive == 1 ? "有效" : "无效" }}
+            <el-tag :type="row.isactive == 1 ? 'primary' : 'danger'">
+              {{ row.isactive == 1 ? "有效" : "禁用" }}
             </el-tag>
           </template>
         </el-table-column>
