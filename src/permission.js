@@ -1,13 +1,9 @@
 import router from "./router";
 import store from "./store";
-import {
-  Message
-} from "element-ui";
+import { Message } from "element-ui";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
-import {
-  getToken
-} from "@/utils/auth";
+import { getToken } from "@/utils/auth";
 import getPageTitle from "@/utils/get-page-title";
 
 NProgress.configure({
@@ -27,43 +23,42 @@ router.beforeEach(async (to, from, next) => {
       });
     } else {
       if (Object.keys(store.getters.apiMap).length > 0) {
-        console.log(store.getters.hasGetRules)
         if (store.getters.hasGetRules) {
-          next()
+          next();
         } else {
           try {
-            const accessRoutes = await store.dispatch('user/generateRoutes');
+            const accessRoutes = await store.dispatch("user/generateRoutes");
             router.addRoutes([
               ...accessRoutes,
               {
-                path: '*',
-                redirect: '/404'
+                path: "*",
+                redirect: "/404"
               }
-            ])
-            console.log(router)
+            ]);
             next({
               ...to,
               replace: true
-            })
+            });
           } catch (error) {
-            await store.dispatch('user/resetToken')
-            Message.error(error || 'Has Error')
-            next(`/login?redirect=${to.path}`)
-            NProgress.done()
+            await store.dispatch("user/resetToken");
+            Message.error(error || "Has Error");
+            next(`/login?redirect=${to.path}`);
+            NProgress.done();
           }
         }
       } else {
         try {
-          const data = await store.dispatch('app/getApiMap');
-          data && next({
-            ...to,
-            replace: true
-          })
+          const data = await store.dispatch("app/getApiMap");
+          data &&
+            next({
+              ...to,
+              replace: true
+            });
         } catch (error) {
-          await store.dispatch('user/resetToken')
-          Message.error(error || 'Has Error')
-          next(`/login?redirect=${to.path}`)
-          NProgress.done()
+          await store.dispatch("user/resetToken");
+          Message.error(error || "Has Error");
+          next(`/login?redirect=${to.path}`);
+          NProgress.done();
         }
       }
     }

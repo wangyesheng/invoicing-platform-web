@@ -1,28 +1,18 @@
-import {
-  checkLoginRes
-} from "@/api/user";
-import {
-  getToken,
-  setToken,
-  removeToken
-} from "@/utils/auth";
-import {
-  asyncRoutes,
-  constantRoutes,
-  resetRouter
-} from "@/router";
+import { checkLoginRes } from "@/api/user";
+import { getToken, setToken, removeToken } from "@/utils/auth";
+import { asyncRoutes, constantRoutes, resetRouter } from "@/router";
 
 function filterAsyncRoutes(routes, pages) {
-  // debugger
   const accessedRoutes = [];
 
   routes.forEach(route => {
     const tempRoute = {
-      ...route
+      ...route,
+      children: []
     };
-    if (pages.includes(tempRoute.path)) {
-      if (tempRoute.children) {
-        tempRoute.children = filterAsyncRoutes(tempRoute.children, pages);
+    if (pages.find(p => p.includes(tempRoute.path))) {
+      if (route.children) {
+        tempRoute.children = filterAsyncRoutes(route.children, pages);
       }
       accessedRoutes.push(tempRoute);
     }
@@ -34,7 +24,7 @@ function filterAsyncRoutes(routes, pages) {
 const getDefaultState = () => {
   return {
     token: getToken(),
-    userinfo: JSON.parse(localStorage.getItem('platform_userinfo')) || {},
+    userinfo: JSON.parse(localStorage.getItem("platform_userinfo")) || {},
     authRoutes: [],
     hasGetRules: false
   };
@@ -61,19 +51,14 @@ const mutations = {
 };
 
 const actions = {
-  login({
-    commit
-  }, userInfo) {
-    const {
-      username,
-      password
-    } = userInfo;
+  login({ commit }, userInfo) {
+    const { username, password } = userInfo;
     return new Promise(async (resolve, reject) => {
       try {
         const response = await checkLoginRes({
           username: username.trim(),
           password: password
-        })
+        });
         setToken(response.token);
         commit("SET_USERINFO", response);
         localStorage.setItem("platform_userinfo", JSON.stringify(response));
@@ -84,16 +69,11 @@ const actions = {
     });
   },
 
-  getUserinfo({
-    commit,
-    state
-  }) {
+  getUserinfo({ commit, state }) {
     return new Promise((resolve, reject) => {
       getUserinfoRes(state.token)
         .then(response => {
-          const {
-            data
-          } = response;
+          const { data } = response;
           commit("SET_USERINFO", data);
           resolve(data);
         })
@@ -103,22 +83,21 @@ const actions = {
     });
   },
 
-  generateRoutes({
-    commit
-  }) {
+  generateRoutes({ commit }) {
     return new Promise(resolve => {
-      const accessedRoutes = filterAsyncRoutes(asyncRoutes, state.userinfo.funs.map(x => x.funRoute));
+      const accessedRoutes = filterAsyncRoutes(
+        asyncRoutes,
+        state.userinfo.funs.map(x => x.funRoute)
+      );
       commit("SET_ROUTES", accessedRoutes);
       commit("SET_RULES", true);
       resolve(accessedRoutes);
     });
   },
 
-  clearUserState({
-    commit
-  }) {
+  clearUserState({ commit }) {
     return new Promise((resolve, reject) => {
-      localStorage.setItem("platform_userinfo", '{}');
+      localStorage.setItem("platform_userinfo", "{}");
       removeToken();
       commit("RESET_STATE");
       resetRouter();
@@ -127,9 +106,7 @@ const actions = {
   },
 
   // remove token
-  resetToken({
-    commit
-  }) {
+  resetToken({ commit }) {
     return new Promise(resolve => {
       removeToken();
       commit("RESET_STATE");

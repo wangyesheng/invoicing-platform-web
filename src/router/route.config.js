@@ -19,7 +19,8 @@ import Layout from "@/layout";
   }
  */
 
-export const constantRoutes = [{
+export const constantRoutes = [
+  {
     path: "/login",
     component: () => import("@/views/login/index"),
     hidden: true
@@ -28,24 +29,27 @@ export const constantRoutes = [{
     path: "/",
     component: Layout,
     redirect: "/dashboard",
-    children: [{
-      path: "/dashboard",
-      name: "Dashboard",
-      component: () => import("@/views/dashboard/index"),
-      meta: {
-        title: "工作台",
-        icon: "dashboard"
+    children: [
+      {
+        path: "/dashboard",
+        name: "Dashboard",
+        component: () => import("@/views/dashboard/index"),
+        meta: {
+          title: "工作台",
+          icon: "dashboard"
+        }
       }
-    }]
+    ]
   },
   {
     path: "/404",
     component: () => import("@/views/404"),
     hidden: true
-  },
+  }
 ];
 
-export const asyncRoutes = [{
+export const asyncRoutes = [
+  {
     path: "/sys",
     component: Layout,
     name: "SYS",
@@ -54,7 +58,8 @@ export const asyncRoutes = [{
       title: "系统设置",
       icon: "system"
     },
-    children: [{
+    children: [
+      {
         path: "/sys/user",
         name: "SYS_USER",
         component: () => import("@/views/sys/user"),
@@ -93,17 +98,18 @@ export const asyncRoutes = [{
     component: Layout,
     redirect: "/base/part",
     alwaysShow: true,
-    name: 'base',
+    name: "base",
     meta: {
       title: "基础管理",
       icon: "bidding"
     },
-    children: [{
+    children: [
+      {
         path: "/base/part",
         name: "part",
         component: () => import("@/views/part/index"),
         meta: {
-          title: "部件"
+          title: "医疗器械目录"
         }
       },
       {
@@ -121,12 +127,13 @@ export const asyncRoutes = [{
     component: Layout,
     redirect: "/storage/in/un-plan",
     alwaysShow: true,
-    name: 'STORAGE',
+    name: "STORAGE",
     meta: {
       title: "出入库管理",
       icon: "bidding"
     },
-    children: [{
+    children: [
+      {
         path: "/storage/in/unplan",
         name: "STORAGE_IN_UNPLAN",
         component: () => import("@/views/storage/in/unplan"),
@@ -157,12 +164,13 @@ export const asyncRoutes = [{
     component: Layout,
     redirect: "/stock/index",
     alwaysShow: true,
-    name: 'stock',
+    name: "stock",
     meta: {
       title: "库存管理",
       icon: "bidding"
     },
-    children: [{
+    children: [
+      {
         path: "/stock/index",
         name: "Stock",
         component: () => import("@/views/stock/index"),
@@ -187,7 +195,7 @@ export const asyncRoutes = [{
         }
       }
     ]
-  },
+  }
   // {
   //   path: "/bidding",
   //   component: Layout,
