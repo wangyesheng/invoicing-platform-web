@@ -23,13 +23,6 @@
             clearable
           />
         </el-form-item>
-        <el-form-item label="域">
-          <el-input
-            v-model="queryCondition.domain"
-            placeholder="请输入域"
-            clearable
-          />
-        </el-form-item>
         <el-form-item>
           <el-button
             type="primary"
@@ -103,7 +96,7 @@
           :data="assignDialog.data"
           :props="{
             children: 'children',
-            label: 'name',
+            label: 'name'
           }"
         />
       </div>
@@ -126,26 +119,26 @@ export default {
       queryCondition: {
         userName: "",
         account: "",
-        domain: "",
+        domain: ""
       },
       userTable: {
         columns: [],
         data: [],
-        total: 0,
+        total: 0
       },
       userDialog: {
         title: "",
         visible: false,
         formDescriptors: {},
-        formData: {},
+        formData: {}
       },
       assignDialog: {
         title: "",
         visible: false,
         data: [],
         currentUser: {},
-        flag: null, // 当前操作的是角色还是组织,
-      },
+        flag: null // 当前操作的是角色还是组织,
+      }
     };
   },
 
@@ -157,10 +150,10 @@ export default {
     async getMianView() {
       const {
         form: { descriptors },
-        table: { columns },
+        table: { columns }
       } = await this.$get("api/discovery/view/user/main");
       this.userDialog.formDescriptors = this.renderFormDescriptors(descriptors);
-      this.userTable.columns = columns;
+      this.userTable.columns = columns.filter(x => x.isShow !== false);
     },
     async getOrgs() {
       const data = await this.$get("/api/core/v1/org/query");
@@ -171,7 +164,7 @@ export default {
       this.assignDialog.data = this.roleTree = this.renderTree(data);
     },
     renderTree(data) {
-      const root = data.filter((x) => !x.parentId);
+      const root = data.filter(x => !x.parentId);
       for (let i = 0; i < root.length; i++) {
         next(root[i], data);
       }
@@ -183,7 +176,7 @@ export default {
           if (layer.parentId == parent.id) {
             parent.children.push({
               ...layer,
-              key: layer.id,
+              key: layer.id
             });
             next(layer, data);
           }
@@ -196,7 +189,10 @@ export default {
         "/api/core/v1/user/query",
         this.queryCondition
       );
-      this.userTable.data = data;
+      this.userTable.data = data.map(x => ({
+        ...x,
+        isActive: x.isActive + ""
+      }));
     },
     handleShowUserDialog(scope) {
       if (scope == null) {
@@ -219,7 +215,7 @@ export default {
         const data = await this.$get(
           `/api/core/v1/userRole/query?userId=${scope.userId}`
         );
-        checkKeys = data ? data.map((x) => x.roleId) : [];
+        checkKeys = data ? data.map(x => x.roleId) : [];
         this.assignDialog.title = "分配角色";
         this.roleTree
           ? (this.assignDialog.data = this.roleTree)
@@ -228,7 +224,7 @@ export default {
         const data = await this.$get(
           `/api/core/v1/userOrg/query?userId=${scope.userId}`
         );
-        checkKeys = data ? data.map((x) => x.orgId) : [];
+        checkKeys = data ? data.map(x => x.orgId) : [];
         this.assignDialog.title = "分配组织";
         this.orgTree ? (this.assignDialog.data = this.orgTree) : this.getOrgs();
       }
@@ -245,7 +241,7 @@ export default {
         {
           confirmButtonText: "确定",
           cancelButtonText: "取消",
-          type: "warning",
+          type: "warning"
         }
       )
         .then(async () => {
@@ -256,17 +252,17 @@ export default {
               this.assignDialog.flag == "role"
                 ? await this.$post("/api/core/v1/userRole/_", {
                     userId,
-                    userRole: keys.map((roleId) => ({
+                    userRole: keys.map(roleId => ({
                       roleId,
-                      userId,
-                    })),
+                      userId
+                    }))
                   })
                 : await this.$post("/api/core/v1/userOrg/_", {
                     userId,
-                    userOrg: keys.map((orgId) => ({
+                    userOrg: keys.map(orgId => ({
                       orgId,
-                      userId,
-                    })),
+                      userId
+                    }))
                   });
             if (data) {
               this.$message.success("设置成功！");
@@ -278,10 +274,10 @@ export default {
         .catch(() => {});
     },
     onSubmit() {
-      this.$refs.userFormRef.validate(async (valid) => {
+      this.$refs.userFormRef.validate(async valid => {
         if (valid) {
           const reqData = {
-            ...this.userDialog.formData,
+            ...this.userDialog.formData
           };
           let data;
           if (this.userDialog.title == "编辑") {
@@ -309,7 +305,7 @@ export default {
         this.$message.success("操作成功！");
         this.getUsers();
       }
-    },
-  },
+    }
+  }
 };
 </script>

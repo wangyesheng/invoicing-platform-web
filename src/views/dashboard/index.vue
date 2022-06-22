@@ -11,15 +11,16 @@
           <span class="great">
             {{ userinfo.userName }} ，祝你开心每一天！
           </span>
-          <span class="extends">{{ userinfo.roles[0].roleName }}</span>
+          <span class="extends">角色：{{ userinfo.roles[0].roleName }}</span>
         </div>
       </div>
     </div>
     <div class="chart-wrap">
       <el-row :gutter="20">
-        <el-col :span="12">
+        <div id="receiptRateWrap" />
+        <!-- <el-col :span="12">
           <div id="receiptRateWrap" />
-        </el-col>
+        </el-col> -->
       </el-row>
     </div>
   </div>

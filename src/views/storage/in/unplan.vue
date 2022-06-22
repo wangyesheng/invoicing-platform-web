@@ -43,7 +43,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="onShowOrderDialog">
-            新增领用单
+            新增入库单
           </el-button>
         </el-form-item>
       </el-form>
@@ -69,6 +69,8 @@
           </template>
         </el-table-column>
         <el-table-column prop="nbr" label="入库单号" />
+        <el-table-column prop="_name" label="医疗器械名称" />
+        <el-table-column prop="_total" label="入库总数" />
         <el-table-column prop="_time" label="入库时间" />
         <el-table-column prop="remark" label="备注" />
       </el-table>
@@ -138,6 +140,7 @@
               v-model="row.pdate"
               type="date"
               placeholder="请选择生产日期"
+              style="width: 150px"
             >
             </el-date-picker>
           </template>
@@ -148,6 +151,7 @@
               v-model="row.deadline"
               type="date"
               placeholder="请选择有效期"
+              style="width: 150px"
             >
             </el-date-picker>
           </template>
@@ -205,24 +209,44 @@ export default {
     query() {},
     async getOrders() {
       const data = await this.$get("/api/eims/v1/receipt", this.queryForm);
-      this.orderTable.data = data.map(x => ({
-        ...x,
-        _time: dayjs(x.date).format("YYYY-MM-DD HH:mm:ss"),
-        receipt_det: x.receipt_det.map(y => ({
-          ...y,
-          pdate: dayjs(y.pdate).format("YYYY-MM-DD HH:mm:ss"),
-          deadline: dayjs(y.deadline).format("YYYY-MM-DD HH:mm:ss")
-        }))
-      }));
+      function renderReceiptMap(receipt_det) {
+        let total = 0,
+          receipts = [];
+
+        for (let i = 0; i < receipt_det.length; i++) {
+          total += Number(receipt_det[i].num);
+          receipts.push({
+            ...receipt_det[i],
+            pdate: dayjs(receipt_det[i].pdate).format("YYYY-MM-DD HH:mm:ss"),
+            deadline: dayjs(receipt_det[i].deadline).format(
+              "YYYY-MM-DD HH:mm:ss"
+            )
+          });
+        }
+        return {
+          total,
+          receipts
+        };
+      }
+      this.orderTable.data = (data || []).map(x => {
+        const { total, receipts } = renderReceiptMap(x.receipt_det);
+        return {
+          ...x,
+          _time: dayjs(x.date).format("YYYY-MM-DD HH:mm:ss"),
+          _name: x.receipt_det.map(x => x.desc).join("、"),
+          _total: total,
+          receipt_det: receipts
+        };
+      });
     },
     async getParts() {
       const data = await this.$get("/api/eims/v1/part/query?desc=&com=");
       this.parts = data;
     },
     async onShowOrderDialog() {
+      this.orderDialog.visible = true;
       const { nbr } = await this.$get("/api/eims/v1/receipt/nbr");
       this.orderDialog.formData.nbr = nbr;
-      this.orderDialog.visible = true;
     },
     onPartSelected(ids) {
       this.orderDialog.selectedParts = this.parts
@@ -255,6 +279,11 @@ export default {
         }))
       };
       const data = await this.$post("/api/eims/v1/receipt", reqData);
+      if (data) {
+        this.$message.success("操作成功");
+        this.orderDialog.visible = false;
+        this.getOrders();
+      }
     }
   }
 };

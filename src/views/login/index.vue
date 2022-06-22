@@ -53,7 +53,7 @@
                   :loading="loading"
                   @click.native.prevent="handleLogin"
                 >
-                  Sign in
+                  登 录
                 </el-button>
               </el-form-item>
             </el-form>
@@ -96,28 +96,26 @@ export default {
     return {
       loginForm: {
         username: "",
-        password: "",
+        password: ""
       },
       loginRules: {
         username: [
-          { required: true, trigger: "blur", validator: validateUsername },
+          { required: true, trigger: "blur", validator: validateUsername }
         ],
-        password: [
-          { required: true, trigger: "blur", message: "请输入密码！" },
-        ],
+        password: [{ required: true, trigger: "blur", message: "请输入密码！" }]
       },
       loading: false,
       passwordType: "password",
-      redirect: undefined,
+      redirect: undefined
     };
   },
   watch: {
     $route: {
-      handler: function (route) {
+      handler: function(route) {
         this.redirect = route.query && route.query.redirect;
       },
-      immediate: true,
-    },
+      immediate: true
+    }
   },
   methods: {
     showPwd() {
@@ -131,7 +129,7 @@ export default {
       });
     },
     handleLogin() {
-      this.$refs.loginForm.validate(async (valid) => {
+      this.$refs.loginForm.validate(async valid => {
         if (valid) {
           this.loading = true;
           try {
@@ -149,8 +147,8 @@ export default {
           return false;
         }
       });
-    },
-  },
+    }
+  }
 };
 </script>
 

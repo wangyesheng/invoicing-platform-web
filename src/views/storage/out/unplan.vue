@@ -14,6 +14,12 @@
         left: -15px;
       }
     }
+
+    .is_over {
+      .el-input__inner {
+        border: 1px solid #ff0000;
+      }
+    }
   }
 }
 </style>
@@ -60,8 +66,8 @@
                 <el-table-column prop="com" label="厂家" />
                 <el-table-column prop="um" label="规格" />
                 <el-table-column prop="package" label="包装" />
-                <el-table-column prop="pdate" label="生产日期" />
-                <el-table-column prop="deadline" label="有效期" />
+                <!-- <el-table-column prop="pdate" label="生产日期" />
+                <el-table-column prop="deadline" label="有效期" /> -->
                 <el-table-column prop="qty" label="领用数量" />
                 <el-table-column prop="unit" label="单位" />
               </el-table>
@@ -69,18 +75,32 @@
           </template>
         </el-table-column>
         <el-table-column prop="nbr" label="领用单号" />
+        <el-table-column prop="_name" label="医疗器械" />
+        <el-table-column prop="userName" label="领用人" />
+        <el-table-column prop="orgName" label="部门" />
         <el-table-column prop="_time" label="领用时间" />
-        <el-table-column prop="remark" label="备注" />
         <el-table-column label="审核状态">
           <template slot-scope="{ row }">
             <el-tag :type="row._tag.type">{{ row._tag.label }}</el-tag>
           </template>
         </el-table-column>
+        <el-table-column prop="remark" label="备注" />
         <el-table-column label="操作">
           <template slot-scope="{ row }">
-            <el-button type="text" @click="onShowOrderDialog(row)"
-              >编辑</el-button
+            <el-button
+              type="text"
+              @click="onShowOrderDialog(row)"
+              v-if="row.status != 1"
             >
+              编辑
+            </el-button>
+            <el-button
+              type="text"
+              @click="onShowAuditDialog(row)"
+              v-if="canAudit"
+            >
+              审核
+            </el-button>
           </template>
         </el-table-column>
       </el-table>
@@ -89,7 +109,7 @@
     <el-dialog
       width="80%"
       :visible.sync="orderDialog.visible"
-      :title="orderDialog.title"
+      :title="orderDialog.isEdit ? '编辑' : '新增'"
       :close-on-click-modal="false"
     >
       <el-form inline>
@@ -104,12 +124,12 @@
             </el-form-item>
           </el-col>
           <el-col :span="6">
-            <el-form-item label="医疗器械目录">
+            <el-form-item label="医疗器械">
               <el-select
                 filterable
                 multiple
                 collapse-tags
-                placeholder="医疗器械目录"
+                placeholder="医疗器械"
                 v-model="orderDialog.selectedPartIds"
                 @change="onPartSelected"
               >
@@ -124,7 +144,7 @@
           </el-col>
           <el-col :span="6">
             <el-form-item label="部门">
-              <el-select
+              <!-- <el-select
                 filterable
                 style="width:100%"
                 placeholder="请选择部门"
@@ -136,7 +156,8 @@
                   :label="item.orgName"
                   :value="item.orgId"
                 />
-              </el-select>
+              </el-select> -->
+              <el-input disabled v-model="orderDialog.formData.orgName" />
             </el-form-item>
           </el-col>
           <el-col :span="6">
@@ -161,7 +182,11 @@
         <el-table-column prop="num" label="可用数量"></el-table-column>
         <el-table-column label="领用数量">
           <template slot-scope="{ row }">
-            <el-input v-model="row.qty" placeholder="请输入数量"></el-input>
+            <el-input
+              :class="row.qty > row.num ? 'is_over' : ''"
+              v-model="row.qty"
+              placeholder="请输入数量"
+            />
           </template>
         </el-table-column>
         <el-table-column prop="unit" label="单位"></el-table-column>
@@ -173,6 +198,26 @@
         </el-button>
       </span>
     </el-dialog>
+
+    <el-dialog
+      width="30%"
+      title="领用单审核"
+      :visible.sync="auditDialog.visible"
+      :close-on-click-modal="false"
+    >
+      <el-form>
+        <el-form-item>
+          <el-radio-group v-model="auditDialog.status" size="medium">
+            <el-radio border label="1">通过</el-radio>
+            <el-radio border label="-1">驳回</el-radio>
+          </el-radio-group>
+        </el-form-item>
+      </el-form>
+      <span slot="footer">
+        <el-button @click="auditDialog.visible = false">取 消</el-button>
+        <el-button type="primary" @click="saveAudit">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -180,16 +225,32 @@
 import { mapGetters } from "vuex";
 import dayjs from "dayjs";
 
+function effectResult(flag, vm, dialogKey) {
+  if (flag) {
+    vm.$message.success("操作成功");
+    dialogKey && (vm[dialogKey].visible = false);
+    vm.getOrders();
+  }
+}
+
 export default {
   name: "LYD",
   computed: {
-    ...mapGetters(["userinfo"])
+    ...mapGetters(["userinfo"]),
+    canAudit() {
+      return (
+        this.userinfo.roles &&
+        this.userinfo.roles.some(x => x.roleName == "管理员")
+      );
+    }
   },
   data() {
+    const user = this.$store.getters.userinfo;
     return {
       queryForm: {
         nbr: "",
-        part: ""
+        part: "",
+        operator: user.userId
       },
       orderTable: {
         data: []
@@ -197,10 +258,15 @@ export default {
       parts: [],
       orderDialog: {
         visible: false,
-        title: "新增领用单",
+        isEdit: false,
         selectedParts: [],
         selectedPartIds: [],
-        formData: { nbr: "", remark: "", orgId: "" }
+        formData: { nbr: "", remark: "", orgId: "", orgName: "" }
+      },
+      auditDialog: {
+        visible: false,
+        current: null,
+        status: "1"
       }
     };
   },
@@ -220,7 +286,7 @@ export default {
             break;
           case "1":
             tagMap.type = "success";
-            tagMap.label = "已领用";
+            tagMap.label = "已通过";
             break;
           case "-1":
             tagMap.type = "danger";
@@ -229,37 +295,66 @@ export default {
         }
         return tagMap;
       };
-      this.orderTable.data = (data || []).map(x => ({
-        ...x,
-        _time: dayjs(x.date).format("YYYY-MM-DD HH:mm:ss"),
-        _tag: statusToTag(x.status),
-        requisition_det: x.requisition_det.map(y => ({
-          ...y,
-          pdate: dayjs(y.pdate).format("YYYY-MM-DD HH:mm:ss"),
-          deadline: dayjs(y.deadline).format("YYYY-MM-DD HH:mm:ss")
-        }))
-      }));
+      function renderRequisitionMap(requisition_det) {
+        let total = 0,
+          requisitions = [];
+
+        for (let i = 0; i < requisition_det.length; i++) {
+          total += Number(requisition_det[i].qty);
+          requisitions.push({
+            ...requisition_det[i],
+            deadline: dayjs(requisition_det[i].deadline).format(
+              "YYYY-MM-DD HH:mm:ss"
+            )
+          });
+        }
+        return {
+          total,
+          requisitions
+        };
+      }
+      this.orderTable.data = (data || []).map(x => {
+        const { total, requisitions } = renderRequisitionMap(x.requisition_det);
+        return {
+          ...x,
+          _time: dayjs(x.date).format("YYYY-MM-DD HH:mm:ss"),
+          _name: x.requisition_det.map(x => x.desc).join("、"),
+          _tag: statusToTag(x.status),
+          _total: total,
+          requisition_det: requisitions
+        };
+      });
     },
     async getParts() {
       const data = await this.$get("/api/eims/v1/stock?com=&part=");
       this.parts = data.map(x => ({
         ...x,
         deadline: dayjs(x.deadline).format("YYYY-MM-DD HH:mm:ss"),
-        _key: `${x.com} - ${x.desc} - ${x.batch}`
+        _key: `${x.com} / ${x.desc} / ${x.batch}`
       }));
     },
     async onShowOrderDialog(scope) {
+      this.orderDialog.visible = true;
       if (scope) {
         this.orderDialog.formData = scope;
         this.orderDialog.selectedParts = scope.requisition_det;
         this.orderDialog.selectedPartIds = scope.requisition_det.map(
-          x => x.part
+          x => `${x.com} / ${x.desc} / ${x.batch}`
         );
+        this.orderDialog.isEdit = true;
       } else {
         const { nbr } = await this.$get("/api/eims/v1/requisition/nbr");
-        this.orderDialog.formData.nbr = nbr;
+        const org = this.userinfo.orgs[0];
+        this.orderDialog.formData = {
+          nbr,
+          remark: "",
+          orgId: org.orgId,
+          orgName: org.orgName
+        };
+        this.orderDialog.selectedParts = [];
+        this.orderDialog.selectedPartIds = [];
+        this.orderDialog.isEdit = false;
       }
-      this.orderDialog.visible = true;
     },
     onPartSelected(keys) {
       this.orderDialog.selectedParts = this.parts
@@ -271,20 +366,55 @@ export default {
     },
     async onSubmit() {
       const { nbr, remark, orgId } = this.orderDialog.formData;
-      const reqData = {
-        nbr,
-        remark,
-        orgId,
-        operator: this.userinfo.userId,
-        requisition_det: this.orderDialog.selectedParts.map(x => ({
+      const requisition_det = [];
+      for (let i = 0; i < this.orderDialog.selectedParts.length; i++) {
+        const layer = this.orderDialog.selectedParts[i];
+        if (!layer.qty) {
+          this.$message.warning(`${layer.desc}领用数量不能为空，请检查！`);
+          return;
+        }
+        if (layer.qty > layer.num) {
+          this.$message.warning(`${layer.desc}领用数量已超可用数量，请检查！`);
+          return;
+        }
+
+        requisition_det.push({
           nbr,
           remark,
-          part: x.part,
-          batch: x.batch,
-          qty: x.qty
-        }))
-      };
-      const data = await this.$post("/api/eims/v1/requisition", reqData);
+          part: layer.part,
+          batch: layer.batch,
+          com: layer.com,
+          qty: layer.qty
+        });
+      }
+      const data = this.orderDialog.isEdit
+        ? await this.$put(`/api/eims/v1/requisition/line/${nbr}`, {
+            nbr,
+            remark,
+            requisition_det
+          })
+        : await this.$post("/api/eims/v1/requisition", {
+            nbr,
+            remark,
+            orgId,
+            operator: this.userinfo.userId,
+            requisition_det
+          });
+      effectResult(data, this, "orderDialog");
+    },
+    onShowAuditDialog(scope) {
+      this.auditDialog.current = scope;
+      this.auditDialog.status = scope.status == 0 ? "1" : scope.status;
+      this.auditDialog.visible = true;
+    },
+    async saveAudit() {
+      const data = await this.$put(
+        `/api/eims/v1/requisition/status/${this.auditDialog.current.nbr}`,
+        {
+          status: this.auditDialog.status
+        }
+      );
+      effectResult(data, this, "auditDialog");
     }
   }
 };
