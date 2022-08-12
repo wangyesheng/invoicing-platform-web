@@ -11,7 +11,9 @@
           <span class="great">
             {{ userinfo.userName }} ，祝你开心每一天！
           </span>
-          <span class="extends">角色：{{ userinfo.roles[0].roleName }}</span>
+          <span class="extends"
+            >角色：{{ userinfo.roles && userinfo.roles[0].roleName }}</span
+          >
         </div>
       </div>
     </div>

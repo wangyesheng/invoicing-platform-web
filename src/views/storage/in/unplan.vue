@@ -22,17 +22,17 @@
   <div class="content-wrap">
     <div class="action-wrap">
       <el-form inline>
-        <el-form-item label="编号">
+        <el-form-item label="入库单号">
           <el-input
-            v-model="queryForm.part"
-            placeholder="请输入编号"
+            v-model="queryForm.nbr"
+            placeholder="请输入入库单号"
             clearable
           />
         </el-form-item>
-        <el-form-item label="名称">
+        <el-form-item label="医疗器械编号">
           <el-input
-            v-model="queryForm.nbr"
-            placeholder="请输入名称"
+            v-model="queryForm.part"
+            placeholder="请输入医疗器械编号"
             clearable
           />
         </el-form-item>
@@ -55,6 +55,7 @@
             <div class="expand-wrap">
               <el-tag type="danger">医疗器械目录明细</el-tag>
               <el-table border :data="row.receipt_det">
+                <el-table-column prop="part" label="医疗器械编号" />
                 <el-table-column prop="desc" label="耗材名称" />
                 <el-table-column prop="um" label="规格" />
                 <el-table-column prop="com" label="厂家" />
@@ -73,6 +74,18 @@
         <el-table-column prop="_total" label="入库总数" />
         <el-table-column prop="_time" label="入库时间" />
         <el-table-column prop="remark" label="备注" />
+        <el-table-column label="操作">
+          <template slot-scope="{ row }">
+            <download-excel
+              :data="renderExcel(row).data"
+              :fields="renderExcel(row).fields"
+              type="xls"
+              :name="`入库单_${row.nbr}`"
+            >
+              <el-button type="text">导出</el-button>
+            </download-excel>
+          </template>
+        </el-table-column>
       </el-table>
     </el-card>
 
@@ -206,6 +219,31 @@ export default {
     this.getParts();
   },
   methods: {
+    renderExcel(scope) {
+      const fields = {
+        入库单号: "nbr",
+        医疗器械名称: "_name",
+        入库时间: "_time",
+        规格: "um",
+        厂家: "com",
+        包装: "package",
+        批号: "batch",
+        生产日期: "pdate",
+        有效期: "deadline",
+        数量: "num",
+        单位: "unit"
+      };
+      const data = scope.receipt_det.map(x => ({
+        nbr: scope.nbr,
+        _name: scope._name,
+        _time: scope._time,
+        ...x
+      }));
+      return {
+        fields,
+        data
+      };
+    },
     query() {},
     async getOrders() {
       const data = await this.$get("/api/eims/v1/receipt", this.queryForm);

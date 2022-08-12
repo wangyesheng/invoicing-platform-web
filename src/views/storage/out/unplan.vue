@@ -28,17 +28,17 @@
   <div class="content-wrap">
     <div class="action-wrap">
       <el-form inline>
-        <el-form-item label="编号">
+        <el-form-item label="领用单号">
           <el-input
-            v-model="queryForm.part"
-            placeholder="请输入编号"
+            v-model="queryForm.nbr"
+            placeholder="请输入领用单号"
             clearable
           />
         </el-form-item>
-        <el-form-item label="名称">
+        <el-form-item label="医疗器械编号">
           <el-input
-            v-model="queryForm.nbr"
-            placeholder="请输入名称"
+            v-model="queryForm.part"
+            placeholder="请输入医疗器械编号"
             clearable
           />
         </el-form-item>
@@ -61,6 +61,7 @@
             <div class="expand-wrap">
               <el-tag type="danger">领用明细</el-tag>
               <el-table border :data="row.requisition_det">
+                <el-table-column prop="part" label="医疗器械编号" />
                 <el-table-column prop="batch" label="批号" />
                 <el-table-column prop="desc" label="耗材名称" />
                 <el-table-column prop="com" label="厂家" />
@@ -101,6 +102,16 @@
             >
               审核
             </el-button>
+
+            <download-excel
+              style="display: inline-block"
+              type="xls"
+              :data="renderExcel(row).data"
+              :fields="renderExcel(row).fields"
+              :name="`领用单_${row.nbr}`"
+            >
+              <el-button type="text">导出</el-button>
+            </download-excel>
           </template>
         </el-table-column>
       </el-table>
@@ -275,6 +286,33 @@ export default {
     this.getParts();
   },
   methods: {
+    renderExcel(scope) {
+      const fields = {
+        领用单号: "nbr",
+        医疗器械名称: "_name",
+        领用人: "userName",
+        领用组织: "orgName",
+        领用时间: "_time",
+        领用数量: "qty",
+        规格: "um",
+        厂家: "com",
+        包装: "package",
+        批号: "batch",
+        单位: "unit"
+      };
+      const data = scope.requisition_det.map(x => ({
+        nbr: scope.nbr,
+        _name: scope._name,
+        userName: scope.userName,
+        orgName: scope.orgName,
+        _time: scope._time,
+        ...x
+      }));
+      return {
+        fields,
+        data
+      };
+    },
     async getOrders() {
       const data = await this.$get("/api/eims/v1/requisition", this.queryForm);
       const statusToTag = status => {

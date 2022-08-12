@@ -10,7 +10,9 @@ function filterAsyncRoutes(routes, pages) {
       ...route,
       children: []
     };
-    if (pages.find(p => p.includes(tempRoute.path))) {
+    const scope = pages.find(p => p.funRoute.includes(tempRoute.path));
+    if (scope) {
+      tempRoute.meta.title = scope.funName;
       if (route.children) {
         tempRoute.children = filterAsyncRoutes(route.children, pages);
       }
@@ -85,13 +87,14 @@ const actions = {
 
   generateRoutes({ commit }) {
     return new Promise(resolve => {
+      const paths = state.userinfo.funs.map(x => x.funRoute);
       const accessedRoutes = filterAsyncRoutes(
         asyncRoutes,
-        state.userinfo.funs.map(x => x.funRoute)
+        state.userinfo.funs
       );
       commit("SET_ROUTES", accessedRoutes);
       commit("SET_RULES", true);
-      resolve(accessedRoutes);
+      resolve({ accessedRoutes, paths });
     });
   },
 

@@ -4,7 +4,7 @@
       :query-config="{
         fields: {
           desc: { control: 'input', label: '名称', value: '' },
-          com: { control: 'input', label: '域', value: '' }
+          com: { control: 'input', label: '厂家', value: '' }
         }
       }"
       :table-config="{

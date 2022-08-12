@@ -179,21 +179,21 @@ export const asyncRoutes = [
         }
       },
       {
-        path: "/stock/inventory",
-        name: "stock_inventory",
-        component: () => import("@/views/stock/inventory/index"),
+        path: "/report/index",
+        name: "report_index",
+        component: () => import("@/views/report/index"),
         meta: {
-          title: "盘点计划"
-        }
-      },
-      {
-        path: "/stock/income",
-        name: "stock_income",
-        component: () => import("@/views/stock/income/index"),
-        meta: {
-          title: "损益"
+          title: "耗材报表"
         }
       }
+      // {
+      //   path: "/stock/income",
+      //   name: "stock_income",
+      //   component: () => import("@/views/stock/income/index"),
+      //   meta: {
+      //     title: "损益"
+      //   }
+      // }
     ]
   }
   // {

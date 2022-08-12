@@ -27,18 +27,24 @@ router.beforeEach(async (to, from, next) => {
           next();
         } else {
           try {
-            const accessRoutes = await store.dispatch("user/generateRoutes");
+            const { accessedRoutes, paths } = await store.dispatch(
+              "user/generateRoutes"
+            );
             router.addRoutes([
-              ...accessRoutes,
+              ...accessedRoutes,
               {
                 path: "*",
                 redirect: "/404"
               }
             ]);
-            next({
-              ...to,
-              replace: true
-            });
+            next(
+              paths.includes(to.path)
+                ? {
+                    ...to,
+                    replace: true
+                  }
+                : { path: "/" }
+            );
           } catch (error) {
             await store.dispatch("user/resetToken");
             Message.error(error || "Has Error");

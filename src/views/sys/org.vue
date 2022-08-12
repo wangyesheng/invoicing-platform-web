@@ -1,5 +1,4 @@
-<style lang="scss" scoped>
-</style>
+<style lang="scss" scoped></style>
 <template>
   <div class="content-wrap">
     <div class="action-wrap">
@@ -42,7 +41,7 @@
         </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="handleShowOrgDialog(null)">
-            新增根组织
+            新增组织
           </el-button>
         </el-form-item>
       </el-form>
@@ -83,9 +82,9 @@
         </el-table-column>
         <el-table-column label="操作">
           <template slot-scope="{ row }">
-            <el-button type="text" @click="handleShowOrgDialog(row.id)">
+            <!-- <el-button type="text" @click="handleShowOrgDialog(row.id)">
               新增子组织
-            </el-button>
+            </el-button> -->
             <el-button type="text" @click="handleShowOrgDialog(row)">
               编辑
             </el-button>
@@ -129,19 +128,19 @@ export default {
       queryCondition: {
         id: null,
         isactive: null,
-        name: null,
+        name: null
       },
       orgTable: {
         columns: [],
         data: [],
-        total: 0,
+        total: 0
       },
       orgDialog: {
         title: "",
         visible: false,
         formDescriptors: {},
-        formData: {},
-      },
+        formData: {}
+      }
     };
   },
 
@@ -153,7 +152,7 @@ export default {
     async getMianView() {
       const {
         form: { descriptors },
-        table: { columns },
+        table: { columns }
       } = await this.$get("/api/discovery/view/org/main");
       this.orgDialog.formDescriptors = this.renderFormDescriptors(descriptors);
       this.orgTable.columns = columns;
@@ -164,7 +163,7 @@ export default {
       this.orgTable.data = root;
     },
     renderOrgTree(data) {
-      const root = data.filter((x) => !x.parentId);
+      const root = data.filter(x => !x.parentId);
       for (let i = 0; i < root.length; i++) {
         next(root[i], data);
       }
@@ -189,7 +188,7 @@ export default {
       } else if (typeof scope == "string") {
         this.orgDialog.title = "新增";
         this.orgDialog.formData = {
-          parentId: scope,
+          parentId: scope
         };
       } else {
         this.orgDialog.title = "编辑";
@@ -199,10 +198,10 @@ export default {
       this.orgDialog.visible = true;
     },
     onSubmit() {
-      this.$refs.deptFormRef.validate(async (valid) => {
+      this.$refs.deptFormRef.validate(async valid => {
         if (valid) {
           const reqData = {
-            ...this.orgDialog.formData,
+            ...this.orgDialog.formData
           };
           let data;
           if (this.orgDialog.title == "编辑") {
@@ -228,7 +227,7 @@ export default {
         this.$message.success("操作成功！");
         this.getOrgs();
       }
-    },
-  },
+    }
+  }
 };
 </script>

@@ -16,9 +16,12 @@ import store from "./store";
 import router from "./router";
 
 import Print from "@/utils/print";
+import JsonExcel from "vue-json-excel";
 
 import "@/icons"; // icon
 import "@/permission"; // permission control
+
+Vue.component("download-excel", JsonExcel);
 
 Vue.use(ElementUI, {
   size: "small",

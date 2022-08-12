@@ -28,17 +28,17 @@
   <div class="content-wrap">
     <div class="action-wrap">
       <el-form inline>
-        <el-form-item label="编号">
+        <el-form-item label="退库单号">
           <el-input
-            v-model="queryForm.part"
-            placeholder="请输入编号"
+            v-model="queryForm.nbr"
+            placeholder="请输入退库单号"
             clearable
           />
         </el-form-item>
-        <el-form-item label="名称">
+        <el-form-item label="医疗器械编号">
           <el-input
-            v-model="queryForm.nbr"
-            placeholder="请输入名称"
+            v-model="queryForm.part"
+            placeholder="请输入医疗器械编号"
             clearable
           />
         </el-form-item>
@@ -61,6 +61,7 @@
             <div class="expand-wrap">
               <el-tag type="danger">退库明细</el-tag>
               <el-table border :data="row.returnStock_det">
+                <el-table-column prop="part" label="医疗器械编号" />
                 <el-table-column prop="batch" label="批号" />
                 <el-table-column prop="desc" label="耗材名称" />
                 <el-table-column prop="com" label="厂家" />
